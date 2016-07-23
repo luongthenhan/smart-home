@@ -32,6 +32,7 @@ public class HomeController {
 	}
 	
 	public void save() {
+		System.out.println("AAA");
 		LOGGER.debug("Click save");
 		deviceTimer.run(turnOnBulbFromTime, turnOnBulbToTime);
 	}
