@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+</h:head>
+<h:body>
+	<h:form>
+		<p:panelGrid style="width:300px">
+			<p:outputLabel for="turnOnBulbFromTime" value="From time:" />
+			<p:calendar id="turnOnBulbFromTime"
+				value="#{homeController.turnOnBulbFromTime}" pattern="HH:mm"
+				timeOnly="true" />
+			<p:outputLabel for="turnOnBulbToTime" value="To time:" />
+			<p:calendar id="turnOnBulbToTime"
+				value="#{homeController.turnOnBulbToTime}" pattern="HH:mm"
+				timeOnly="true" />
+		</p:panelGrid>
+		<p:commandButton type="submit" value="Save"
+			action="#{homeController.save()}" />
+					<p:commandButton type="submit" value="Toggle"
+			action="#{homeController.toggleLED()}" />
+	</h:form>
+</h:body>
+</html>
