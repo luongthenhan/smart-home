@@ -47,6 +47,11 @@ public class HomeController {
 		isLightOn = !isLightOn;
 		deviceService.toggleLightBulb();
 	}
+	
+	public void capturePicture() {
+		LOGGER.debug("Capture Picture");
+		deviceService.capturePicture();
+	}
 
 	public Date getTurnOnBulbFromTime() {
 		return turnOnBulbFromTime;

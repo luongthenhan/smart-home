@@ -13,4 +13,6 @@ public interface IDeviceService {
 	
 	public boolean isLightOn();
 	
+	public void capturePicture();
+	
 }
