@@ -1,25 +1,109 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
+	<h:outputStylesheet name="bootstrap.min.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<h:outputStylesheet name="index.css" library="css" />
+	<h:outputScript library="primefaces" name="jquery/jquery.js" />
+	<h:outputScript library="js" name="index.js" />
 </h:head>
 <h:body>
-	<h:form>
-		<p:panelGrid style="width:300px">
-			<p:outputLabel for="turnOnBulbFromTime" value="From time:" />
-			<p:calendar id="turnOnBulbFromTime"
-				value="#{homeController.turnOnBulbFromTime}" pattern="HH:mm"
-				timeOnly="true" />
-			<p:outputLabel for="turnOnBulbToTime" value="To time:" />
-			<p:calendar id="turnOnBulbToTime"
-				value="#{homeController.turnOnBulbToTime}" pattern="HH:mm"
-				timeOnly="true" />
-		</p:panelGrid>
-		<p:commandButton type="submit" value="Save"
-			action="#{homeController.save()}" />
-					<p:commandButton type="submit" value="Toggle"
-			action="#{homeController.toggleLED()}" />
-	</h:form>
+	<div class="ui-grid">
+		<h:form>
+			<p:poll interval="1" update="@(.state_device)" global="false" />
+			<p:remoteCommand name="toggleLightBulb" update="light_bulb_panel_id"
+				action="#{homeController.toggleLED()}" />
+
+
+
+			<p:panel id="light_bulb_panel_id" widgetVar="light_bulb_panel"
+				toggleable="true" toggleSpeed="200" collapsed="true">
+				<f:facet name="header">
+						<p:panelGrid columns="2"
+							columnClasses="ui-grid-col-11 btn_toggle_light_bulb,ui-grid-col-1"
+							layout="grid">
+							<p:panelGrid columns="4"
+								columnClasses="ui-grid-col-1,ui-grid-col-2,ui-grid-col-3 outer,ui-grid-col-6 outer"
+								layout="grid">
+								<h:panelGroup layout="block"
+									styleClass="ui-grid-col-3 device_indicator"></h:panelGroup>
+								<h:panelGroup layout="block"></h:panelGroup>
+								<h:panelGroup layout="block" styleClass="inner">
+									<p:graphicImage library="images" name="light_bulb.png"
+										styleClass="title_logo" />
+								</h:panelGroup>
+								<h:panelGroup layout="block" styleClass="inner">
+									<h:outputText value="Light Bulb&lt;br/&gt;" escape="false"
+										styleClass="title_device_name" />
+									<h:outputText id="light_bulb_status_output"
+										value="#{homeController.isLightOn ? 'ON' : 'OFF'}"
+										styleClass="title_device_name state_device #{homeController.isLightOn ? 'on_state' : 'off_state'}" />
+								</h:panelGroup>
+						</p:panelGrid>
+						<h:panelGroup>
+								<p:commandButton styleClass="btn_expand btn_expand_light_bulb"
+									icon="fa fa-chevron-right" global="false"
+									onclick="PF('light_bulb_panel').toggle();toggleExpandIconOfLightBlub();">
+								</p:commandButton>
+							</h:panelGroup>
+						</p:panelGrid>
+
+					<!-- <div class="ui-grid-row">
+						<div class="ui-grid-col-11 btn_toggle_light_bulb"
+							onclick="toggleLightBulb();">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-1">
+									<div class="ui-grid-col-3 device_indicator" />
+								</div>
+								<div class="ui-grid-col-2"></div>
+								<div class="ui-grid-col-3 outer">
+									<div class="inner">
+										<p:graphicImage url="/resources/images/light_bulb.png"
+											styleClass="title_logo" />
+									</div>
+								</div>
+								<div class="ui-grid-col-6 outer">
+									<div class="inner">
+										<h:outputText value="Light Bulb&lt;br/&gt;" escape="false"
+											styleClass="title_device_name" />
+										<h:outputText id="light_bulb_status_output"
+											value="#{homeController.isLightOn ? 'ON' : 'OFF'}"
+											styleClass="title_device_name state_device #{homeController.isLightOn ? 'on_state' : 'off_state'}" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ui-grid-col-1">
+
+							<p:commandButton styleClass="btn_expand btn_expand_light_bulb"
+								icon="fa fa-chevron-right" global="false"
+								onclick="PF('light_bulb_panel').toggle();toggleExpandIconOfLightBlub();">
+							</p:commandButton>
+						</div>
+					</div> -->
+				</f:facet>
+				<h:panelGroup styleClass="scenario_group">
+					<h:outputText value="From " />
+					<p:calendar styleClass="time_picker" id="fromTime" pattern="HH:mm"
+						timeOnly="true" value="#{homeController.turnOnBulbFromTime}" />
+					<h:outputText value=" to " />
+					<p:calendar styleClass="time_picker" id="toTime" pattern="HH:mm"
+						timeOnly="true" value="#{homeController.turnOnBulbToTime}" />
+					<h:outputText value=" light bulb will be turned on" />
+					<p:commandButton value="Save" action="#{homeController.save}"></p:commandButton>
+				</h:panelGroup>
+			</p:panel>
+		</h:form>
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
+
+		<p:dialog widgetVar="statusDialog" draggable="false" closable="false"
+			resizable="false" showHeader="false">
+			<p:graphicImage name="loading_icon.gif" library="images" />
+		</p:dialog>
+	</div>
 </h:body>
 </html>

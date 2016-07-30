@@ -19,46 +19,94 @@ public class DeviceTimer {
 	private static final Logger LOGGER = Logger.getLogger(DeviceTimer.class);
 
 	private boolean isBulbLighting = false;
+	private boolean isTimerStarting = false;
+
+	private Timer timer;
 
 	public DeviceTimer() {
 		super();
+		timer = new Timer();
 	}
 
-	private void toggleBulb() {
-		LOGGER.info("Prepare to toggle");
-		if (!isBulbLighting) {
-			LOGGER.info("Toggle Now");
-			deviceService.toggleLED();
-			isBulbLighting = !isBulbLighting;
-		}
+	private void turnOnLightBulb() {
+		LOGGER.debug("Turn on light bulb");
+		deviceService.turnOnLightBulb();
+		isBulbLighting = true;
+	}
+	
+	private void turnOffLightBulb() {
+		LOGGER.debug("Turn off light bulb");
+		deviceService.turnOffLightBulb();
+		isBulbLighting = false;
 	}
 
 	public void run(final Date fromTime, final Date toTime) {
-		Timer timer = new Timer();
+		if (isTimerStarting) {
+			LOGGER.debug("Timer has already scheduled");
+			return;
+		} else {
+			isTimerStarting = true;
+		}
+
 		timer.schedule(new TimerTask() {
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				Date currTime = new Date();
 
-				if (currTime.getHours() == fromTime.getHours()
-						&& currTime.getMinutes() >= fromTime.getMinutes()) {
-					LOGGER.debug("Case 1");
-					toggleBulb();
-				} else if (currTime.getHours() == toTime.getHours()
-						&& currTime.getMinutes() <= toTime.getMinutes()) {
-					LOGGER.debug("Case 2");
-					toggleBulb();
-				} else if (currTime.getHours() > fromTime.getHours()
-						&& currTime.getHours() < toTime.getHours()) {
-					LOGGER.debug("Case 3");
-					toggleBulb();
-				} else {
-					LOGGER.debug("Case 4");
-					isBulbLighting = false;
-					toggleBulb();
+				LOGGER.debug("Current: " + currTime.getHours() + ":"
+						+ currTime.getMinutes());
+				LOGGER.debug("From: " + fromTime.getHours() + ":"
+						+ fromTime.getMinutes());
+				LOGGER.debug("To: " + toTime.getHours() + ":"
+						+ toTime.getMinutes());
+
+				if (fromTime.compareTo(toTime) >= 1)
+					return;
+
+				int toHour = toTime.getHours();
+				if (toTime.getHours() < fromTime.getHours())
+					toHour += 24;
+
+				if (fromTime.getHours() == currTime.getHours()) {
+					if (fromTime.getMinutes() <= currTime.getMinutes()) {
+						LOGGER.debug("Case 0");
+						if (currTime.getHours() <= toHour
+								&& currTime.getMinutes() < toTime.getMinutes()) {
+							LOGGER.debug("Turn on light bulb");
+							turnOnLightBulb();
+						} else
+							stopTheJob();
+					}
+				} else if (fromTime.getHours() < currTime.getHours()) {
+					if (currTime.getHours() < toHour) {
+						LOGGER.debug("Case 2");
+						turnOnLightBulb();
+					} else if (currTime.getHours() == toTime.getHours()) {
+						if (currTime.getMinutes() < toTime.getMinutes()) {
+							LOGGER.debug("Case 3");
+							turnOnLightBulb();
+						} else
+							stopTheJob();
+					}
 				}
+
+				LOGGER.debug("-----------------------------------");
+
 			}
-		}, 0, 60000);
+
+			private void stopTheJob() {
+				LOGGER.debug("Stop the job");
+				turnOffLightBulb();
+				resetTimer();
+				this.cancel();
+			}
+
+		}, 0, 10000);
+	}
+
+	private void resetTimer() {
+		isTimerStarting = false;
 	}
 }
