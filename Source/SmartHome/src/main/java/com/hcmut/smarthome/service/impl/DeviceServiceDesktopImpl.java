@@ -30,4 +30,10 @@ public class DeviceServiceDesktopImpl implements IDeviceService {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public void capturePicture() {
+		// TODO Auto-generated method stub
+		
+	}
 }
