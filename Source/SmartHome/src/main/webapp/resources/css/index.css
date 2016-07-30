@@ -1,0 +1,76 @@
+.title_logo {
+	width: 80%;
+}
+
+.title_device_name {
+	font-size: 3em;
+	font-weight: normal;
+}
+
+.ui-icon-minusthick, .ui-icon-plusthick {
+	display: none !important;
+}
+
+.ui-panel-title {
+	margin: 0 !important;
+}
+
+.ui-panel-titlebar {
+	padding: 0 !important;
+	background: #fff !important;
+}
+
+.btn_expand {
+	height: 100%;
+	width: 100% !important;
+	background: #fff !important;
+	border-top: 0px !important;
+	border-bottom: 0px !important;
+	border-right: 0px !important;
+	border-radius: 0px !important;
+	font-size: 2.2em !important;
+}
+
+.device_indicator {
+	background-color: #FF851B;
+	height: 100%;
+}
+
+.ui-icon {
+	height: 3em !important;
+	width: 1em !important;
+}
+
+.inner {
+	display: table-cell;
+	height: 200px;
+	vertical-align: middle;
+}
+
+.off_state {
+	color: #FF4136;
+}
+
+.on_state {
+	color: #2ECC40;
+}
+
+.time_picker input {
+	width: 10% !important;
+}
+
+.scenario_group {
+	font-size: 2.3em;
+}
+
+.ui-panel-content {
+	padding: 2em !important;
+}
+
+.ui-hidden-container {
+	background-color: transparent !important;
+}
+
+.ui-widget-content{
+	border: 0px;
+}
