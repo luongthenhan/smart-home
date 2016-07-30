@@ -1,9 +1,6 @@
 package com.hcmut.smarthome.service.impl;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hopding.jrpicam.RPiCamera;

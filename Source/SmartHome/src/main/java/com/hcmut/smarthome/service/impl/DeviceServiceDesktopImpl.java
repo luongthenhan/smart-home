@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.service.IDeviceService;
 
+@Service
 public class DeviceServiceDesktopImpl implements IDeviceService {
 
 	@Override
@@ -29,11 +30,4 @@ public class DeviceServiceDesktopImpl implements IDeviceService {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	@Override
-	public void capturePicture() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
