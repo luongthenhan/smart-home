@@ -44,6 +44,7 @@ public class HomeController {
 
 	public void toggleLED() {
 		LOGGER.debug("Toggle LED");
+		System.out.println("TOGGGLLE NNOOWW");
 		isLightOn = !isLightOn;
 		deviceService.toggleLightBulb();
 	}

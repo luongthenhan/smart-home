@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.service.IDeviceService;
 
+@Service
 public class DeviceServiceDesktopImpl implements IDeviceService {
 
 	@Override
