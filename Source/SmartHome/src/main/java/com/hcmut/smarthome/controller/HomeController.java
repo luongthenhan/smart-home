@@ -5,13 +5,12 @@ import java.util.Date;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.hcmut.smarthome.job.DeviceTimer;
 import com.hcmut.smarthome.service.IDeviceService;
+import com.hcmut.smarthome.service.IGasSensorService;
 
 /**
  * Handles requests for the application home page.
@@ -26,6 +25,9 @@ public class HomeController {
 
 	@Autowired
 	private IDeviceService deviceService;
+	
+	@Autowired
+	private IGasSensorService gasSensorService;
 
 	private Date turnOnBulbFromTime;
 	private Date turnOnBulbToTime;
@@ -35,6 +37,7 @@ public class HomeController {
 	@PostConstruct
 	public void setUp() {
 		isLightOn = deviceService.isLightOn();
+		gasSensorService.start();
 	}
 
 	public void save() {

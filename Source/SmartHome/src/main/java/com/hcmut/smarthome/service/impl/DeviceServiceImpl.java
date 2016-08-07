@@ -20,7 +20,7 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
-
+@Service
 public class DeviceServiceImpl implements IDeviceService {
 
 	private static GpioController gpioController;
