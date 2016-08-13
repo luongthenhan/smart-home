@@ -183,6 +183,7 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- OpenCV 3.0.0 -->
 		<dependency>
 			<groupId>org.opencv</groupId>
 			<artifactId>opencv</artifactId>
