@@ -1,0 +1,9 @@
+.delete-script-button {
+    background: #f5f5f5;
+    border: 0;
+}
+
+.clockpicker input {
+    width: 45px;
+    text-align: center;
+}
