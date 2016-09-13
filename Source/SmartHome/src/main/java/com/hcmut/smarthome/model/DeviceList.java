@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,7 +37,7 @@ public class DeviceList implements Serializable{
 	@Column(name="description", nullable = true , length = 1024)
 	private String description;
 	
-	@ManyToMany
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="devlist_has_device", joinColumns={@JoinColumn(name="device_list_id",nullable=false)}, inverseJoinColumns={@JoinColumn(name="device_id",nullable=false)})
 	private List<Device> devices;
 	
@@ -66,6 +67,12 @@ public class DeviceList implements Serializable{
 	}
 	public void setUser(User user) {
 		this.user = user;
+	}
+	public List<Device> getDevices() {
+		return devices;
+	}
+	public void setDevices(List<Device> devices) {
+		this.devices = devices;
 	}
 	
 	

@@ -31,7 +31,7 @@ public class Device implements Serializable{
 	private String location;
 
 	@ManyToOne
-	@JoinColumn(name="homeId", nullable = false)
+	@JoinColumn(name="home_id", nullable = false)
 	private Home home;
 	
 	@ManyToOne
@@ -42,7 +42,7 @@ public class Device implements Serializable{
 	private boolean enabled;
 	
 	@Column(name="gpio_info", nullable = false , length = 45)
-	private String GPIOinfo;
+	private int GPIOinfo;
 	
 	public Device() {
 		super();
@@ -77,12 +77,6 @@ public class Device implements Serializable{
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	public String getGPIOinfo() {
-		return GPIOinfo;
-	}
-	public void setGPIOinfo(String gPIOinfo) {
-		GPIOinfo = gPIOinfo;
-	}
 	public Home getHome() {
 		return home;
 	}
@@ -95,6 +89,10 @@ public class Device implements Serializable{
 	public void setDeviceType(DeviceType deviceType) {
 		this.deviceType = deviceType;
 	}
-	
-	
+	public int getGPIOinfo() {
+		return GPIOinfo;
+	}
+	public void setGPIOinfo(int gPIOinfo) {
+		GPIOinfo = gPIOinfo;
+	}
 }
