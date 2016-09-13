@@ -1,0 +1,40 @@
+<div class="panel-group device-panel-group">
+    <div class="panel panel-default device-panel">
+        <div class="panel-heading device-panel-heading">
+            <h4 class="panel-title device-panel-title">
+                <button type="button" class="device-button">
+                    <div class="row device-type-button-row">
+                        <div class="device-type-indicator"></div>
+                        <div class="col-xs-offset-2 col-xs-3">
+                            <img class="img-responsive" src="{{ typeimg }}">
+                        </div>
+                        <div class="col-xs-7">
+                            <div class="row device-name">
+                                {{ name }}
+                            </div>
+                            <div class="row device-status">
+                                <span>Status: </span>
+                                <span class="device-status-value">On</span>
+                            </div>
+                        </div>
+                        <button data-toggle="collapse" data-target="#collapse1" class="device-panel-toggle-button">
+                            <span class="glyphicon glyphicon-menu-right device-panel-toggle-icon"/>
+                        </button>
+                    </div>
+                </button>
+            </h4>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse script-panel-collapse">
+            <div class="panel-footer script-panel-body">
+                <device-script-when-then></device-script-when-then>
+                <device-script-from-to></device-script-from-to>
+                <div class="row">
+                    <button class="add-script-button pull-right">
+                        <span class="glyphicon glyphicon-plus-sign"/>
+                        Add more...
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

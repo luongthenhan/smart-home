@@ -1,0 +1,81 @@
+.device-panel-group {
+    margin: 0;
+}
+
+.device-button:active {
+    background: #FF7F00;
+    color: #FFFFFF;
+}
+
+.device-panel {
+    border: 0;
+}
+
+.device-panel-heading {
+    padding: 0;
+}
+
+.device-panel-title {
+    position: relative;
+    border-bottom: 0.2px solid #D0C1B3;;
+}
+
+.device-panel-toggle-button {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    background: #FFFFFF;
+    border-left: 0.2px solid #D0C1B3;
+    border-top:0;
+    border-right:0;
+    border-bottom: 0;
+}
+
+.device-button {
+    position: relative;
+    background: #FFFFFF;
+    color: #FF7F00;
+    border-radius: 0;
+    margin-bottom: 0;
+    border: 0;
+    width: 100%;
+    height: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.device-name, .device-status {
+    font-size: 22px;
+    text-align:left;
+    margin-left: 5px;
+}
+
+.device-status {
+    margin-top: 10px;
+}
+
+.device-status-value {
+    color: #3CB371;
+}
+
+.device-panel-toggle-button {
+    color: #FF7F00;
+}
+
+.script-panel-collapse {
+    background: #f5f5f5;
+}
+
+.script-panel-body {
+    margin: auto 10px;
+}
+
+.dropdown-option-button {
+    padding: 0;
+}
+
+.add-script-button {
+    background: #f5f5f5;
+    border: 0;
+    margin-top: 10px;
+}
