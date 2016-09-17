@@ -29,6 +29,9 @@ public class Device implements Serializable{
 	
 	@Column(name="location", nullable = true , length = 100)
 	private String location;
+	
+	@Column(name="code", nullable = true , length = 50)
+	private String code;
 
 	@ManyToOne
 	@JoinColumn(name="home_id", nullable = false)
@@ -95,4 +98,12 @@ public class Device implements Serializable{
 	public void setGPIOinfo(int gPIOinfo) {
 		GPIOinfo = gPIOinfo;
 	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	
+	
 }
