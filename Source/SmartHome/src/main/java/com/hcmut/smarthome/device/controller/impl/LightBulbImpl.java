@@ -27,5 +27,15 @@ public class LightBulbImpl implements ILightBulb {
 	public void turnOff() {
 		lightBulbPin.setState(PinState.HIGH);
 	}
+	
+	@Override
+	public void toggle() {
+		lightBulbPin.toggle();
+	}
+
+	@Override
+	public boolean isOn() {
+		return lightBulbPin.isLow();
+	}
 
 }

@@ -27,5 +27,15 @@ public class BuzzerImpl implements IBuzzer {
 	public void turnOff() {
 		buzzerPin.setState(PinState.HIGH);
 	}
+	
+	@Override
+	public void toggle() {
+		buzzerPin.toggle();
+	}
+
+	@Override
+	public boolean isOn() {
+		return buzzerPin.isLow();
+	}
 
 }
