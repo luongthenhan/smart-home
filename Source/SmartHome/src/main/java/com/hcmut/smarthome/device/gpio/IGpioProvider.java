@@ -1,13 +1,15 @@
 package com.hcmut.smarthome.device.gpio;
 
-import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.model.DeviceBase;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 
 public interface IGpioProvider {
 
-	public GpioPinDigitalOutput getGpioOutput(Device device);
+	public GpioPinDigitalOutput getGpioOutput(DeviceBase device);
 	
-	public GpioPinDigitalInput getGpioInput(Device device);
+	public GpioPinDigitalInput getGpioInputForActiveLowDevice(DeviceBase device);
+	
+	public GpioPinDigitalInput getGpioInputForActiveHighDevice(DeviceBase device);
 	
 }

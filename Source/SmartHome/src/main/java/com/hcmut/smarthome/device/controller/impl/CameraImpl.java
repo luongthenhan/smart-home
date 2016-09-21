@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import com.hcmut.smarthome.device.controller.ICamera;
-import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.model.Camera;
 import com.hopding.jrpicam.RPiCamera;
 import com.hopding.jrpicam.enums.AWB;
 import com.hopding.jrpicam.enums.DRC;
@@ -27,7 +27,7 @@ public class CameraImpl implements ICamera {
 	private int contrast;
 	private int brightness;
 
-	public CameraImpl(Device device) {
+	public CameraImpl(Camera camera) {
 
 		// set up pi camera
 		try {

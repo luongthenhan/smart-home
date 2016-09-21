@@ -1,4 +1,4 @@
-package com.hcmut.smarthome.model;
+package com.hcmut.smarthome.entity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,8 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="device_list")
-public class DeviceList implements Serializable{
+@Table(name="script_list")
+public class ScriptList implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -26,10 +25,10 @@ public class DeviceList implements Serializable{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
-	@ManyToOne
-	@JoinColumn(name="home_id", nullable = false)
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name="home_id" , nullable= false)
 	private Home home;
-
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="user_id", nullable=false)
 	private User user;
@@ -37,11 +36,11 @@ public class DeviceList implements Serializable{
 	@Column(name="description", nullable = true , length = 1024)
 	private String description;
 	
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(name="devlist_has_device", joinColumns={@JoinColumn(name="device_list_id",nullable=false)}, inverseJoinColumns={@JoinColumn(name="device_id",nullable=false)})
-	private List<Device> devices;
+	@ManyToMany
+	@JoinTable(name="scriptlist_has_script", joinColumns={@JoinColumn(name="script_list_id",nullable=false)}, inverseJoinColumns={@JoinColumn(name="script_id",nullable=false)})
+	private List<Script> scripts;
 	
-	public DeviceList() {
+	public ScriptList() {
 		super();
 	}
 	public int getId() {
@@ -67,12 +66,6 @@ public class DeviceList implements Serializable{
 	}
 	public void setUser(User user) {
 		this.user = user;
-	}
-	public List<Device> getDevices() {
-		return devices;
-	}
-	public void setDevices(List<Device> devices) {
-		this.devices = devices;
 	}
 	
 	

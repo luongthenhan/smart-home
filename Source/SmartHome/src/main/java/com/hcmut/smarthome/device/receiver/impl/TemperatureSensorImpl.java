@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import com.hcmut.smarthome.device.receiver.ITemperatureSensor;
-import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.model.TemperatureSensor;
 
 public class TemperatureSensorImpl implements ITemperatureSensor {
 	
@@ -15,12 +15,12 @@ public class TemperatureSensorImpl implements ITemperatureSensor {
 	
 	private StringBuilder temperatureFilePath;
 	
-	public TemperatureSensorImpl(Device device) {
+	public TemperatureSensorImpl(TemperatureSensor temperatureSensor) {
 		
 		temperatureFilePath = new StringBuilder();
 		
 		temperatureFilePath.append("/sys/bus/w1/devices/");
-		temperatureFilePath.append(device.getCode());
+		temperatureFilePath.append(temperatureSensor.getCode());
 		temperatureFilePath.append("/w1_slave");
 		
 	}

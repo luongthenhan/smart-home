@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hcmut.smarthome.dto.Scenario;
-import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.entity.Device;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
 
