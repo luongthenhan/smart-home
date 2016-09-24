@@ -1,17 +1,17 @@
-app.directive("deviceTypeButton", function($location) {
+app.directive("deviceTypeButton", ['MainService', function(MainService) {
     return {
         restrict: "E",
         scope: {
-            typename: "@",
-            typeimg: "@"
+            devicetype: "="
         },
         templateUrl: "app/shared/device-type-button/deviceTypeButtonView.html",
         controllerAs: 'deviceTypeCtrl',
-        controller: function() {
+        controller: function($scope, $location) {
             var self = this;
-            this.toDeviceList = function() {
+            self.toDeviceList = function() {
+                MainService.selectedDeviceType = $scope.devicetype;
                 $location.path("/device_list");
             }
         }
     }
-})
+}])

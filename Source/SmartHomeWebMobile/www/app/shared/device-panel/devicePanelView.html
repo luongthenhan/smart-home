@@ -1,4 +1,4 @@
-<div class="panel-group device-panel-group">
+<div class="panel-group device-panel-group" ng-init="devicePanelCtrl.init()">
     <div class="panel panel-default device-panel">
         <div class="panel-heading device-panel-heading">
             <h4 class="panel-title device-panel-title">
@@ -10,31 +10,76 @@
                         </div>
                         <div class="col-xs-7">
                             <div class="row device-name">
-                                {{ name }}
+                                {{ device.name }}
                             </div>
                             <div class="row device-status">
-                                <span>Status: </span>
-                                <span class="device-status-value">On</span>
+                                <span class="device-status-value">{{device.status == null ? mainactionname : device.status}}</span>
                             </div>
                         </div>
-                        <button data-toggle="collapse" data-target="#collapse1" class="device-panel-toggle-button">
-                            <span class="glyphicon glyphicon-menu-right device-panel-toggle-icon"/>
+                        <button data-toggle="collapse" data-target="#deviceCollapse{{device.id}}" class="device-panel-toggle-button">
+                            <span id="devicePanelToggleIcon{{device.id}}" class="glyphicon glyphicon-menu-right device-panel-toggle-icon"/>
                         </button>
                     </div>
                 </button>
             </h4>
         </div>
-        <div id="collapse1" class="panel-collapse collapse script-panel-collapse">
+        <div id="deviceCollapse{{device.id}}" class="panel-collapse collapse script-panel-collapse">
             <div class="panel-footer script-panel-body">
+                <div class="row device-panel-operational-button-row">
+                    <button type="button" class="btn btn-default device-panel-operational-button">
+                        <span class="glyphicon glyphicon-off"></span> Disable
+                    </button>
+                    <button type="button" class="btn btn-danger device-panel-operational-button">
+                        <span class="glyphicon glyphicon-trash"></span> Remove
+                    </button>
+                </div>
                 <device-script-when-then></device-script-when-then>
                 <device-script-from-to></device-script-from-to>
+                <device-script-custom></device-script-custom>
                 <div class="row">
-                    <button class="add-script-button pull-right">
+                    <button class="add-script-button pull-right" data-toggle="modal" data-target="#device-panel-add-script-modal{{device.id}}">
                         <span class="glyphicon glyphicon-plus-sign"/>
                         Add more...
                     </button>
                 </div>
             </div>
         </div>
+
+        <!-- Add Script Modal -->
+        <div class="modal fade device-panel-add-script-modal" id="device-panel-add-script-modal{{device.id}}" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Script For {{device.name}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div style="font-weight: bold">Choose Script Type: </div>
+                        <form>
+                            <div class="radio">
+                                <label><input type="radio" name="optradio">When/Then</label>
+                            </div>
+                            <div class="radio">
+                                <label><input type="radio" name="optradio">From/To</label>
+                            </div>
+                            <div class="radio disabled">
+                                <label><input type="radio" name="optradio">Custom</label>
+                            </div>
+                            <input type="text" class="form-control input-field" placeholder="Custom Script Name">
+                            <textarea class="form-control input-field device-panel-custom-script-input"
+                                      rows="3"
+                                      placeholder="Custom Script Input"></textarea>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn modal-confirm-btn add-script-btn" data-dismiss="modal">Save</button>
+                        <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>

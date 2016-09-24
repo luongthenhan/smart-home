@@ -1,8 +1,6 @@
 <navbar></navbar>
-<div class="wrapper-content">
+<div class="wrapper-content" ng-controller="HomeController as homeCtrl" ng-init="homeCtrl.init()">
     <div class="row form-row form-title">Device Categories</div>
-    <device-type-button typename="Lightings" typeimg="assets/img/light-bulb.png" class="first-device-type-button"></device-type-button>
-    <device-type-button typename="Buzzers" typeimg="assets/img/buzzer.png"></device-type-button>
-    <device-type-button typename="Cameras" typeimg="assets/img/camera.png"></device-type-button>
-    <device-type-button typename="Sensors" typeimg="assets/img/sensor.png"></device-type-button>
+
+    <device-type-button ng-repeat="deviceType in homeCtrl.deviceTypes" devicetype="deviceType"></device-type-button>
 </div>

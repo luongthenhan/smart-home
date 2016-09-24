@@ -5,6 +5,6 @@ app.controller('ChangeDefaultUserController', function($location) {
     self.password = "";
 
     self.changeDefaultUser = function() {
-        $location.path("/add_device");
+        $location.path("/home");
     }
 })

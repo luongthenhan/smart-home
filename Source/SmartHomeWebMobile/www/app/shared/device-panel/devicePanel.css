@@ -8,7 +8,6 @@
 }
 
 .device-panel {
-    border: 0;
 }
 
 .device-panel-heading {
@@ -17,7 +16,6 @@
 
 .device-panel-title {
     position: relative;
-    border-bottom: 0.2px solid #D0C1B3;;
 }
 
 .device-panel-toggle-button {
@@ -78,4 +76,20 @@
     background: #f5f5f5;
     border: 0;
     margin-top: 10px;
+}
+
+.device-panel-operational-button-row {
+    margin-bottom: 15px !important;
+}
+
+.device-panel-operational-button {
+    padding: 3px 12px 3px 12px;
+}
+
+.add-script-btn {
+    width: 70px;
+}
+
+.device-panel-custom-script-input {
+    margin-top: 2px;
 }
