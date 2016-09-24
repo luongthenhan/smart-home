@@ -11,7 +11,9 @@ import com.hcmut.smarthome.model.TemperatureSensor;
 
 public class TemperatureSensorImpl implements ITemperatureSensor {
 	
-	private static final Logger LOGGER = Logger.getLogger(TemperatureSensorImpl.class);
+	private final static Logger LOGGER = Logger.getLogger(TemperatureSensorImpl.class);
+	
+	private final static float DANGER_TEMPERATURE = 50;
 	
 	private StringBuilder temperatureFilePath;
 	
@@ -64,5 +66,15 @@ public class TemperatureSensorImpl implements ITemperatureSensor {
 		}
 		
 		return temperature;
+	}
+
+	@Override
+	public boolean isDanger() {
+		
+		if(getTemperature() >= DANGER_TEMPERATURE) {
+			return true;
+		}
+		
+		return false;
 	}
 }
