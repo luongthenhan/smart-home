@@ -10,33 +10,36 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="row form-row">
+            <div class="row">
                 <div class="col-xs-12">
-                    <input ng-model="addDeviceCtrl.type" type="text" class="form-control input-field"
-                           id="type"
-                           placeholder="Device Type">
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="row form-row">
-                <div class="col-xs-12">
-                    <input ng-model="addDeviceCtrl.gpio" type="number" class="form-control input-field"
-                           id="gpio"
-                           placeholder="Device Gpio Pin">
+                    <textarea ng-model="addDeviceCtrl.description" class="form-control input-field"
+                              id="description" rows="3"
+                              placeholder="Device Description"></textarea>
                 </div>
             </div>
         </div>
         <div class="form-group">
             <div class="row">
                 <div class="col-xs-12">
-                    <textarea ng-model="addDeviceCtrl.description" class="form-control input-field"
-                           id="description" rows="3"
-                           placeholder="Device Description"></textarea>
+                    <span class="add-device-form-label">Device Type</span>
+                    <select class="combobox">
+                        <option value="PA">Light</option>
+                        <option value="CT">Camera</option>
+                    </select>
                 </div>
             </div>
         </div>
-
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-12">
+                    <span class="add-device-form-label">Device GPIO</span>
+                    <select class="combobox">
+                        <option value="PA">2</option>
+                        <option value="CT">3</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="row form-row">

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+          content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: 'unsafe-inline'; connect-src * 'unsafe-inline'; frame-src *;">
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport"
@@ -22,6 +22,8 @@
     <script type="text/javascript" src="app/components/login/loginController.js"></script>
     <script type="text/javascript" src="app/components/change_default_user/changeDefaultUserController.js"></script>
     <script type="text/javascript" src="app/components/add_device/addDeviceController.js"></script>
+    <script type="text/javascript" src="app/components/home/homeController.js"></script>
+    <script type="text/javascript" src="app/components/device_list/deviceListController.js"></script>
 
     <!-- shared js -->
     <script type="text/javascript" src="app/shared/navbar/navbarDirective.js"></script>
@@ -29,6 +31,10 @@
     <script type="text/javascript" src="app/shared/device-panel/devicePanelController.js"></script>
     <script type="text/javascript" src="app/shared/device-script-when-then/deviceScriptWhenThenController.js"></script>
     <script type="text/javascript" src="app/shared/device-script-from-to/deviceScriptFromToController.js"></script>
+    <script type="text/javascript" src="app/shared/device-script-custom/deviceScriptCustomController.js"></script>
+
+    <!-- service js -->
+    <script type="text/javascript" src="app/services/mainService.js"></script>
 
     <!-- css -->
     <link rel="stylesheet" type="text/css" href="assets/css/jquery-clockpicker.min.css">
@@ -39,6 +45,7 @@
 
     <!-- components css -->
     <link rel="stylesheet" type="text/css" href="app/components/home/home.css">
+    <link rel="stylesheet" type="text/css" href="app/components/add_device/addDevice.css">
     <link rel="stylesheet" type="text/css" href="app/components/device_list/deviceList.css">
 
     <!-- shared css -->
@@ -46,6 +53,7 @@
     <link rel="stylesheet" type="text/css" href="app/shared/device-panel/devicePanel.css">
     <link rel="stylesheet" type="text/css" href="app/shared/device-script-when-then/deviceScriptWhenThen.css">
     <link rel="stylesheet" type="text/css" href="app/shared/device-script-from-to/deviceScriptFromTo.css">
+    <link rel="stylesheet" type="text/css" href="app/shared/device-script-custom/deviceScriptCustom.css">
 
     <title>Smart Home</title>
 </head>

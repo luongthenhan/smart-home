@@ -1,7 +1,9 @@
 <navbar></navbar>
-<div class="wrapper-content">
+<div class="wrapper-content" ng-controller="DeviceListController as deviceListCtrl" ng-init="deviceListCtrl.init()">
     <div class="row form-row form-title">Devices</div>
-    <device-panel name="Lightbulb 1" typeimg="assets/img/light-bulb.png" class="first-device-panel"></device-panel>
-    <device-panel name="Lightbulb 2" typeimg="assets/img/light-bulb.png"></device-panel>
-    <device-panel name="Lightbulb 3" typeimg="assets/img/light-bulb.png"></device-panel>
+
+    <device-panel ng-repeat="device in deviceListCtrl.devices"
+                  device="device"
+                  mainactionname="{{deviceListCtrl.deviceType.mainAction.name}}"
+                  typeimg="{{deviceListCtrl.deviceType.imageURL}}"></device-panel>
 </div>
