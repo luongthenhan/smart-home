@@ -37,13 +37,13 @@ public class CameraImpl implements ICamera {
 			LOGGER.error(e.getMessage());
 		}
 		
-		width = 650;
-		height = 650;
-		quality = 75;
-		timeout = 1000;
-		sharpness = 0;
-		contrast = 0;
-		brightness = 50;
+		width = camera.getWidth();
+		height = camera.getHeight();
+		quality = camera.getQuality();
+		timeout = camera.getTimeout();
+		sharpness = camera.getSharpness();
+		contrast = camera.getContrast();
+		brightness = camera.getBrightness();
 
 	}
 	

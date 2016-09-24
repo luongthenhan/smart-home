@@ -4,6 +4,8 @@ import com.hcmut.smarthome.entity.Device;
 
 public class MotionSensor extends DeviceBase {
 	
+	private boolean hasHuman;
+	
 	public MotionSensor(Device device) {
 		this.id = device.getId();
 		this.name = device.getName();
@@ -13,6 +15,15 @@ public class MotionSensor extends DeviceBase {
 		this.status = device.getStatus();
 		this.enabled = device.isEnabled();
 		this.code = device.getCode();
+		this.hasHuman = false;
 	}
 
+	public boolean isHasHuman() {
+		return hasHuman;
+	}
+
+	public void setHasHuman(boolean hasHuman) {
+		this.hasHuman = hasHuman;
+	}
+	
 }

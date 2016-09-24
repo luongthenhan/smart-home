@@ -3,5 +3,6 @@ package com.hcmut.smarthome.device.receiver;
 
 public interface ITemperatureSensor {
 	
-	float getTemperature();
+	public float getTemperature();
+	public boolean isDanger();
 }
