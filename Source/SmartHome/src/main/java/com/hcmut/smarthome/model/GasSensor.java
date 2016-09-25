@@ -15,6 +15,7 @@ public class GasSensor extends DeviceBase {
 		this.status = device.getStatus();
 		this.enabled = device.isEnabled();
 		this.code = device.getCode();
+		this.deviceType = device.getDeviceType().getTypeName();
 		this.isDanger = false;
 	}
 

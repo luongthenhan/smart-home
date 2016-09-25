@@ -97,8 +97,8 @@ public class ScenarioService implements IScenarioService {
 					t -> deviceService.toggleLight(object.get(1).toString()));
 			break;
 
-		case BUZZER_BEEP:
-			block = new SimpleAction(BUZZER_BEEP,
+		case TOGGLE_BUZZER:
+			block = new SimpleAction(TOGGLE_BUZZER,
 					t -> deviceService.toggleBuzzer(object.get(1).toString()));
 			break;
 

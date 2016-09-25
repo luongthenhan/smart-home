@@ -15,6 +15,7 @@ public class MotionSensor extends DeviceBase {
 		this.status = device.getStatus();
 		this.enabled = device.isEnabled();
 		this.code = device.getCode();
+		this.deviceType = device.getDeviceType().getTypeName();
 		this.hasHuman = false;
 	}
 

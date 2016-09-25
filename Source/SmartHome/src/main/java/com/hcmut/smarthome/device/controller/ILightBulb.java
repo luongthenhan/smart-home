@@ -6,5 +6,5 @@ public interface ILightBulb {
 	public void turnOff();
 	public void toggle();
 	public boolean isOn();
-
+	
 }

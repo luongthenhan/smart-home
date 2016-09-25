@@ -8,12 +8,12 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 
 public class LightBulbImpl implements ILightBulb {
-	
+
 	GpioPinDigitalOutput lightBulbPin;
 	IGpioProvider gpioProvider;
-	
+
 	public LightBulbImpl(LightBulb lightBulb) {
-		
+
 		gpioProvider = new GpioProviderImpl();
 		lightBulbPin = gpioProvider.getGpioOutput(lightBulb);
 	}

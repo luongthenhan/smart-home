@@ -48,5 +48,5 @@ public interface ICamera {
 	 * @param brightness
 	 */
 	public void setBrightness(int brightness);
-
+	
 }

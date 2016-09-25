@@ -16,6 +16,7 @@ public class TemperatureSensor extends DeviceBase {
 		this.status = device.getStatus();
 		this.enabled = device.isEnabled();
 		this.code = device.getCode();
+		this.deviceType = device.getDeviceType().getTypeName();
 		this.temperature = 0;
 		this.isDanger = false;
 	}

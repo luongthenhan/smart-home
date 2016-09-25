@@ -10,6 +10,7 @@ public class DeviceBase {
 	protected String status;
 	protected boolean enabled;
 	protected String code;
+	protected String deviceType;
 	
 	public long getId() {
 		return id;
@@ -65,6 +66,12 @@ public class DeviceBase {
 	}
 	public void setCode(String code) {
 		this.code = code;
+	}
+	public String getDeviceType() {
+		return deviceType;
+	}
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 	
 }
