@@ -3,6 +3,7 @@ package com.hcmut.smarthome.device.controller.impl;
 import java.awt.image.BufferedImage;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.device.controller.IBuzzer;
 import com.hcmut.smarthome.device.controller.ICamera;
@@ -23,6 +24,7 @@ import com.hcmut.smarthome.model.TemperatureSensor;
 
 import static com.hcmut.smarthome.utils.ConstantUtil.*;
 
+@Service
 public class GeneralControllerImpl implements IGeneralController {
 
 	private static final Logger LOGGER = Logger
