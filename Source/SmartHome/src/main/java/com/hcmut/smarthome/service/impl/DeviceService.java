@@ -1,13 +1,31 @@
 package com.hcmut.smarthome.service.impl;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hcmut.smarthome.dao.IDeviceDao;
+import com.hcmut.smarthome.entity.DeviceEntity;
+import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.service.IDeviceService;
+import com.hcmut.smarthome.utils.DeviceConverter;
+
 @Service
-public class DeviceService {
+public class DeviceService implements IDeviceService {
 	private boolean isLightOn = true;
 	private boolean isBuzzerBeep = true;
 	private boolean isDayLight = true;
 	
+	@Autowired
+	private IDeviceDao deviceDao;
+	
+	@Override
+	public List<Device> getAllGivenHomeAndDeviceType(int homeId, int deviceTypeId){
+		List<DeviceEntity> devices = deviceDao.getAllGivenHomeAndDeviceType(homeId, deviceTypeId);
+		return DeviceConverter.toListModel(devices);
+	}
+
 	public void toggleLight(String deviceName){
 		if( isLightOn )
 			System.out.println("Turn " + deviceName + " on .....");
@@ -43,9 +61,12 @@ public class DeviceService {
 		return 35.5F;
 	}
 	
+	private float temp = 32.5F;
 	public float getTemperature(String deviceName){
-		System.out.println("Get temperature from " + deviceName);
-		return 35.5F;
+		temp = temp + 1 ;
+		System.out.println("Get temperature from " + deviceName + " :" +temp);
+		
+		return temp;
 	}
 	
 	public float getGasThreshold(String deviceName){

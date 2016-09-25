@@ -1,7 +1,7 @@
 package com.hcmut.smarthome.device.gpio.impl;
 
 import com.hcmut.smarthome.device.gpio.IGpioProvider;
-import com.hcmut.smarthome.model.DeviceBase;
+import com.hcmut.smarthome.model.Device;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
@@ -22,11 +22,11 @@ public class GpioProviderImpl implements IGpioProvider {
 	}
 
 	@Override
-	public GpioPinDigitalOutput getGpioOutput(DeviceBase device) {
+	public GpioPinDigitalOutput getGpioOutput(Device device) {
 
 		GpioPinDigitalOutput outputPin;
 
-		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGpio());
+		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIOPin());
 
 		outputPin = gpioController.provisionDigitalOutputPin(p4jPin,
 				device.getName(), PinState.HIGH);
@@ -38,11 +38,11 @@ public class GpioProviderImpl implements IGpioProvider {
 	}
 
 	@Override
-	public GpioPinDigitalInput getGpioInputForActiveLowDevice(DeviceBase device) {
+	public GpioPinDigitalInput getGpioInputForActiveLowDevice(Device device) {
 
 		GpioPinDigitalInput inputPin;
 
-		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGpio());
+		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIOPin());
 
 		inputPin = gpioController.provisionDigitalInputPin(p4jPin,
 				device.getName());
@@ -54,11 +54,11 @@ public class GpioProviderImpl implements IGpioProvider {
 	}
 
 	@Override
-	public GpioPinDigitalInput getGpioInputForActiveHighDevice(DeviceBase device) {
+	public GpioPinDigitalInput getGpioInputForActiveHighDevice(Device device) {
 
 		GpioPinDigitalInput inputPin;
 
-		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGpio());
+		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIOPin());
 
 		inputPin = gpioController.provisionDigitalInputPin(p4jPin,
 				device.getName());

@@ -1,6 +1,6 @@
 package com.hcmut.smarthome.utils;
 
-import com.hcmut.smarthome.model.DeviceBase;
+import com.hcmut.smarthome.model.Device;
 
 public class ConstantUtil {
 
@@ -61,8 +61,11 @@ public class ConstantUtil {
 	public static final String MOTION_SENSOR = "MotionSensor";
 	public static final String LIGHT_SENSOR = "LightSensor";
 
+	public static final int SIZE_CONTROL_BLOCK_IF_ELSE = 4;
+	public static final int SIZE_CONTROL_BLOCK_IF = 3;
+	
 	// Returned status and exception
-	public static final DeviceBase CANNOT_CONVERT_ENTITY_TO_MODEL = null;
+	public static final Device CANNOT_CONVERT_ENTITY_TO_MODEL = null;
 	public static final Exception DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL = new Exception(
 			"Device base cannot cast to correct model");
 	public static final Exception DEVICE_CANNOT_PERFORM_THIS_ACTION = new Exception(

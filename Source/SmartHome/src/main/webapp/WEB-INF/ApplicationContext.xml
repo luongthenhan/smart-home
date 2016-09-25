@@ -15,7 +15,7 @@ http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 	<context:annotation-config />
 
 	<!-- Enable component scanning -->
-	<context:component-scan base-package="com.hcmut.smarthome" />
+	<context:component-scan base-package="com.hcmut.smarthome.**" />
 
 	<import resource="hibernate-context.xml" />
 </beans>

@@ -1,4 +1,4 @@
-package com.hcmut.smarthome.dto;
+package com.hcmut.smarthome.scenario.model;
 
 public abstract class ControlBlock implements IBlock{
 	protected String name;

@@ -1,32 +1,32 @@
 package com.hcmut.smarthome.service.impl;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.function.Supplier;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.*;
-
-import com.hcmut.smarthome.dto.Action;
-import com.hcmut.smarthome.dto.Condition;
-import com.hcmut.smarthome.dto.ControlBlock;
-import com.hcmut.smarthome.dto.ControlBlockFromTo;
-import com.hcmut.smarthome.dto.ControlBlockIf;
-import com.hcmut.smarthome.dto.ControlBlockIfElse;
-import com.hcmut.smarthome.dto.IBlock;
-import com.hcmut.smarthome.dto.Scenario;
-import com.hcmut.smarthome.dto.SimpleAction;
+import com.hcmut.smarthome.scenario.model.Action;
+import com.hcmut.smarthome.scenario.model.Condition;
+import com.hcmut.smarthome.scenario.model.ControlBlock;
+import com.hcmut.smarthome.scenario.model.ControlBlockFromTo;
+import com.hcmut.smarthome.scenario.model.ControlBlockIf;
+import com.hcmut.smarthome.scenario.model.ControlBlockIfElse;
+import com.hcmut.smarthome.scenario.model.IBlock;
+import com.hcmut.smarthome.scenario.model.Scenario;
+import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IScenarioService;
 
 @Service
 public class ScenarioService implements IScenarioService {
-
-	private static final int SIZE_CONTROL_BLOCK_IF_ELSE = 4;
-	private static final int SIZE_CONTROL_BLOCK_IF = 3;
 
 	private JSONParser parser = new JSONParser();
 
@@ -147,53 +147,63 @@ public class ScenarioService implements IScenarioService {
 	private IBlock setupConditions(JSONArray object) {
 		IBlock block = null;
 		String deviceName = object.get(0).toString();
+		Supplier<Object> method;
+		
 		if (is(deviceName, LIGHT_SENSOR)) {
-			block = setupCondition(object, LIGHT_SENSOR,
-					deviceService.isDayLight(deviceName));
+			method = () -> deviceService.isDayLight(deviceName);
+			block = setupCondition(object, LIGHT_SENSOR, method, Boolean.class);
 		} else if (is(deviceName, TEMPERATURE_SENSOR)) {
-			block = setupCondition(object, TEMPERATURE_SENSOR,
-					deviceService.getTemperature(deviceName));
+			method = () -> deviceService.getTemperature(deviceName);
+			block = setupCondition(object, TEMPERATURE_SENSOR, method, Float.class);
 		} else if (is(deviceName, GAS_SENSOR)) {
-			block = setupCondition(object, GAS_SENSOR,
-					deviceService.getGasThreshold(deviceName));
+			method = () -> deviceService.getGasThreshold(deviceName);
+			block = setupCondition(object, GAS_SENSOR, method, Float.class );
 		} else if (is(deviceName, MOTION_SENSOR)) {
 			// TODO: Not Support Motion sensor now
 		} else if (is(deviceName, LIGHT)) {
-			block = setupCondition(object, LIGHT,
-					deviceService.isLightOn(deviceName));
+			method = () -> deviceService.isLightOn(deviceName);
+			block = setupCondition(object, LIGHT, method , Boolean.class);
 		} else if (is(deviceName, BUZZER)) {
-			block = setupCondition(object, BUZZER,
-					deviceService.isBuzzerBeep(deviceName));
+			method = () -> deviceService.isBuzzerBeep(deviceName);
+			block = setupCondition(object, BUZZER, method , Boolean.class);
 		}
 
 		return block;
 	}
+	
+
 
 	private Condition setupCondition(JSONArray object, String conditionName,
-			float comparedValue) {
+			Supplier<Object> method, Class<?> methodReturnType) {
 		Condition condition = new Condition();
 		condition.setName(conditionName);
 		condition.setLogicOperator(object.get(1).toString());
-		condition.setValue(Float.parseFloat(object.get(2).toString()));
-
+		
+		if( methodReturnType.equals(Boolean.class) ){
+			condition.setValue(Boolean.valueOf(object.get(2).toString()));
+		}else if (methodReturnType.equals(Float.class)){
+			condition.setValue(Float.valueOf(object.get(2).toString()));
+		}else condition.setValue(object.get(2));
+		
+		
 		switch (condition.getLogicOperator()) {
 		case EQUAL:
-			condition.setPredicate(t -> comparedValue == (float) t);
+			condition.setPredicate(t -> method.get() == condition.getValue());
 			break;
 		case NOT_EQUAL:
-			condition.setPredicate(t -> comparedValue != (float) t);
+			condition.setPredicate(t -> method.get() != condition.getValue());
 			break;
 		case GREATER_OR_EQUAL:
-			condition.setPredicate(t -> comparedValue >= (float) t);
+			condition.setPredicate(t -> (float)method.get() >= (float)condition.getValue());
 			break;
 		case GREATER_THAN:
-			condition.setPredicate(t -> comparedValue > (float) t);
+			condition.setPredicate(t -> (float)method.get() > (float)condition.getValue());
 			break;
 		case LESS_OR_EQUAL:
-			condition.setPredicate(t -> comparedValue <= (float) t);
+			condition.setPredicate(t -> (float)method.get() <= (float)condition.getValue());
 			break;
 		case LESS_THAN:
-			condition.setPredicate(t -> comparedValue < (float) t);
+			condition.setPredicate(t -> (float)method.get() < (float)condition.getValue());
 			break;
 
 		default:
@@ -205,28 +215,6 @@ public class ScenarioService implements IScenarioService {
 		return condition;
 	}
 
-	private Condition setupCondition(JSONArray object, String conditionName,
-			boolean comparedValue) {
-		Condition condition = new Condition();
-		condition.setName(conditionName);
-		condition.setLogicOperator(object.get(1).toString());
-		condition.setValue(Boolean.parseBoolean(object.get(2).toString()));
-
-		switch (condition.getLogicOperator()) {
-		case EQUAL:
-			condition.setPredicate(t -> comparedValue == (boolean) t);
-			break;
-		case NOT_EQUAL:
-			condition.setPredicate(t -> comparedValue != (boolean) t);
-			break;
-		default:
-			System.out.println("Not support operator "
-					+ condition.getLogicOperator());
-			break;
-		}
-
-		return condition;
-	}
 
 	private ControlBlockIf setupControlBlockIf(JSONArray object) {
 		ControlBlockIf controlBlock = new ControlBlockIf();
@@ -253,7 +241,16 @@ public class ScenarioService implements IScenarioService {
 				SimpleAction action = (SimpleAction) block;
 				action.doAction();
 			} else if (block instanceof ControlBlock) {
-				runControlBlock((ControlBlock) block);
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+						
+					@Override
+					public void run() {
+						runControlBlock((ControlBlock) block);
+						
+					}
+				}, 0 , 2000);
+				
 			} else if (block instanceof ControlBlockFromTo) {
 				timerService.schedule(new Date(), new Date(),
 						t -> runBlocks(((ControlBlockFromTo) block).getAction()

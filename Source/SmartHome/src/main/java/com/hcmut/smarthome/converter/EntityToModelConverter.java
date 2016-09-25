@@ -1,15 +1,23 @@
 package com.hcmut.smarthome.converter;
 
-import com.hcmut.smarthome.entity.Device;
+import static com.hcmut.smarthome.utils.ConstantUtil.BUZZER;
+import static com.hcmut.smarthome.utils.ConstantUtil.CAMERA;
+import static com.hcmut.smarthome.utils.ConstantUtil.CANNOT_CONVERT_ENTITY_TO_MODEL;
+import static com.hcmut.smarthome.utils.ConstantUtil.GAS_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.MOTION_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
+
 import com.hcmut.smarthome.model.Buzzer;
 import com.hcmut.smarthome.model.Camera;
-import com.hcmut.smarthome.model.DeviceBase;
+import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.GasSensor;
 import com.hcmut.smarthome.model.LightBulb;
 import com.hcmut.smarthome.model.LightSensor;
 import com.hcmut.smarthome.model.MotionSensor;
 import com.hcmut.smarthome.model.TemperatureSensor;
-import static com.hcmut.smarthome.utils.ConstantUtil.*;
 
 public class EntityToModelConverter {
 
@@ -41,10 +49,10 @@ public class EntityToModelConverter {
 		return new GasSensor(device);
 	}
 	
-	public DeviceBase convertToModel(Device device) {
+	public Device convertToModel(Device device) {
 		
 		String deviceType = device.getDeviceType().getTypeName();
-		DeviceBase model;
+		Device model;
 		
 		switch (deviceType) {
 		case LIGHT:

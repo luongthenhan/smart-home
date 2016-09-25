@@ -15,7 +15,7 @@ import com.hcmut.smarthome.device.controller.IMotionSensor;
 import com.hcmut.smarthome.device.controller.ITemperatureSensor;
 import com.hcmut.smarthome.model.Buzzer;
 import com.hcmut.smarthome.model.Camera;
-import com.hcmut.smarthome.model.DeviceBase;
+import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.GasSensor;
 import com.hcmut.smarthome.model.LightBulb;
 import com.hcmut.smarthome.model.LightSensor;
@@ -31,9 +31,9 @@ public class GeneralControllerImpl implements IGeneralController {
 			.getLogger(GeneralControllerImpl.class);
 
 	@Override
-	public void turnOn(DeviceBase deviceBase) throws Exception {
+	public void turnOn(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType();
+		String deviceType = deviceBase.getDeviceType().getTypeName();
 
 		switch (deviceType) {
 		case LIGHT:
@@ -53,9 +53,9 @@ public class GeneralControllerImpl implements IGeneralController {
 	}
 
 	@Override
-	public void turnOff(DeviceBase deviceBase) throws Exception {
+	public void turnOff(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType();
+		String deviceType = deviceBase.getDeviceType().getTypeName();
 
 		switch (deviceType) {
 		case LIGHT:
@@ -74,9 +74,9 @@ public class GeneralControllerImpl implements IGeneralController {
 	}
 
 	@Override
-	public void toggle(DeviceBase deviceBase) throws Exception {
+	public void toggle(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType();
+		String deviceType = deviceBase.getDeviceType().getTypeName();
 
 		switch (deviceType) {
 		case LIGHT:
@@ -95,9 +95,9 @@ public class GeneralControllerImpl implements IGeneralController {
 	}
 
 	@Override
-	public float getTemperature(DeviceBase deviceBase) throws Exception {
+	public float getTemperature(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType();
+		String deviceType = deviceBase.getDeviceType().getTypeName();
 		float temperature = 0;
 
 		switch (deviceType) {
@@ -126,9 +126,9 @@ public class GeneralControllerImpl implements IGeneralController {
 	}
 
 	@Override
-	public boolean isNight(DeviceBase deviceBase) throws Exception {
+	public boolean isNight(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType();
+		String deviceType = deviceBase.getDeviceType().getTypeName();
 		boolean isNight = false;
 
 		switch (deviceType) {
@@ -158,9 +158,9 @@ public class GeneralControllerImpl implements IGeneralController {
 	}
 
 	@Override
-	public boolean isDanger(DeviceBase deviceBase) throws Exception {
+	public boolean isDanger(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType();
+		String deviceType = deviceBase.getDeviceType().getTypeName();
 		boolean isDanger = false;
 
 		switch (deviceType) {
@@ -184,9 +184,9 @@ public class GeneralControllerImpl implements IGeneralController {
 	}
 
 	@Override
-	public boolean hasHuman(DeviceBase deviceBase) throws Exception {
+	public boolean hasHuman(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType();
+		String deviceType = deviceBase.getDeviceType().getTypeName();
 		boolean hasHuman = false;
 
 		switch (deviceType) {
@@ -216,9 +216,9 @@ public class GeneralControllerImpl implements IGeneralController {
 	}
 
 	@Override
-	public boolean isOn(DeviceBase deviceBase) throws Exception {
+	public boolean isOn(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType();
+		String deviceType = deviceBase.getDeviceType().getTypeName();
 		boolean isOn = false;
 
 		switch (deviceType) {
@@ -241,9 +241,9 @@ public class GeneralControllerImpl implements IGeneralController {
 	}
 
 	@Override
-	public BufferedImage takeAPhoto(DeviceBase deviceBase) throws Exception {
+	public BufferedImage takeAPhoto(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType();
+		String deviceType = deviceBase.getDeviceType().getTypeName();
 		BufferedImage bufferedImage = null;
 
 		switch (deviceType) {
@@ -271,7 +271,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		return bufferedImage;
 	}
 
-	private void turnOnBuzzer(DeviceBase deviceBase) throws Exception {
+	private void turnOnBuzzer(Device deviceBase) throws Exception {
 
 		Buzzer buzzer = null;
 
@@ -286,7 +286,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		buzzerController.turnOn();
 	}
 
-	private void turnOnLightBulb(DeviceBase deviceBase) throws Exception {
+	private void turnOnLightBulb(Device deviceBase) throws Exception {
 
 		LightBulb lightBulb = null;
 
@@ -301,7 +301,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		lightBulbController.turnOn();
 	}
 
-	private void turnOffBuzzer(DeviceBase deviceBase) throws Exception {
+	private void turnOffBuzzer(Device deviceBase) throws Exception {
 
 		Buzzer buzzer = null;
 
@@ -316,7 +316,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		buzzerController.turnOff();
 	}
 
-	private void turnOffLightBulb(DeviceBase deviceBase) throws Exception {
+	private void turnOffLightBulb(Device deviceBase) throws Exception {
 
 		LightBulb lightBulb = null;
 
@@ -331,7 +331,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		lightBulbController.turnOff();
 	}
 
-	private void toggleBuzzer(DeviceBase deviceBase) throws Exception {
+	private void toggleBuzzer(Device deviceBase) throws Exception {
 
 		Buzzer buzzer = null;
 
@@ -346,7 +346,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		buzzerController.toggle();
 	}
 
-	private void toggleLightBulb(DeviceBase deviceBase) throws Exception {
+	private void toggleLightBulb(Device deviceBase) throws Exception {
 
 		LightBulb lightBulb = null;
 
@@ -361,7 +361,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		lightBulbController.toggle();
 	}
 
-	private boolean isTemperatureDanger(DeviceBase deviceBase) throws Exception {
+	private boolean isTemperatureDanger(Device deviceBase) throws Exception {
 
 		boolean isDanger = false;
 		TemperatureSensor temperatureSensor = null;
@@ -380,7 +380,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		return isDanger;
 	}
 
-	private boolean isGasDanger(DeviceBase deviceBase) throws Exception {
+	private boolean isGasDanger(Device deviceBase) throws Exception {
 
 		boolean isDanger = false;
 		GasSensor gasSensor = null;
@@ -398,7 +398,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		return isDanger;
 	}
 
-	private boolean isBuzzerOn(DeviceBase deviceBase) throws Exception {
+	private boolean isBuzzerOn(Device deviceBase) throws Exception {
 
 		boolean isOn = false;
 		Buzzer buzzer = null;
@@ -416,7 +416,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		return isOn;
 	}
 
-	private boolean isLightBulbOn(DeviceBase deviceBase) throws Exception {
+	private boolean isLightBulbOn(Device deviceBase) throws Exception {
 
 		boolean isOn = false;
 		LightBulb lightBulb = null;

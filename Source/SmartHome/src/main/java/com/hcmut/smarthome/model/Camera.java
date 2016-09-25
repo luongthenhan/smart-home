@@ -1,8 +1,8 @@
 package com.hcmut.smarthome.model;
 
-import com.hcmut.smarthome.entity.Device;
 
-public class Camera extends DeviceBase {
+public class Camera extends Device {
+	private static final long serialVersionUID = 1L;
 	
 	private final static int DEFAULT_WIDTH = 650;
 	private final static int DEFAULT_HEIGHT = 650;
@@ -21,15 +21,7 @@ public class Camera extends DeviceBase {
 	private int brightness;
 	
 	public Camera(Device device) {
-		this.id = device.getId();
-		this.name = device.getName();
-		this.description = device.getDescription();
-		this.location = device.getLocation();
-		this.gpio = device.getGPIOinfo();
-		this.status = device.getStatus();
-		this.enabled = device.isEnabled();
-		this.code = device.getCode();
-		this.deviceType = device.getDeviceType().getTypeName();
+		super(device);
 		
 		width = DEFAULT_WIDTH;
 		height = DEFAULT_HEIGHT;

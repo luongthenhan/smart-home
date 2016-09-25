@@ -2,26 +2,26 @@ package com.hcmut.smarthome.device.controller;
 
 import java.awt.image.BufferedImage;
 
-import com.hcmut.smarthome.model.DeviceBase;
+import com.hcmut.smarthome.model.Device;
 
 public interface IGeneralController {
 	
-	public void turnOn(DeviceBase deviceBase) throws Exception;
+	public void turnOn(Device deviceBase) throws Exception;
 	
-	public void turnOff(DeviceBase deviceBase) throws Exception;
+	public void turnOff(Device deviceBase) throws Exception;
 	
-	public void toggle(DeviceBase deviceBase) throws Exception;
+	public void toggle(Device deviceBase) throws Exception;
 	
-	public BufferedImage takeAPhoto(DeviceBase deviceBase) throws Exception;
+	public BufferedImage takeAPhoto(Device deviceBase) throws Exception;
 	
-	public float getTemperature(DeviceBase deviceBase) throws Exception;
+	public float getTemperature(Device deviceBase) throws Exception;
 	
-	public boolean isNight(DeviceBase deviceBase) throws Exception;
+	public boolean isNight(Device deviceBase) throws Exception;
 	
-	public boolean isDanger(DeviceBase deviceBase) throws Exception;
+	public boolean isDanger(Device deviceBase) throws Exception;
 	
-	public boolean hasHuman(DeviceBase deviceBase) throws Exception;
+	public boolean hasHuman(Device deviceBase) throws Exception;
 	
-	public boolean isOn(DeviceBase deviceBase) throws Exception;
+	public boolean isOn(Device deviceBase) throws Exception;
 
 }

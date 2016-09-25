@@ -2,7 +2,7 @@ package com.hcmut.smarthome.service;
 
 import org.json.simple.parser.ParseException;
 
-import com.hcmut.smarthome.dto.Scenario;
+import com.hcmut.smarthome.scenario.model.Scenario;
 
 public interface IScenarioService {
 	String JSONToString();

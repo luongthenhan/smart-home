@@ -1,21 +1,13 @@
 package com.hcmut.smarthome.model;
 
-import com.hcmut.smarthome.entity.Device;
 
-public class LightSensor extends DeviceBase {
+public class LightSensor extends Device {
 	
+	private static final long serialVersionUID = 1L;
 	public boolean isNight;
 	
 	public LightSensor(Device device) {
-		this.id = device.getId();
-		this.name = device.getName();
-		this.description = device.getDescription();
-		this.location = device.getLocation();
-		this.gpio = device.getGPIOinfo();
-		this.status = device.getStatus();
-		this.enabled = device.isEnabled();
-		this.code = device.getCode();
-		this.deviceType = device.getDeviceType().getTypeName();
+		super(device);
 		this.isNight = false;
 	}
 
