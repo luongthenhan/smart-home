@@ -1,8 +1,8 @@
-package com.hcmut.smarthome.device.receiver.impl;
+package com.hcmut.smarthome.device.controller.impl;
 
+import com.hcmut.smarthome.device.controller.IMotionSensor;
 import com.hcmut.smarthome.device.gpio.IGpioProvider;
 import com.hcmut.smarthome.device.gpio.impl.GpioProviderImpl;
-import com.hcmut.smarthome.device.receiver.IMotionSensor;
 import com.hcmut.smarthome.model.MotionSensor;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 

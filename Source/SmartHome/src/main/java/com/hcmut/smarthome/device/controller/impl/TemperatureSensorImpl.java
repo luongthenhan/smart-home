@@ -1,4 +1,4 @@
-package com.hcmut.smarthome.device.receiver.impl;
+package com.hcmut.smarthome.device.controller.impl;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import com.hcmut.smarthome.device.receiver.ITemperatureSensor;
+import com.hcmut.smarthome.device.controller.ITemperatureSensor;
 import com.hcmut.smarthome.model.TemperatureSensor;
 
 public class TemperatureSensorImpl implements ITemperatureSensor {

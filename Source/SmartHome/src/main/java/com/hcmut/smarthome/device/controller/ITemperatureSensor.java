@@ -1,4 +1,4 @@
-package com.hcmut.smarthome.device.receiver;
+package com.hcmut.smarthome.device.controller;
 
 
 public interface ITemperatureSensor {
