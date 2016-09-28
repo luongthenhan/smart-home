@@ -101,7 +101,7 @@ public class GeneralControllerImpl implements IGeneralController {
 			throw DEVICE_CANNOT_PERFORM_THIS_ACTION;
 		}
 	}
-
+	
 	@Override
 	public float getTemperature(Device deviceBase) throws Exception {
 		return 35.5F;

@@ -8,18 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.DeviceType;
+import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IDeviceTypeService;
 import com.hcmut.smarthome.service.IScenarioService;
-import com.hcmut.smarthome.service.impl.DeviceService;
+import com.hcmut.smarthome.utils.ConstantUtil;
 
 @RestController
-@RequestMapping("/devices")
+@RequestMapping("/homes/{homeId}/devices")
 @CrossOrigin
 public class DeviceResource {
 
@@ -27,7 +29,7 @@ public class DeviceResource {
 	private IScenarioService scenarioService;
 
 	@Autowired
-	private DeviceService deviceService;
+	private IDeviceService deviceService;
 	
 	@Autowired
 	private IDeviceTypeService deviceTypeService;
@@ -110,12 +112,13 @@ public class DeviceResource {
 	}*/
 
 	@RequestMapping(method = RequestMethod.GET, path = "/type")
-	public ResponseEntity<List<DeviceType>> getAllDevicesTypeUserHave()
-			throws NotSupportedException {
-		
-		return new ResponseEntity<List<DeviceType>>(deviceTypeService.getAll(2, 1), HttpStatus.OK);
+	public ResponseEntity<List<DeviceType>> getAllDevicesTypeUserHave(@PathVariable int homeId){
+		return new ResponseEntity<List<DeviceType>>(deviceTypeService.getAll(ConstantUtil.VALID_USER_ID, homeId), HttpStatus.OK);
+	}
 	
-
+	@RequestMapping(method = RequestMethod.GET, path = "type/{deviceTypeId}")
+	public ResponseEntity<List<Device>> getAllDevicesGivenHomeAndDeviceType(@PathVariable int homeId, @PathVariable int deviceTypeId) throws NotSupportedException {
+		return new ResponseEntity<List<Device>>(deviceService.getAllGivenHomeAndDeviceType(homeId, deviceTypeId), HttpStatus.OK);
 	}
 
 	/*@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/toggle")

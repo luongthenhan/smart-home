@@ -75,4 +75,5 @@ public class ConstantUtil {
 	
 	// Hard code 
 	public static int HOME_ID = 1;
+	public static int VALID_USER_ID = 2;
 }

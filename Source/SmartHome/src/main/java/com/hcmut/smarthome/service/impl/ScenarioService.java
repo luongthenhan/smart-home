@@ -163,17 +163,27 @@ public class ScenarioService implements IScenarioService {
 
 		// SETUP DEVICE CONDITION
 		default:
-			block = setupConditions(object);
+			block = setupCondition(object);
 			break;
 		}
 
 		return block;
 	}
 
+	/**
+	 * Check whether a JSON object is control block If-Then or not
+	 * @param object
+	 * @return
+	 */
 	private boolean isBlockIfThen(JSONArray object) {
 		return object.size() == SIZE_CONTROL_BLOCK_IF;
 	}
 
+	/**
+	 * Check whether a JSON object is control block If-Then-Else or not
+	 * @param object
+	 * @return
+	 */
 	private boolean isBlockIfThenElse(JSONArray object) {
 		return object.size() == SIZE_CONTROL_BLOCK_IF_ELSE;
 	}
@@ -194,89 +204,155 @@ public class ScenarioService implements IScenarioService {
 		return action;
 	}
 
+	/**
+	 * Check whether a JSON Array contain a list of JSON object or not
+	 * @param object
+	 * @return
+	 */
 	private boolean isListOfActions(JSONArray object) {
 		return object.get(0) instanceof JSONArray;
 	}
 
-	private IBlock setupSimpleAction(String actionName , Supplier<?> method, Class<?> methodReturnType){
+	/**
+	 * Setup one simple action
+	 * @param actionName
+	 * @param actionExpression
+	 * @param actionExpressionType
+	 * @return
+	 */
+	private IBlock setupSimpleAction(String actionName , Supplier<?> actionExpression, Class<?> actionExpressionType){
 		SimpleAction simpleAction = new SimpleAction();
 		simpleAction.setName(actionName);
-		simpleAction.setAction(t -> simpleAction.setValue(methodReturnType.cast(method.get())));
+		simpleAction.setAction(t -> simpleAction.setValue(actionExpressionType.cast(actionExpression.get())));
 		return simpleAction;
 	}
 	
-	private IBlock setupConditions(JSONArray object) {
+	/**
+	 * Setup one condition given JSON object
+	 * @param object
+	 * @return
+	 */
+	private IBlock setupCondition(JSONArray object) {
 		IBlock block = null;
 		int deviceId = Integer.valueOf(object.get(0).toString());
 		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
 		String deviceTypeName = device.getDeviceType().getTypeName();
-		Supplier<Object> method;
+		Supplier<Object> LHSExpression = () -> null;
 		
-//		if (is(deviceTypeName, LIGHT_SENSOR)) {
-//			method = () -> deviceController.isNight(device);
-//			block = setupCondition(object, LIGHT_SENSOR, method, Boolean.class);
-//		} else 
-			if (is(deviceTypeName, TEMPERATURE_SENSOR)) {
-			method = () -> {
+		// Check device type 
+		// Then set up the method to be checked ( as condition )for each device 
+		if (is(deviceTypeName, LIGHT_SENSOR)) {
+			LHSExpression = () -> {
+				Boolean result = null;
+				try {
+					result = deviceController.isNight(device);
+				} catch (Exception e) {
+					System.out.println("Error: setupConditions + isNight");
+				}
+				return result;
+			};
+			block = setupLHSAndRHSCondition(object, LIGHT_SENSOR, LHSExpression, Boolean.class);
+		} else if (is(deviceTypeName, TEMPERATURE_SENSOR)) {
+			LHSExpression = () -> {
 				Float temp = null;
 				try {
 					temp = deviceController.getTemperature(device);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-				return temp;};
-			block = setupCondition(object, TEMPERATURE_SENSOR, method, Float.class);
+				} catch (Exception e) {
+
+				}
+				return temp;
+			};
+			block = setupLHSAndRHSCondition(object, TEMPERATURE_SENSOR, LHSExpression, Float.class);
 		} 
-//		else if (is(deviceTypeName, GAS_SENSOR)) {
-//			method = () -> deviceService.getGasThreshold(deviceTypeName);
-//			block = setupCondition(object, GAS_SENSOR, method, Float.class );
-//		} else if (is(deviceTypeName, MOTION_SENSOR)) {
-//			// TODO: Not Support Motion sensor now
-//		} else if (is(deviceTypeName, LIGHT)) {
-//			method = () -> deviceService.isLightOn(deviceTypeName);
-//			block = setupCondition(object, LIGHT, method , Boolean.class);
-//		} else if (is(deviceTypeName, BUZZER)) {
-//			method = () -> deviceService.isBuzzerBeep(deviceTypeName);
-//			block = setupCondition(object, BUZZER, method , Boolean.class);
-//		}
+		else if (is(deviceTypeName, GAS_SENSOR)) {
+			LHSExpression = () -> {
+				Boolean result = null;
+				try {
+					result = deviceController.isDanger(device);
+				} catch (Exception e) {
+					System.out.println("Error: setupConditions + isDanger");
+				}
+				return result;
+			};
+			block = setupLHSAndRHSCondition(object, GAS_SENSOR, LHSExpression, Boolean.class );
+		} else if (is(deviceTypeName, MOTION_SENSOR)) {
+			LHSExpression = () -> {
+				Boolean result = null;
+				try {
+					result = deviceController.hasHuman(device);
+				} catch (Exception e) {
+					System.out.println("Error: setupConditions + hasHuman");
+				}
+				return result;
+			};
+			block = setupLHSAndRHSCondition(object, MOTION_SENSOR, LHSExpression, Boolean.class );
+		} else if (is(deviceTypeName, LIGHT)) {
+			LHSExpression = () -> {
+				Boolean result = null;
+				try {
+					result = deviceController.isOn(device);
+				} catch (Exception e) {
+					System.out.println("Error: setupConditions + isOn: light");
+				}
+				return result;
+			};
+			block = setupLHSAndRHSCondition(object, LIGHT, LHSExpression , Boolean.class);
+		} else if (is(deviceTypeName, BUZZER)) {
+			LHSExpression = () -> {
+				Boolean result = null;
+				try {
+					result = deviceController.isOn(device);
+				} catch (Exception e) {
+					System.out.println("Error: setupConditions + isOn: buzzer");
+				}
+				return result;
+			};
+			block = setupLHSAndRHSCondition(object, BUZZER, LHSExpression , Boolean.class);
+		}
 
 		return block;
 	}
 	
 
-
-	private Condition setupCondition(JSONArray object, String conditionName,
-			Supplier<Object> method, Class<?> methodReturnType) {
+	/**
+	 * Setup the LHS and RHS of one condition based on the given JSON object
+	 * @param object the JSON object as condition
+	 * @param conditionName 
+	 * @param LHSExpression the left hand side of expression, which will be evaluated when check the condition is true or false
+	 * @param LHSExpressionType the left hand side of expression return type
+	 * @return
+	 */
+	private Condition setupLHSAndRHSCondition(JSONArray object, String conditionName,
+			Supplier<Object> LHSExpression, Class<?> LHSExpressionType) {
 		Condition condition = new Condition();
 		condition.setName(conditionName);
 		condition.setLogicOperator(object.get(1).toString());
 		
-		if( methodReturnType.equals(Boolean.class) ){
+		if( LHSExpressionType.equals(Boolean.class) ){
 			condition.setValue(Boolean.valueOf(object.get(2).toString()));
-		}else if (methodReturnType.equals(Float.class)){
+		}else if (LHSExpressionType.equals(Float.class)){
 			condition.setValue(Float.valueOf(object.get(2).toString()));
 		}else condition.setValue(object.get(2));
 		
 		
 		switch (condition.getLogicOperator()) {
 		case EQUAL:
-			condition.setPredicate(t -> method.get() == condition.getValue());
+			condition.setPredicate(t -> LHSExpression.get() == condition.getValue());
 			break;
 		case NOT_EQUAL:
-			condition.setPredicate(t -> method.get() != condition.getValue());
+			condition.setPredicate(t -> LHSExpression.get() != condition.getValue());
 			break;
 		case GREATER_OR_EQUAL:
-			condition.setPredicate(t -> (float)method.get() >= (float)condition.getValue());
+			condition.setPredicate(t -> (float)LHSExpression.get() >= (float)condition.getValue());
 			break;
 		case GREATER_THAN:
-			condition.setPredicate(t -> (float)method.get() > (float)condition.getValue());
+			condition.setPredicate(t -> (float)LHSExpression.get() > (float)condition.getValue());
 			break;
 		case LESS_OR_EQUAL:
-			condition.setPredicate(t -> (float)method.get() <= (float)condition.getValue());
+			condition.setPredicate(t -> (float)LHSExpression.get() <= (float)condition.getValue());
 			break;
 		case LESS_THAN:
-			condition.setPredicate(t -> (float)method.get() < (float)condition.getValue());
+			condition.setPredicate(t -> (float)LHSExpression.get() < (float)condition.getValue());
 			break;
 
 		default:
@@ -308,6 +384,10 @@ public class ScenarioService implements IScenarioService {
 		return controlBlockIfElse;
 	}
 
+	/**
+	 * Run a list of blocks
+	 * @param blocks
+	 */
 	private void runBlocks(List<IBlock> blocks) {
 		for (IBlock block : blocks) {
 			if (block instanceof SimpleAction) {
@@ -332,6 +412,10 @@ public class ScenarioService implements IScenarioService {
 		}
 	}
 
+	/**
+	 * Run one control block such as: If-Then or If-Then-Else
+	 * @param controlBlock
+	 */
 	private void runControlBlock(ControlBlock controlBlock) {
 		if (controlBlock.getCondition().check()) {
 			runBlocks(controlBlock.getAction().getBlocks());
@@ -341,7 +425,13 @@ public class ScenarioService implements IScenarioService {
 		}
 	}
 
-	private boolean is(String blockName, String deviceType) {
-		return blockName.indexOf(deviceType) == 0;
+	/**
+	 * Check whether a device belong to determined deviceType or not
+	 * @param device
+	 * @param deviceType
+	 * @return
+	 */
+	private boolean is(String device, String deviceType) {
+		return device.indexOf(deviceType) == 0;
 	}
 }
