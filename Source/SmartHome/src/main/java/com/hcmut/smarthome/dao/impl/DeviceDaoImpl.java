@@ -25,4 +25,14 @@ public class DeviceDaoImpl extends CommonDaoImpl<DeviceEntity> implements IDevic
 		
 		return sqlStatement.list();
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DeviceEntity> getAll(int homeId) {
+		String query = "SELECT * FROM public.device WHERE device.home_id = :homeId ;";
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query.toString()).addEntity(DeviceEntity.class);
+		sqlStatement.setParameter("homeId", homeId);
+		
+		return sqlStatement.list();
+	}
 }

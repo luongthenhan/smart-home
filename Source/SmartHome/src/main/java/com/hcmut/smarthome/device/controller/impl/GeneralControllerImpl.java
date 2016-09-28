@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.hcmut.smarthome.converter.EntityToModelConverter;
 import com.hcmut.smarthome.device.controller.IBuzzer;
 import com.hcmut.smarthome.device.controller.ICamera;
 import com.hcmut.smarthome.device.controller.IGasSensor;
@@ -75,12 +76,12 @@ public class GeneralControllerImpl implements IGeneralController {
 
 	@Override
 	public void toggle(Device deviceBase) throws Exception {
-
+		
 		String deviceType = deviceBase.getDeviceType().getTypeName();
-
+		System.out.println("toggle function: " + deviceType);
 		switch (deviceType) {
 		case LIGHT:
-
+			
 			toggleLightBulb(deviceBase);
 			break;
 
@@ -96,33 +97,33 @@ public class GeneralControllerImpl implements IGeneralController {
 
 	@Override
 	public float getTemperature(Device deviceBase) throws Exception {
-
-		String deviceType = deviceBase.getDeviceType().getTypeName();
-		float temperature = 0;
-
-		switch (deviceType) {
-		case TEMPERATURE_SENSOR:
-
-			TemperatureSensor temperatureSensor = null;
-
-			try {
-				temperatureSensor = (TemperatureSensor) deviceBase;
-			} catch (ClassCastException e) {
-				LOGGER.error(e.getMessage());
-				throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
-			}
-
-			ITemperatureSensor temperatureSensorController = new TemperatureSensorImpl(
-					temperatureSensor);
-			temperature = temperatureSensorController.getTemperature();
-
-			break;
-
-		default:
-			throw DEVICE_CANNOT_PERFORM_THIS_ACTION;
-		}
-
-		return temperature;
+		return 35.5F;
+//		String deviceType = deviceBase.getDeviceType().getTypeName();
+//		float temperature = 0;
+//
+//		switch (deviceType) {
+//		case TEMPERATURE_SENSOR:
+//
+//			TemperatureSensor temperatureSensor = null;
+//
+//			try {
+//				temperatureSensor = (TemperatureSensor) deviceBase;
+//			} catch (ClassCastException e) {
+//				LOGGER.error(e.getMessage());
+//				throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
+//			}
+//
+//			ITemperatureSensor temperatureSensorController = new TemperatureSensorImpl(
+//					temperatureSensor);
+//			temperature = temperatureSensorController.getTemperature();
+//
+//			break;
+//
+//		default:
+//			throw DEVICE_CANNOT_PERFORM_THIS_ACTION;
+//		}
+//
+//		return temperature;
 	}
 
 	@Override
@@ -351,14 +352,15 @@ public class GeneralControllerImpl implements IGeneralController {
 		LightBulb lightBulb = null;
 
 		try {
-			lightBulb = (LightBulb) deviceBase;
+			lightBulb = (LightBulb)(new EntityToModelConverter()).convertToModel(deviceBase);
 		} catch (ClassCastException e) {
 			LOGGER.error(e.getMessage());
 			throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 		}
 
-		ILightBulb lightBulbController = new LightBulbImpl(lightBulb);
-		lightBulbController.toggle();
+		System.out.println("Light is activated");
+		//ILightBulb lightBulbController = new LightBulbImpl(lightBulb);
+		//lightBulbController.toggle();
 	}
 
 	private boolean isTemperatureDanger(Device deviceBase) throws Exception {

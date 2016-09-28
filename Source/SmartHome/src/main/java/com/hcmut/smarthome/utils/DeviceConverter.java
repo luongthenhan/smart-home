@@ -22,6 +22,8 @@ public class DeviceConverter {
 		device.setLocation(deviceEntity.getLocation());
 		device.setName(deviceEntity.getName());
 		device.setHome(HomeConverter.toModel(deviceEntity.getHome()) );
+		device.setScripts( ScriptConverter.toListModel(deviceEntity.getScripts()));
+		device.setDeviceType( DeviceTypeConverter.toBriefDeviceType(deviceEntity.getDeviceType()) );
 		
 		return device;
 	}

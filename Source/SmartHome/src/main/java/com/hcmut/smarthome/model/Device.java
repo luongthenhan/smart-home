@@ -1,6 +1,7 @@
 package com.hcmut.smarthome.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Device implements Serializable {
 	
@@ -18,7 +19,7 @@ public class Device implements Serializable {
 
 	protected Home home;
 	
-	protected DeviceType deviceType;
+	protected BriefDeviceType deviceType;
 	
 	protected boolean enabled;
 	
@@ -27,6 +28,8 @@ public class Device implements Serializable {
 	protected String GPIOType; 
 	
 	protected String status;
+	
+	protected List<Script> scripts;
 	
 	public Device() {
 		super();
@@ -44,6 +47,7 @@ public class Device implements Serializable {
 		this.deviceType = that.getDeviceType();
 		this.home = that.getHome();
 		this.GPIOType = that.getGPIOType();
+		this.scripts = that.scripts;
 	}
 	
 	public int getId() {
@@ -82,12 +86,6 @@ public class Device implements Serializable {
 	public void setHome(Home home) {
 		this.home = home;
 	}
-	public DeviceType getDeviceType() {
-		return deviceType;
-	}
-	public void setDeviceType(DeviceType deviceType) {
-		this.deviceType = deviceType;
-	}
 	public String getCode() {
 		return code;
 	}
@@ -112,6 +110,22 @@ public class Device implements Serializable {
 	}
 	public void setGPIOType(String gPIOType) {
 		GPIOType = gPIOType;
+	}
+
+	public List<Script> getScripts() {
+		return scripts;
+	}
+
+	public void setScripts(List<Script> scripts) {
+		this.scripts = scripts;
+	}
+
+	public BriefDeviceType getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(BriefDeviceType deviceType) {
+		this.deviceType = deviceType;
 	}
 	
 }

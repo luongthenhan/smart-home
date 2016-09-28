@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.DeviceType;
 import com.hcmut.smarthome.service.IDeviceTypeService;
 import com.hcmut.smarthome.service.IScenarioService;
@@ -25,8 +26,8 @@ public class DeviceResource {
 	@Autowired
 	private IScenarioService scenarioService;
 
-//	@Autowired
-//	private DeviceService deviceService;
+	@Autowired
+	private DeviceService deviceService;
 	
 	@Autowired
 	private IDeviceTypeService deviceTypeService;
@@ -54,12 +55,12 @@ public class DeviceResource {
 			throws NotSupportedException {
 		throw new NotSupportedException();
 	}
-
+	*/
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<Void> getAllDevices() throws NotSupportedException {
-		throw new NotSupportedException();
+	public ResponseEntity<List<Device>> getAllDevices() throws NotSupportedException {
+		return new ResponseEntity<List<Device>>(deviceService.getAllDevices(1),HttpStatus.OK);
 	}
-
+	/*
 	@RequestMapping(method = RequestMethod.GET, path = "/status")
 	public ResponseEntity<Void> getStatusAllDevices()
 			throws NotSupportedException {

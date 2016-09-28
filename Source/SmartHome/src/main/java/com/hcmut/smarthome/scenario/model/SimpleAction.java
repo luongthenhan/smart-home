@@ -3,7 +3,7 @@ package com.hcmut.smarthome.scenario.model;
 import java.util.function.Consumer;
 
 public class SimpleAction implements IBlock, IAction{
-	private int value;
+	private Object value;
 	private String name;
 	private Consumer<Object> action;
 	
@@ -40,11 +40,12 @@ public class SimpleAction implements IBlock, IAction{
 		action.accept(value);
 	}
 
-	public int getValue() {
+	public Object getValue() {
 		return value;
 	}
 
-	public void setValue(int value) {
+	public void setValue(Object value) {
 		this.value = value;
 	}
+
 }

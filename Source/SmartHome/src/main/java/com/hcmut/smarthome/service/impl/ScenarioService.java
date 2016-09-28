@@ -1,6 +1,25 @@
 package com.hcmut.smarthome.service.impl;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.*;
+import static com.hcmut.smarthome.utils.ConstantUtil.BUZZER;
+import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_FROM_TO;
+import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF;
+import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF_ELSE;
+import static com.hcmut.smarthome.utils.ConstantUtil.EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.GAS_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_OR_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_THAN;
+import static com.hcmut.smarthome.utils.ConstantUtil.LESS_OR_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.MOTION_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF;
+import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF_ELSE;
+import static com.hcmut.smarthome.utils.ConstantUtil.TAKE_A_SHOT;
+import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE_BUZZER;
+import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE_LIGHT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,8 +31,11 @@ import java.util.function.Supplier;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hcmut.smarthome.device.controller.IGeneralController;
+import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.scenario.model.Action;
 import com.hcmut.smarthome.scenario.model.Condition;
 import com.hcmut.smarthome.scenario.model.ControlBlock;
@@ -23,15 +45,21 @@ import com.hcmut.smarthome.scenario.model.ControlBlockIfElse;
 import com.hcmut.smarthome.scenario.model.IBlock;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
+import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
+import com.hcmut.smarthome.utils.ConstantUtil;
 
 @Service
 public class ScenarioService implements IScenarioService {
 
 	private JSONParser parser = new JSONParser();
 
-	// TODO : Auto-wire here
-	private DeviceService deviceService = getInstance();
+	@Autowired
+	private IGeneralController deviceController;
+	
+	@Autowired
+	private IDeviceService deviceService;
+	
 	TimerService timerService = new TimerService();
 
 	public String JSONToString() {
@@ -90,21 +118,47 @@ public class ScenarioService implements IScenarioService {
 				block = setupControlBlockIfElse(object);
 			break;
 
-		// SIMPLE ACTION
 		// deviceName = object.get(1).toString()
+		//TODO: Now hard code homeId
 		case TOGGLE_LIGHT:
-			block = new SimpleAction(TOGGLE_LIGHT,
-					t -> deviceService.toggleLight(object.get(1).toString()));
+			Supplier<Void> toggleLight = () -> {
+				try {
+					deviceController.toggle(deviceService.getDevice(ConstantUtil.HOME_ID,
+							Integer.valueOf(object.get(1).toString())));
+				} catch (Exception e) {
+					System.out.println("Error: " + e.getMessage());
+				}
+				return null;
+			};
+			block = setupSimpleAction(TOGGLE_LIGHT, toggleLight, Void.class);
 			break;
 
 		case TOGGLE_BUZZER:
-			block = new SimpleAction(TOGGLE_BUZZER,
-					t -> deviceService.toggleBuzzer(object.get(1).toString()));
+			Supplier<Void> toggleBuzzer = () -> {
+				try {
+					deviceController.toggle(deviceService.getDevice(ConstantUtil.HOME_ID,
+							Integer.valueOf(object.get(1).toString())));
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+				return null;
+			};
+			block = setupSimpleAction(TOGGLE_BUZZER, toggleBuzzer, Void.class);
 			break;
 
 		case TAKE_A_SHOT:
-			block = new SimpleAction(TAKE_A_SHOT,
-					t -> deviceService.takeAShot(object.get(1).toString()));
+			Supplier<Object> takePicture = () -> {
+				Object picture = null;
+				try {
+					picture = deviceController.takeAPhoto(deviceService
+							.getDevice(ConstantUtil.HOME_ID,
+									Integer.valueOf(object.get(1).toString())));
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+				return picture;
+			};
+			block = setupSimpleAction(TAKE_A_SHOT, takePicture, Object.class);
 			break;
 
 		// SETUP DEVICE CONDITION
@@ -144,29 +198,48 @@ public class ScenarioService implements IScenarioService {
 		return object.get(0) instanceof JSONArray;
 	}
 
+	private IBlock setupSimpleAction(String actionName , Supplier<?> method, Class<?> methodReturnType){
+		SimpleAction simpleAction = new SimpleAction();
+		simpleAction.setName(actionName);
+		simpleAction.setAction(t -> simpleAction.setValue(methodReturnType.cast(method.get())));
+		return simpleAction;
+	}
+	
 	private IBlock setupConditions(JSONArray object) {
 		IBlock block = null;
-		String deviceName = object.get(0).toString();
+		int deviceId = Integer.valueOf(object.get(0).toString());
+		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
+		String deviceTypeName = device.getDeviceType().getTypeName();
 		Supplier<Object> method;
 		
-		if (is(deviceName, LIGHT_SENSOR)) {
-			method = () -> deviceService.isDayLight(deviceName);
-			block = setupCondition(object, LIGHT_SENSOR, method, Boolean.class);
-		} else if (is(deviceName, TEMPERATURE_SENSOR)) {
-			method = () -> deviceService.getTemperature(deviceName);
+//		if (is(deviceTypeName, LIGHT_SENSOR)) {
+//			method = () -> deviceController.isNight(device);
+//			block = setupCondition(object, LIGHT_SENSOR, method, Boolean.class);
+//		} else 
+			if (is(deviceTypeName, TEMPERATURE_SENSOR)) {
+			method = () -> {
+				Float temp = null;
+				try {
+					temp = deviceController.getTemperature(device);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+				return temp;};
 			block = setupCondition(object, TEMPERATURE_SENSOR, method, Float.class);
-		} else if (is(deviceName, GAS_SENSOR)) {
-			method = () -> deviceService.getGasThreshold(deviceName);
-			block = setupCondition(object, GAS_SENSOR, method, Float.class );
-		} else if (is(deviceName, MOTION_SENSOR)) {
-			// TODO: Not Support Motion sensor now
-		} else if (is(deviceName, LIGHT)) {
-			method = () -> deviceService.isLightOn(deviceName);
-			block = setupCondition(object, LIGHT, method , Boolean.class);
-		} else if (is(deviceName, BUZZER)) {
-			method = () -> deviceService.isBuzzerBeep(deviceName);
-			block = setupCondition(object, BUZZER, method , Boolean.class);
-		}
+		} 
+//		else if (is(deviceTypeName, GAS_SENSOR)) {
+//			method = () -> deviceService.getGasThreshold(deviceTypeName);
+//			block = setupCondition(object, GAS_SENSOR, method, Float.class );
+//		} else if (is(deviceTypeName, MOTION_SENSOR)) {
+//			// TODO: Not Support Motion sensor now
+//		} else if (is(deviceTypeName, LIGHT)) {
+//			method = () -> deviceService.isLightOn(deviceTypeName);
+//			block = setupCondition(object, LIGHT, method , Boolean.class);
+//		} else if (is(deviceTypeName, BUZZER)) {
+//			method = () -> deviceService.isBuzzerBeep(deviceTypeName);
+//			block = setupCondition(object, BUZZER, method , Boolean.class);
+//		}
 
 		return block;
 	}
@@ -266,12 +339,6 @@ public class ScenarioService implements IScenarioService {
 			ControlBlockIfElse controlBlockIfElse = (ControlBlockIfElse) controlBlock;
 			runBlocks(controlBlockIfElse.getElseAction().getBlocks());
 		}
-	}
-
-	private DeviceService getInstance() {
-		if (this.deviceService == null)
-			deviceService = new DeviceService();
-		return this.deviceService;
 	}
 
 	private boolean is(String blockName, String deviceType) {

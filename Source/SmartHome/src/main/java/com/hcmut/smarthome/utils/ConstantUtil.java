@@ -56,10 +56,10 @@ public class ConstantUtil {
 	public static final String LIGHT = "Light";
 	public static final String BUZZER = "Buzzer";
 	public static final String CAMERA = "Camera";
-	public static final String TEMPERATURE_SENSOR = "TemperatureSensor";
-	public static final String GAS_SENSOR = "GasSensor";
-	public static final String MOTION_SENSOR = "MotionSensor";
-	public static final String LIGHT_SENSOR = "LightSensor";
+	public static final String TEMPERATURE_SENSOR = "Temperature Sensor";
+	public static final String GAS_SENSOR = "Gas Sensor";
+	public static final String MOTION_SENSOR = "Motion Sensor";
+	public static final String LIGHT_SENSOR = "Light Sensor";
 
 	public static final int SIZE_CONTROL_BLOCK_IF_ELSE = 4;
 	public static final int SIZE_CONTROL_BLOCK_IF = 3;
@@ -71,4 +71,8 @@ public class ConstantUtil {
 	public static final Exception DEVICE_CANNOT_PERFORM_THIS_ACTION = new Exception(
 			"Device cannot perform this action");
 
+	
+	
+	// Hard code 
+	public static int HOME_ID = 1;
 }

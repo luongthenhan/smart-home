@@ -1,11 +1,12 @@
 package com.hcmut.smarthome.entity;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,7 +41,7 @@ public class DeviceEntity implements Serializable{
 	@JoinColumn(name="home_id", nullable = false)
 	private HomeEntity home;
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="device_type_id", nullable = false)
 	private DeviceTypeEntity deviceType;
 	
@@ -53,8 +54,8 @@ public class DeviceEntity implements Serializable{
 	@Column(name="gpio_type", nullable = false , length = 45)
 	private String GPIOType;
 	
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="device")
-	List<ScriptEntity> scripts;
+	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="device")
+	Set<ScriptEntity> scripts;
 	 
 	public DeviceEntity() {
 		super();
@@ -107,13 +108,6 @@ public class DeviceEntity implements Serializable{
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
-	public List<ScriptEntity> getScripts() {
-		return scripts;
-	}
-	public void setScripts(List<ScriptEntity> scripts) {
-		this.scripts = scripts;
-	}
 	public int getGPIOPin() {
 		return GPIOPin;
 	}
@@ -125,6 +119,12 @@ public class DeviceEntity implements Serializable{
 	}
 	public void setGPIOType(String gPIOType) {
 		GPIOType = gPIOType;
+	}
+	public Set<ScriptEntity> getScripts() {
+		return scripts;
+	}
+	public void setScripts(Set<ScriptEntity> scripts) {
+		this.scripts = scripts;
 	}
 
 

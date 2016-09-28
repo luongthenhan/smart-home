@@ -11,7 +11,7 @@ public class Test {
 	public static void main(String[] args) throws ParseException {
 		String script1 = "[['If',['LightIsOn','=','true'],[['If',['BuzzerIsBeeping','=','true'],[['ToggleBuzzer','A'],['ToggleLight','A']]],[['ToggleLight','B']]]]]";
 		String script2 = "[['ToggleBuzzer'],['ToggleLight']]";
-		String script3 = "[['If',['TemperatureSensorABC','>=','35.5'],[['ToggleBuzzer','Buzzle Near Gas']]]]";
+		String script3 = "[['If',['Temperature SensorABC','>=','35.5'],[['ToggleLight','2']]]]";
 		String script4 = "[['If',['Light Near Door','=','true'],[['ToggleBuzzer','Buzzle Near Gas']]]]";
 		//"[['ControlBlock','If',['Condition','Light Near Door','=','true'],['Action',['SimpleAction','ToggleBuzzer','Buzzle Near Gas']]]]";
 		IScenarioService scenarioService = new ScenarioService();

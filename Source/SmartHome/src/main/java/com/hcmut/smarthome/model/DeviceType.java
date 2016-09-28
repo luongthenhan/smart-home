@@ -3,13 +3,9 @@ package com.hcmut.smarthome.model;
 import java.io.Serializable;
 import java.util.List;
 
-public class DeviceType implements Serializable{
+public class DeviceType extends BriefDeviceType implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	
-	private int id;
-	
-	private String typeName;
 	
 	private String description;
 	
