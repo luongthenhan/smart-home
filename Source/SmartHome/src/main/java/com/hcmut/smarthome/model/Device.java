@@ -3,6 +3,11 @@ package com.hcmut.smarthome.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.hcmut.smarthome.converter.DeviceTypeConverter;
+import com.hcmut.smarthome.converter.HomeConverter;
+import com.hcmut.smarthome.converter.ScriptConverter;
+import com.hcmut.smarthome.entity.DeviceEntity;
+
 public class Device implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -47,7 +52,22 @@ public class Device implements Serializable {
 		this.deviceType = that.getDeviceType();
 		this.home = that.getHome();
 		this.GPIOType = that.getGPIOType();
-		this.scripts = that.scripts;
+		this.scripts = that.getScripts();
+	}
+	
+	public Device(DeviceEntity that){
+		this.id = that.getId();
+		this.name = that.getName();
+		this.description = that.getDescription();
+		this.location = that.getLocation();
+		this.GPIOPin = that.getGPIOPin();
+		this.status = "";
+		this.enabled = that.isEnabled();
+		this.code = that.getCode();
+		this.deviceType = DeviceTypeConverter.toBriefDeviceType(that.getDeviceType());
+		this.home = HomeConverter.toModel(that.getHome());
+		this.GPIOType = that.getGPIOType();
+		this.scripts = ScriptConverter.toListModel(that.getScripts());
 	}
 	
 	public int getId() {

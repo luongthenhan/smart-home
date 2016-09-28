@@ -8,12 +8,12 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hcmut.smarthome.converter.DeviceConverter;
 import com.hcmut.smarthome.dao.IDeviceDao;
 import com.hcmut.smarthome.entity.DeviceEntity;
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.utils.ConstantUtil;
-import com.hcmut.smarthome.utils.DeviceConverter;
 
 @Service
 public class DeviceService implements IDeviceService {

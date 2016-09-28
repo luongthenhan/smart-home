@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.model;
 
+import com.hcmut.smarthome.entity.DeviceEntity;
+
 
 public class Buzzer extends Device {
 	
@@ -7,6 +9,11 @@ public class Buzzer extends Device {
 	private boolean isOn;
 	
 	public Buzzer(Device device) {
+		super(device);
+		this.isOn = false;
+	}
+	
+	public Buzzer(DeviceEntity device) {
 		super(device);
 		this.isOn = false;
 	}

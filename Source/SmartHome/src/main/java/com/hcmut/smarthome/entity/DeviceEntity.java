@@ -55,7 +55,7 @@ public class DeviceEntity implements Serializable{
 	private String GPIOType;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="device")
-	Set<ScriptEntity> scripts;
+	private Set<ScriptEntity> scripts;
 	 
 	public DeviceEntity() {
 		super();

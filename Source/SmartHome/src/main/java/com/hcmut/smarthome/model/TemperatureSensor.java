@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.model;
 
+import com.hcmut.smarthome.entity.DeviceEntity;
+
 
 public class TemperatureSensor extends Device {
 	
@@ -8,6 +10,12 @@ public class TemperatureSensor extends Device {
 	private boolean isDanger;
 	
 	public TemperatureSensor(Device device) {
+		super(device);
+		this.temperature = 0;
+		this.isDanger = false;
+	}
+	
+	public TemperatureSensor(DeviceEntity device) {
 		super(device);
 		this.temperature = 0;
 		this.isDanger = false;

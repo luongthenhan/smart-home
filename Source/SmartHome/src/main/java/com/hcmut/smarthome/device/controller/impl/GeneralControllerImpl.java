@@ -1,11 +1,20 @@
 package com.hcmut.smarthome.device.controller.impl;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.BUZZER;
+import static com.hcmut.smarthome.utils.ConstantUtil.CAMERA;
+import static com.hcmut.smarthome.utils.ConstantUtil.DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
+import static com.hcmut.smarthome.utils.ConstantUtil.DEVICE_CANNOT_PERFORM_THIS_ACTION;
+import static com.hcmut.smarthome.utils.ConstantUtil.GAS_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.MOTION_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
+
 import java.awt.image.BufferedImage;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import com.hcmut.smarthome.converter.EntityToModelConverter;
 import com.hcmut.smarthome.device.controller.IBuzzer;
 import com.hcmut.smarthome.device.controller.ICamera;
 import com.hcmut.smarthome.device.controller.IGasSensor;
@@ -22,8 +31,6 @@ import com.hcmut.smarthome.model.LightBulb;
 import com.hcmut.smarthome.model.LightSensor;
 import com.hcmut.smarthome.model.MotionSensor;
 import com.hcmut.smarthome.model.TemperatureSensor;
-
-import static com.hcmut.smarthome.utils.ConstantUtil.*;
 
 @Service
 public class GeneralControllerImpl implements IGeneralController {
@@ -352,7 +359,7 @@ public class GeneralControllerImpl implements IGeneralController {
 		LightBulb lightBulb = null;
 
 		try {
-			lightBulb = (LightBulb)(new EntityToModelConverter()).convertToModel(deviceBase);
+			lightBulb = (LightBulb) deviceBase;
 		} catch (ClassCastException e) {
 			LOGGER.error(e.getMessage());
 			throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;

@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.model;
 
+import com.hcmut.smarthome.entity.DeviceEntity;
+
 
 public class LightBulb extends Device {
 	
@@ -7,6 +9,11 @@ public class LightBulb extends Device {
 	private boolean isOn;
 	
 	public LightBulb(Device device) {
+		super(device);
+		this.isOn = false;
+	}
+	
+	public LightBulb(DeviceEntity device) {
 		super(device);
 		this.isOn = false;
 	}

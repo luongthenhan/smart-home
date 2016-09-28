@@ -17,7 +17,6 @@ import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
-import com.hcmut.smarthome.service.impl.ScenarioService;
 
 
 @RestController

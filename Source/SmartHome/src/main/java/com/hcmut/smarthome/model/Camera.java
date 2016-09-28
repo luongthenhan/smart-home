@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.model;
 
+import com.hcmut.smarthome.entity.DeviceEntity;
+
 
 public class Camera extends Device {
 	private static final long serialVersionUID = 1L;
@@ -21,6 +23,19 @@ public class Camera extends Device {
 	private int brightness;
 	
 	public Camera(Device device) {
+		super(device);
+		
+		width = DEFAULT_WIDTH;
+		height = DEFAULT_HEIGHT;
+		quality = DEFAULT_QUALITY;
+		timeout = DEFAULT_TIMEOUT;
+		sharpness = DEFAULT_SHARPNESS;
+		contrast = DEFAULT_CONTRAST;
+		brightness = DEFAULT_BRIGHTNESS;
+		
+	}
+	
+	public Camera(DeviceEntity device) {
 		super(device);
 		
 		width = DEFAULT_WIDTH;

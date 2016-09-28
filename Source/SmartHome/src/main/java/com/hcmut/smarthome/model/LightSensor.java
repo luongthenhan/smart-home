@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.model;
 
+import com.hcmut.smarthome.entity.DeviceEntity;
+
 
 public class LightSensor extends Device {
 	
@@ -7,6 +9,11 @@ public class LightSensor extends Device {
 	public boolean isNight;
 	
 	public LightSensor(Device device) {
+		super(device);
+		this.isNight = false;
+	}
+	
+	public LightSensor(DeviceEntity device) {
 		super(device);
 		this.isNight = false;
 	}

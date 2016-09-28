@@ -1,4 +1,4 @@
-package com.hcmut.smarthome.utils;
+package com.hcmut.smarthome.converter;
 
 import java.util.ArrayList;
 import java.util.List;
