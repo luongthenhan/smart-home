@@ -69,6 +69,11 @@ public class HomeResource {
 		return new ResponseEntity<List<Device>>(deviceService.getAllDevices(1),HttpStatus.OK);
 	}
 	
+	@RequestMapping(method = RequestMethod.GET, path="{homeId}/availableGPIOs")
+	public ResponseEntity<List<Integer>> getAllAvailableGPIOs(@PathVariable int homeId) {
+		return new ResponseEntity<List<Integer>>(deviceService.getAllAvailableGpio(homeId),HttpStatus.OK);
+	}
+	
 	/**
 	 * For testing purpose
 	 * @return
@@ -92,4 +97,5 @@ public class HomeResource {
 		return null;
 	}
 
+	
 }
