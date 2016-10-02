@@ -78,6 +78,7 @@ public class HomeResource {
 	public ResponseEntity<Void> test() throws ParseException{
 		String script3 = "[['If',['4','=', 'true'],[['TurnOnLight','2']]]]";
 		Scenario scenario = scenarioService.JSONToScenario(script3);
+		scenario.setId(1);
 		scenarioService.runScenario(scenario);
 		return null;
 	}
@@ -86,6 +87,7 @@ public class HomeResource {
 	public ResponseEntity<Void> test2() throws ParseException{
 		String script1 = "[['If',['5','>', '31.0'],[['TurnOnBuzzer','6']]]]";
 		Scenario scenario = scenarioService.JSONToScenario(script1);
+		scenario.setId(2);
 		scenarioService.runScenario(scenario);
 		return null;
 	}

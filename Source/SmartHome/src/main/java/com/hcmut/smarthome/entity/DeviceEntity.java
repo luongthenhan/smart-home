@@ -37,6 +37,9 @@ public class DeviceEntity implements Serializable{
 	@Column(name="code", nullable = true , length = 45)
 	private String code;
 	
+	@Column(name="timeout", nullable=true)
+	private int timeout;
+	
 	@ManyToOne
 	@JoinColumn(name="home_id", nullable = false)
 	private HomeEntity home;
@@ -126,7 +129,10 @@ public class DeviceEntity implements Serializable{
 	public void setScripts(Set<ScriptEntity> scripts) {
 		this.scripts = scripts;
 	}
-
-
-	
+	public int getTimeout() {
+		return timeout;
+	}
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
 }

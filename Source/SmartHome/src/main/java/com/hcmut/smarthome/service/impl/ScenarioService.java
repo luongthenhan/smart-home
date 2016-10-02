@@ -1,10 +1,32 @@
 package com.hcmut.smarthome.service.impl;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.*;
+import static com.hcmut.smarthome.utils.ConstantUtil.BUZZER;
+import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_FROM_TO;
+import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF;
+import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF_ELSE;
+import static com.hcmut.smarthome.utils.ConstantUtil.EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.GAS_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_OR_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_THAN;
+import static com.hcmut.smarthome.utils.ConstantUtil.LESS_OR_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.MOTION_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF;
+import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF_ELSE;
+import static com.hcmut.smarthome.utils.ConstantUtil.TAKE_PICTURE;
+import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE;
+import static com.hcmut.smarthome.utils.ConstantUtil.TURN_OFF;
+import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -41,9 +63,14 @@ public class ScenarioService implements IScenarioService {
 	private static final Logger LOGGER = Logger
 			.getLogger(ScenarioService.class);
 
+	private static final boolean RUNNING = true;
+	private static final boolean STOPPING = false;
+	
 	private static final int TIMEOUT_CHECK_CONDITION = 2000;
 
 	private JSONParser parser = new JSONParser();
+	
+	private Map<Integer,Boolean> mapScenarioController = new HashMap<>();
 
 	@Autowired
 	private IGeneralController deviceController;
@@ -57,10 +84,30 @@ public class ScenarioService implements IScenarioService {
 		throw new UnsupportedOperationException("Not supported");
 	}
 
+	// TODO : When one script is removed , how to know and get rid of it and also stop the timer
+	@Override
 	public void runScenario(Scenario scenario) {
-		runBlocks(scenario.getBlocks());
+		if( scenario == null || scenario.getId() == null)
+			return;
+		
+		// Mark scenario as running
+		mapScenarioController.put(scenario.getId(), RUNNING);
+		
+		runBlocks(scenario.getBlocks(), scenario.getId());
 	}
 
+	@Override
+	public void stopScenario( int id ){
+		return;
+	}
+	
+	@Override
+	public void stopForeverScenario(int id){
+		if( mapScenarioController.containsKey(id) )
+			mapScenarioController.put(id, STOPPING);
+	}
+	
+	// TODO: Change parameter from String to Script ( for assigning id to scenario after return)
 	@SuppressWarnings("unchecked")
 	public Scenario JSONToScenario(String script) throws ParseException {
 		// Must do that because library can't parse the string with single quote
@@ -382,7 +429,7 @@ public class ScenarioService implements IScenarioService {
 	 * Run a list of blocks
 	 * @param blocks
 	 */
-	private void runBlocks(List<IBlock> blocks) {
+	private void runBlocks(List<IBlock> blocks, int id) {
 		for (IBlock block : blocks) {
 			if (block instanceof SimpleAction) {
 				SimpleAction action = (SimpleAction) block;
@@ -393,7 +440,12 @@ public class ScenarioService implements IScenarioService {
 						
 					@Override
 					public void run() {
-						runControlBlock((ControlBlock) block);
+						// Check state is still running or not
+						boolean state = mapScenarioController.get(id);
+						if( state == RUNNING)
+							runControlBlock((ControlBlock) block , id);
+						else if ( state == STOPPING )
+							this.cancel();
 						
 					}
 				}, 0 , TIMEOUT_CHECK_CONDITION);
@@ -402,7 +454,7 @@ public class ScenarioService implements IScenarioService {
 			} else if (block instanceof ControlBlockFromTo) {
 				timerService.schedule(new Date(), new Date(),
 						t -> runBlocks(((ControlBlockFromTo) block).getAction()
-								.getBlocks()));
+								.getBlocks(),id));
 			}
 		}
 	}
@@ -411,12 +463,12 @@ public class ScenarioService implements IScenarioService {
 	 * Run one control block such as: If-Then or If-Then-Else
 	 * @param controlBlock
 	 */
-	private void runControlBlock(ControlBlock controlBlock) {
+	private void runControlBlock(ControlBlock controlBlock, int id) {
 		if (controlBlock.getCondition().check()) {
-			runBlocks(controlBlock.getAction().getBlocks());
+			runBlocks(controlBlock.getAction().getBlocks(), id);
 		} else if (CONTROL_BLOCK_IF_ELSE.equals(controlBlock.getName())) {
 			ControlBlockIfElse controlBlockIfElse = (ControlBlockIfElse) controlBlock;
-			runBlocks(controlBlockIfElse.getElseAction().getBlocks());
+			runBlocks(controlBlockIfElse.getElseAction().getBlocks(), id);
 		}
 	}
 

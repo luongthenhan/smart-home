@@ -36,4 +36,16 @@ public interface IScenarioService {
 	 * @return
 	 */
 	boolean isScenarioValidate(Scenario inputScenario, List<Scenario> existedScenarios) throws NotSupportedException;
+	
+	/**
+	 * Stop ( remove ) forever a scenario
+	 * @param id
+	 */
+	void stopForeverScenario(int id);
+	
+	/**
+	 * Pause the timer , not run scenario in period of time 
+	 * @param id
+	 */
+	void stopScenario( int id );
 }

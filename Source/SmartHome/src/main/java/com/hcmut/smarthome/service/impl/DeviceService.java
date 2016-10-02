@@ -26,7 +26,13 @@ public class DeviceService implements IDeviceService {
 	private boolean isLightOn = true;
 	private boolean isBuzzerBeep = true;
 	private boolean isDayLight = true;
+	
+	// TODO : Update map after add new / update / delete something. Also in this time
+	// call stopOrRemoveScenario
 	private HashMap<Integer,List<Device>> mapHomeDevices = new HashMap<>();
+	
+	@Autowired
+	private ScenarioService scenarioService;
 	
 	@Autowired
 	private IDeviceDao deviceDao;
@@ -72,6 +78,7 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public boolean deleteScript(int scriptId) {
 		scriptDao.deleteScript(scriptId);
+		//scenarioService.stopForeverScenario(scriptId);
 		return true;
 	}
 

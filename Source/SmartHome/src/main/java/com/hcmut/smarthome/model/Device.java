@@ -24,6 +24,8 @@ public class Device implements Serializable {
 
 	protected Home home;
 	
+	protected int timeout;
+	
 	protected BriefDeviceType deviceType;
 	
 	protected boolean enabled;
@@ -53,6 +55,7 @@ public class Device implements Serializable {
 		this.home = that.getHome();
 		this.GPIOType = that.getGPIOType();
 		this.scripts = that.getScripts();
+		this.timeout = that.getTimeout();
 	}
 	
 	public Device(DeviceEntity that){
@@ -67,6 +70,7 @@ public class Device implements Serializable {
 		this.deviceType = DeviceTypeConverter.toBriefDeviceType(that.getDeviceType());
 		this.home = HomeConverter.toModel(that.getHome());
 		this.GPIOType = that.getGPIOType();
+		this.timeout = that.getTimeout();
 		this.scripts = ScriptConverter.toListModel(that.getScripts());
 	}
 	
@@ -146,6 +150,14 @@ public class Device implements Serializable {
 
 	public void setDeviceType(BriefDeviceType deviceType) {
 		this.deviceType = deviceType;
+	}
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 	
 }
