@@ -1,5 +1,6 @@
 package com.hcmut.smarthome.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,6 +21,8 @@ import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.utils.ConstantUtil;
+import static com.hcmut.smarthome.utils.ConstantUtil.ALL_GPIO;
+import static com.hcmut.smarthome.utils.ConstantUtil.ALWAYS_AVAILABLE_GPIO;
 
 @Service
 public class DeviceService implements IDeviceService {
@@ -112,6 +115,46 @@ public class DeviceService implements IDeviceService {
 		scriptEntity.setDevice(device);
 		
 		scriptDao.save(scriptEntity);
+		return false;
+	}
+	
+	@Override
+	public List<Integer> getAllAvailableGpio(int homeId) {
+		List<Integer> availableGpio = new ArrayList<Integer>();
+		List<Device> devices = getAllDevices(homeId);
+		
+		for( int i = 0; i < ALL_GPIO.size(); i++ ) {
+			if(isAvailable(ALL_GPIO.get(i).intValue(), devices)) {
+				availableGpio.add(ALL_GPIO.get(i));
+			}
+		}
+		
+		return availableGpio;
+	}
+	
+	private boolean isAvailable(int gpio, List<Device> devices) {
+		
+		if( isAlwaysAvailable(gpio) ) {
+			return true;
+		}
+		
+		for(Device device : devices) {
+			if(device.isEnabled() && (device.getGPIO().intValue() == gpio) ) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	private boolean isAlwaysAvailable(int gpio) {
+		
+		for(int i = 0; i < ALWAYS_AVAILABLE_GPIO.size(); i++) {
+			if(gpio == ALWAYS_AVAILABLE_GPIO.get(i).intValue()) {
+				return true;
+			}
+		}
+		
 		return false;
 	}
 	
