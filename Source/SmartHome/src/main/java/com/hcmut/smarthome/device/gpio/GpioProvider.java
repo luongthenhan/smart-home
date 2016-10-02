@@ -1,6 +1,7 @@
-package com.hcmut.smarthome.device.gpio.impl;
+package com.hcmut.smarthome.device.gpio;
 
-import com.hcmut.smarthome.device.gpio.IGpioProvider;
+import java.util.HashMap;
+
 import com.hcmut.smarthome.model.Device;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -11,22 +12,25 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
-public class GpioProviderImpl implements IGpioProvider {
+public class GpioProvider {
 
-	private GpioController gpioController;
+	private static GpioController gpioController = GpioFactory.getInstance();
 
-	public GpioProviderImpl() {
+	private static HashMap<Integer, GpioPinDigitalOutput> outputPinMap = new HashMap<Integer, GpioPinDigitalOutput>();
 
-		// Create GPIO controller
-		gpioController = GpioFactory.getInstance();
-	}
+	private static HashMap<Integer, GpioPinDigitalInput> inputPinMap = new HashMap<Integer, GpioPinDigitalInput>();
 
-	@Override
-	public GpioPinDigitalOutput getGpioOutput(Device device) {
+	public static GpioPinDigitalOutput getGpioOutput(Device device) {
+
+		int devicePin = device.getGPIOPin();
+
+		if (outputPinMap.containsKey(devicePin)) {
+			return outputPinMap.get(devicePin);
+		}
 
 		GpioPinDigitalOutput outputPin;
 
-		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIOPin());
+		Pin p4jPin = convertRaspberryPinToP4jPin(devicePin);
 
 		outputPin = gpioController.provisionDigitalOutputPin(p4jPin,
 				device.getName(), PinState.HIGH);
@@ -34,15 +38,23 @@ public class GpioProviderImpl implements IGpioProvider {
 		outputPin
 				.setShutdownOptions(true, PinState.HIGH, PinPullResistance.OFF);
 
+		outputPinMap.put(devicePin, outputPin);
+
 		return outputPin;
 	}
 
-	@Override
-	public GpioPinDigitalInput getGpioInputForActiveLowDevice(Device device) {
+	public static GpioPinDigitalInput getGpioInputForActiveLowDevice(
+			Device device) {
+
+		int devicePin = device.getGPIOPin();
+
+		if (inputPinMap.containsKey(devicePin)) {
+			return inputPinMap.get(devicePin);
+		}
 
 		GpioPinDigitalInput inputPin;
 
-		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIOPin());
+		Pin p4jPin = convertRaspberryPinToP4jPin(devicePin);
 
 		inputPin = gpioController.provisionDigitalInputPin(p4jPin,
 				device.getName());
@@ -50,26 +62,36 @@ public class GpioProviderImpl implements IGpioProvider {
 		inputPin.setPullResistance(PinPullResistance.PULL_UP);
 		inputPin.setShutdownOptions(true, PinState.HIGH, PinPullResistance.OFF);
 
+		inputPinMap.put(devicePin, inputPin);
+
 		return inputPin;
 	}
 
-	@Override
-	public GpioPinDigitalInput getGpioInputForActiveHighDevice(Device device) {
+	public static GpioPinDigitalInput getGpioInputForActiveHighDevice(
+			Device device) {
+		
+		int devicePin = device.getGPIOPin();
+
+		if (inputPinMap.containsKey(devicePin)) {
+			return inputPinMap.get(devicePin);
+		}
 
 		GpioPinDigitalInput inputPin;
 
-		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIOPin());
+		Pin p4jPin = convertRaspberryPinToP4jPin(devicePin);
 
 		inputPin = gpioController.provisionDigitalInputPin(p4jPin,
 				device.getName());
 
 		inputPin.setPullResistance(PinPullResistance.PULL_DOWN);
 		inputPin.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
+		
+		inputPinMap.put(devicePin, inputPin);
 
 		return inputPin;
 	}
 
-	private Pin convertRaspberryPinToP4jPin(int raspberryPin) {
+	private static Pin convertRaspberryPinToP4jPin(int raspberryPin) {
 
 		Pin p4jPin;
 

@@ -22,15 +22,18 @@ public class HomeResource {
 	@Autowired
 	private IScenarioService scenarioService;
 	
-	@RequestMapping(method = RequestMethod.GET, path ="/test")
+	@RequestMapping(method = RequestMethod.GET, path ="/test1")
 	public ResponseEntity<Void> test() throws ParseException{
-		String script1 = "[['If',['LightIsOn','=','true'],[['If',['BuzzerIsBeeping','=','true'],[['ToggleBuzzer','A'],['ToggleLight','A']]],[['ToggleLight','B']]]]]";
-		String script2 = "[['ToggleBuzzer'],['ToggleLight']]";
-		String script3 = "[['If',['5','>=','35.5'],[['ToggleLight','2']]]]";
-		String script4 = "[['If',['Light Near Door','=','true'],[['ToggleBuzzer','Buzzle Near Gas']]]]";
-		//"[['ControlBlock','If',['Condition','Light Near Door','=','true'],['Action',['SimpleAction','ToggleBuzzer','Buzzle Near Gas']]]]";
-		//IScenarioService scenarioService = new ScenarioService();
+		String script3 = "[['If',['4','=', 'true'],[['TurnOnLight','2']]]]";
 		Scenario scenario = scenarioService.JSONToScenario(script3);
+		scenarioService.runScenario(scenario);
+		return null;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path ="/test2")
+	public ResponseEntity<Void> test2() throws ParseException{
+		String script1 = "[['If',['5','>', '31.0'],[['TurnOnBuzzer','6']]]]";
+		Scenario scenario = scenarioService.JSONToScenario(script1);
 		scenarioService.runScenario(scenario);
 		return null;
 	}

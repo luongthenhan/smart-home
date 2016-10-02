@@ -20,6 +20,8 @@ import static com.hcmut.smarthome.utils.ConstantUtil.TAKE_A_SHOT;
 import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
 import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE_BUZZER;
 import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE_LIGHT;
+import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON_BUZZER;
+import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON_LIGHT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +30,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Supplier;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -51,6 +54,9 @@ import com.hcmut.smarthome.utils.ConstantUtil;
 
 @Service
 public class ScenarioService implements IScenarioService {
+	
+	private static final Logger LOGGER = Logger
+			.getLogger(ScenarioService.class);
 
 	private JSONParser parser = new JSONParser();
 
@@ -132,6 +138,19 @@ public class ScenarioService implements IScenarioService {
 			};
 			block = setupSimpleAction(TOGGLE_LIGHT, toggleLight, Void.class);
 			break;
+			
+		case TURN_ON_LIGHT:
+			Supplier<Void> turnOnLight = () -> {
+				try {
+					deviceController.turnOn(deviceService.getDevice(ConstantUtil.HOME_ID,
+							Integer.valueOf(object.get(1).toString())));
+				} catch (Exception e) {
+					System.out.println("Error: " + e.getMessage());
+				}
+				return null;
+			};
+			block = setupSimpleAction(TURN_ON_LIGHT, turnOnLight, Void.class);
+			break;
 
 		case TOGGLE_BUZZER:
 			Supplier<Void> toggleBuzzer = () -> {
@@ -144,6 +163,19 @@ public class ScenarioService implements IScenarioService {
 				return null;
 			};
 			block = setupSimpleAction(TOGGLE_BUZZER, toggleBuzzer, Void.class);
+			break;
+			
+		case TURN_ON_BUZZER:
+			Supplier<Void> turnOnBuzzer = () -> {
+				try {
+					deviceController.turnOn(deviceService.getDevice(ConstantUtil.HOME_ID,
+							Integer.valueOf(object.get(1).toString())));
+				} catch (Exception e) {
+					LOGGER.error(e.getMessage());
+				}
+				return null;
+			};
+			block = setupSimpleAction(TURN_ON_BUZZER, turnOnBuzzer, Void.class);
 			break;
 
 		case TAKE_A_SHOT:
