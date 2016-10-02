@@ -1,5 +1,8 @@
 package com.hcmut.smarthome.utils;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.hcmut.smarthome.model.Device;
 
 public class ConstantUtil {
@@ -57,7 +60,7 @@ public class ConstantUtil {
 
 	public static final int SIZE_CONTROL_BLOCK_IF_ELSE = 4;
 	public static final int SIZE_CONTROL_BLOCK_IF = 3;
-	
+
 	// Returned status and exception
 	public static final Device CANNOT_CONVERT_ENTITY_TO_MODEL = null;
 	public static final Exception DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL = new Exception(
@@ -65,9 +68,14 @@ public class ConstantUtil {
 	public static final Exception DEVICE_CANNOT_PERFORM_THIS_ACTION = new Exception(
 			"Device cannot perform this action");
 
-	
-	
-	// Hard code 
+	// Hard code
 	public static int HOME_ID = 1;
 	public static int VALID_USER_ID = 2;
+
+	// List gpio
+	public static List<Integer> ALL_GPIO = Arrays.asList(3, 5, 7, 8, 10, 11,
+			12, 13, 15, 16, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33,
+			35, 36, 37, 38, 40);
+	
+	public static List<Integer> ALWAYS_AVAILABLE_GPIO = Arrays.asList(7);
 }

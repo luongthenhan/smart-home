@@ -19,4 +19,6 @@ public interface IDeviceService {
 	boolean deleteScript(int scriptId);
 	
 	boolean updateScript(int scriptId, Script updatedScript);
+	
+	List<Integer> getAllAvailableGpio(int homeId);
 }
