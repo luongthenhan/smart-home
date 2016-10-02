@@ -46,6 +46,7 @@ public interface ICommonDao<T extends Object> {
 	 */
 	boolean delete(T t);
 
+	boolean delete(Serializable id);
 	
 	/**
 	 * get current session

@@ -22,8 +22,10 @@ public class UserResource {
 
 	@RequestMapping(method=RequestMethod.PUT, path = "/signup/{username}")
 	public ResponseEntity<Void> signUp(@PathVariable String username) throws NotSupportedException{
+		
 		throw new NotSupportedException();
 	}
 	
 
 }
+

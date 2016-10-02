@@ -2,38 +2,74 @@ package com.hcmut.smarthome.rest;
 
 import java.util.List;
 
-import javax.transaction.NotSupportedException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hcmut.smarthome.model.Device;
-import com.hcmut.smarthome.model.DeviceType;
+import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.service.IDeviceService;
-import com.hcmut.smarthome.service.IDeviceTypeService;
-import com.hcmut.smarthome.service.IScenarioService;
-import com.hcmut.smarthome.utils.ConstantUtil;
 
 @RestController
-@RequestMapping("/homes/{homeId}/devices")
+@RequestMapping("devices/{deviceId}/modes/{modeId}/scripts")
 @CrossOrigin
 public class DeviceResource {
 
 	@Autowired
-	private IScenarioService scenarioService;
-
-	@Autowired
 	private IDeviceService deviceService;
 	
-	@Autowired
-	private IDeviceTypeService deviceTypeService;
-
+	/**
+	 * Delete one script given scriptId
+	 * @param scriptId
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.DELETE, path="/{scriptId}")
+	public ResponseEntity<Void> deleteScript(@PathVariable int scriptId){
+		deviceService.deleteScript(scriptId);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
+	
+	/**
+	 * Get all scripts given mode and device
+	 * @param deviceId
+	 * @param modeId
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<List<Script>> getScripts(@PathVariable int deviceId,@PathVariable int modeId){
+		return new ResponseEntity<List<Script>>(deviceService.getScripts( modeId, deviceId),HttpStatus.OK);
+	}
+	
+	/**
+	 * Update one script
+	 * @param scriptId
+	 * @param script
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.PUT, path="/{scriptId}")
+	public ResponseEntity<Void> updateScript(@PathVariable int scriptId, @RequestBody Script script ){
+		deviceService.updateScript(scriptId,script);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
+	
+	/**
+	 * Add new script given mode and device
+	 * @param deviceId
+	 * @param modeId
+	 * @param script
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Void> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ){
+		deviceService.addScript(script,deviceId, modeId);
+		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	}
+	
 	/*@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}")
 	public ResponseEntity<Void> getDeviceById(@PathVariable int deviceId)
 			throws NotSupportedException {
@@ -58,10 +94,7 @@ public class DeviceResource {
 		throw new NotSupportedException();
 	}
 	*/
-	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<Device>> getAllDevices() throws NotSupportedException {
-		return new ResponseEntity<List<Device>>(deviceService.getAllDevices(1),HttpStatus.OK);
-	}
+
 	/*
 	@RequestMapping(method = RequestMethod.GET, path = "/status")
 	public ResponseEntity<Void> getStatusAllDevices()
@@ -111,15 +144,7 @@ public class DeviceResource {
 		throw new NotSupportedException();
 	}*/
 
-	@RequestMapping(method = RequestMethod.GET, path = "/type")
-	public ResponseEntity<List<DeviceType>> getAllDevicesTypeUserHave(@PathVariable int homeId){
-		return new ResponseEntity<List<DeviceType>>(deviceTypeService.getAll(ConstantUtil.VALID_USER_ID, homeId), HttpStatus.OK);
-	}
 	
-	@RequestMapping(method = RequestMethod.GET, path = "type/{deviceTypeId}")
-	public ResponseEntity<List<Device>> getAllDevicesGivenHomeAndDeviceType(@PathVariable int homeId, @PathVariable int deviceTypeId) throws NotSupportedException {
-		return new ResponseEntity<List<Device>>(deviceService.getAllGivenHomeAndDeviceType(homeId, deviceTypeId), HttpStatus.OK);
-	}
 
 	/*@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/toggle")
 	public ResponseEntity<Void> toggleDeviceById(@PathVariable int deviceId)

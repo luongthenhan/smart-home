@@ -9,9 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.converter.DeviceConverter;
+import com.hcmut.smarthome.converter.ScriptConverter;
 import com.hcmut.smarthome.dao.IDeviceDao;
+import com.hcmut.smarthome.dao.IScriptDao;
 import com.hcmut.smarthome.entity.DeviceEntity;
+import com.hcmut.smarthome.entity.ModeEntity;
+import com.hcmut.smarthome.entity.ScriptEntity;
+import com.hcmut.smarthome.entity.ScriptTypeEntity;
 import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.utils.ConstantUtil;
 
@@ -24,6 +30,9 @@ public class DeviceService implements IDeviceService {
 	
 	@Autowired
 	private IDeviceDao deviceDao;
+	
+	@Autowired
+	private IScriptDao scriptDao;
 	
 	@PostConstruct
 	private void init(){
@@ -54,6 +63,53 @@ public class DeviceService implements IDeviceService {
 		return null;
 	}
 	
+	@Override
+	public List<Script> getScripts(int modeId, int deviceId) {
+		List<ScriptEntity> scriptEntities = scriptDao.getAllScripts(modeId, deviceId);
+		return ScriptConverter.toListModel(scriptEntities);
+	}
+	
+	@Override
+	public boolean deleteScript(int scriptId) {
+		scriptDao.deleteScript(scriptId);
+		return true;
+	}
+
+	// TODO: Now update a script involved so many queries -> need to improve performance
+	@Override
+	public boolean updateScript(int scriptId, Script updatedScript) {
+		ScriptEntity updatedScriptEntity = scriptDao.getById(scriptId);
+		updatedScriptEntity.setContent(updatedScript.getContent());
+		updatedScriptEntity.setName(updatedScript.getName());
+		scriptDao.update(updatedScriptEntity);
+		return false;
+	}
+
+
+	@Override
+	public boolean addScript(Script script, int deviceId , int modeId) {
+		ScriptEntity scriptEntity = new ScriptEntity();
+		scriptEntity.setName(script.getName());
+		scriptEntity.setContent(script.getContent());
+		
+		ModeEntity mode = new ModeEntity();
+		mode.setId(modeId);
+		scriptEntity.setMode(mode);
+		
+		ScriptTypeEntity scriptType = new ScriptTypeEntity();
+		scriptType.setId(script.getType().getId());
+		scriptEntity.setScriptType(scriptType);
+		
+		DeviceEntity device = new DeviceEntity();
+		device.setId(deviceId);
+		scriptEntity.setDevice(device);
+		
+		scriptDao.save(scriptEntity);
+		return false;
+	}
+	
+	/// AVAILABLE FOR TESTING PURPOSE 
+	// TODO: Remove later 
 	public void toggleLight(String deviceName){
 		if( isLightOn )
 			System.out.println("Turn " + deviceName + " on .....");
@@ -105,5 +161,6 @@ public class DeviceService implements IDeviceService {
 	public void takeAShot(String deviceName) {
 		System.out.println("Take a shot from " + deviceName);
 	}
+
 
 }

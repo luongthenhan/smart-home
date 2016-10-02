@@ -4,24 +4,12 @@ import java.util.Date;
 
 import com.hcmut.smarthome.utils.ConstantUtil;
 
-public class ControlBlockFromTo implements IBlock, ICondition{
-	private String name;
+public class ControlBlockFromTo extends ControlBlock{
 	private Date fromValue;
 	private Date toValue;
-	private Action action;
 	
 	public ControlBlockFromTo() {
 		setName(ConstantUtil.CONTROL_BLOCK_FROM_TO);
-	}
-	
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public Date getFromValue() {
@@ -40,17 +28,15 @@ public class ControlBlockFromTo implements IBlock, ICondition{
 		this.toValue = toValue;
 	}
 
-	public Action getAction() {
-		return action;
-	}
-
-	public void setAction(Action action) {
-		this.action = action;
-	}
-
+	// Not support condition here
 	@Override
-	public boolean check() {
-		// TODO Auto-generated method stub
-		return false;
+	public Condition getCondition() {
+		return null;
+	}
+
+	// Not support condition here
+	@Override
+	public void setCondition(Condition condition) {
+		return;
 	}
 }

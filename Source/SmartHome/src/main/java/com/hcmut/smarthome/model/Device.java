@@ -45,7 +45,7 @@ public class Device implements Serializable {
 		this.name = that.getName();
 		this.description = that.getDescription();
 		this.location = that.getLocation();
-		this.GPIOPin = that.getGPIOPin();
+		this.GPIOPin = that.getGPIO();
 		this.status = that.getStatus();
 		this.enabled = that.isEnabled();
 		this.code = that.getCode();
@@ -119,7 +119,7 @@ public class Device implements Serializable {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public Integer getGPIOPin() {
+	public Integer getGPIO() {
 		return GPIOPin;
 	}
 	public void setGPIOPin(Integer gPIOPin) {

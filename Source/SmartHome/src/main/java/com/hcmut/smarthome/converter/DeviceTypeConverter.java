@@ -26,7 +26,7 @@ public class DeviceTypeConverter {
 		deviceType.setId(deviceTypeEntity.getId());
 		deviceType.setDescription(deviceTypeEntity.getDescription());
 		deviceType.setImageURL(deviceTypeEntity.getImageURL());
-		deviceType.setTypeName(deviceTypeEntity.getTypeName());
+		deviceType.setName(deviceTypeEntity.getTypeName());
 		
 		Action mainAction = new Action();
 		
@@ -52,7 +52,7 @@ public class DeviceTypeConverter {
 	public static BriefDeviceType toBriefDeviceType(DeviceTypeEntity deviceTypeEntity) {
 		BriefDeviceType deviceType = new BriefDeviceType();
 		deviceType.setId(deviceTypeEntity.getId());
-		deviceType.setTypeName(deviceTypeEntity.getTypeName());
+		deviceType.setName(deviceTypeEntity.getTypeName());
 		
 		return deviceType;
 	}

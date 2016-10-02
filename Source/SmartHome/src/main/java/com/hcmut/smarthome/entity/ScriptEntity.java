@@ -2,7 +2,6 @@ package com.hcmut.smarthome.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,7 +26,7 @@ public class ScriptEntity implements Serializable{
 	@Column(name="content", nullable = true , length = 4096)
 	private String content;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name="device_id", nullable =false)
 	private DeviceEntity device;
 	

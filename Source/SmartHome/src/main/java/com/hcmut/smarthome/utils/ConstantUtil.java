@@ -13,18 +13,12 @@ public class ConstantUtil {
 	// ACTION NAME
 
 	// For output device
-	// Light bulb
-	public static final String TURN_ON_LIGHT = "TurnOnLight";
-	public static final String TURN_OFF_LIGHT = "TurnOffLight";
-	public static final String TOGGLE_LIGHT = "ToggleLight";
-
-	// Buzzer
-	public static final String TURN_ON_BUZZER = "TurnOnBuzzer";
-	public static final String TURN_OFF_BUZZER = "TurnOffBuzzer";
-	public static final String TOGGLE_BUZZER = "ToggleBuzzer";
+	public static final String TURN_ON = "Turn On";
+	public static final String TURN_OFF = "Turn Off";
+	public static final String TOGGLE = "Toggle";
 
 	// Camera
-	public static final String TAKE_A_SHOT = "TakeAShot";
+	public static final String TAKE_PICTURE = "TakePicture";
 
 	// General
 	public static final String SEND_EMAIL = "SendEmail";

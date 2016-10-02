@@ -41,7 +41,7 @@ public class GeneralControllerImpl implements IGeneralController {
 	@Override
 	public void turnOn(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType().getTypeName();
+		String deviceType = deviceBase.getDeviceType().getName();
 
 		switch (deviceType) {
 		case LIGHT:
@@ -63,7 +63,7 @@ public class GeneralControllerImpl implements IGeneralController {
 	@Override
 	public void turnOff(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType().getTypeName();
+		String deviceType = deviceBase.getDeviceType().getName();
 
 		switch (deviceType) {
 		case LIGHT:
@@ -84,7 +84,7 @@ public class GeneralControllerImpl implements IGeneralController {
 	@Override
 	public void toggle(Device deviceBase) throws Exception {
 		
-		String deviceType = deviceBase.getDeviceType().getTypeName();
+		String deviceType = deviceBase.getDeviceType().getName();
 		System.out.println("toggle function: " + deviceType);
 		switch (deviceType) {
 		case LIGHT:
@@ -136,7 +136,7 @@ public class GeneralControllerImpl implements IGeneralController {
 	@Override
 	public boolean isNight(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType().getTypeName();
+		String deviceType = deviceBase.getDeviceType().getName();
 		boolean isNight = false;
 
 		switch (deviceType) {
@@ -168,7 +168,7 @@ public class GeneralControllerImpl implements IGeneralController {
 	@Override
 	public boolean isDanger(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType().getTypeName();
+		String deviceType = deviceBase.getDeviceType().getName();
 		boolean isDanger = false;
 
 		switch (deviceType) {
@@ -194,7 +194,7 @@ public class GeneralControllerImpl implements IGeneralController {
 	@Override
 	public boolean hasHuman(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType().getTypeName();
+		String deviceType = deviceBase.getDeviceType().getName();
 		boolean hasHuman = false;
 
 		switch (deviceType) {
@@ -226,7 +226,7 @@ public class GeneralControllerImpl implements IGeneralController {
 	@Override
 	public boolean isOn(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType().getTypeName();
+		String deviceType = deviceBase.getDeviceType().getName();
 		boolean isOn = false;
 
 		switch (deviceType) {
@@ -251,7 +251,7 @@ public class GeneralControllerImpl implements IGeneralController {
 	@Override
 	public BufferedImage takeAPhoto(Device deviceBase) throws Exception {
 
-		String deviceType = deviceBase.getDeviceType().getTypeName();
+		String deviceType = deviceBase.getDeviceType().getName();
 		BufferedImage bufferedImage = null;
 
 		switch (deviceType) {

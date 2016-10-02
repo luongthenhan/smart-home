@@ -26,7 +26,7 @@ public class GpioProviderImpl implements IGpioProvider {
 
 		GpioPinDigitalOutput outputPin;
 
-		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIOPin());
+		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIO());
 
 		outputPin = gpioController.provisionDigitalOutputPin(p4jPin,
 				device.getName(), PinState.HIGH);
@@ -42,7 +42,7 @@ public class GpioProviderImpl implements IGpioProvider {
 
 		GpioPinDigitalInput inputPin;
 
-		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIOPin());
+		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIO());
 
 		inputPin = gpioController.provisionDigitalInputPin(p4jPin,
 				device.getName());
@@ -58,7 +58,7 @@ public class GpioProviderImpl implements IGpioProvider {
 
 		GpioPinDigitalInput inputPin;
 
-		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIOPin());
+		Pin p4jPin = convertRaspberryPinToP4jPin(device.getGPIO());
 
 		inputPin = gpioController.provisionDigitalInputPin(p4jPin,
 				device.getName());

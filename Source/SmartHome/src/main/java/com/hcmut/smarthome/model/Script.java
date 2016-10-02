@@ -9,9 +9,9 @@ public class Script implements Serializable {
 
 	private String name;
 
-	private String script;
+	private String content;
 
-	private String scriptType;
+	private ScriptType scriptType;
 
 	public Script() {
 		super();
@@ -33,20 +33,19 @@ public class Script implements Serializable {
 		this.name = name;
 	}
 
-	public String getScript() {
-		return script;
+	public String getContent() {
+		return content;
 	}
 
-	public void setScript(String script) {
-		this.script = script;
+	public void setContent(String script) {
+		this.content = script;
 	}
 
-	public String getScriptType() {
+	public ScriptType getType() {
 		return scriptType;
 	}
 
-	public void setScriptType(String scriptType) {
+	public void setType(ScriptType scriptType) {
 		this.scriptType = scriptType;
 	}
-
 }

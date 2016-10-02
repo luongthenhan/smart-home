@@ -29,12 +29,12 @@ public class DeviceType extends BriefDeviceType implements Serializable{
 		this.id = id;
 	}
 
-	public String getTypeName() {
-		return typeName;
+	public String getName() {
+		return name;
 	}
 
-	public void setTypeName(String typeName) {
-		this.typeName = typeName;
+	public void setName(String typeName) {
+		this.name = typeName;
 	}
 
 	public String getDescription() {

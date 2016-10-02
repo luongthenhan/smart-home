@@ -54,6 +54,13 @@ public class CommonDaoImpl<K extends Object> implements ICommonDao<K> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public final boolean delete(Serializable id) {
+		K obj = (K) getCurrentSession().load(entityClass, id); 
+		return delete(obj);
+	}
+	
 	@Override
 	public final boolean delete(K item) throws DataAccessException {
 		getCurrentSession().delete(item);
@@ -78,7 +85,7 @@ public class CommonDaoImpl<K extends Object> implements ICommonDao<K> {
 	public final boolean update(K entity) {
 		try {
 			merge(entity);
-			getCurrentSession().saveOrUpdate(entity);
+			//getCurrentSession().saveOrUpdate(entity);
 		} catch (Exception e) {
 		}
 
@@ -97,4 +104,5 @@ public class CommonDaoImpl<K extends Object> implements ICommonDao<K> {
 	public void setEntityClass(Class<K> entityClass) {
 		this.entityClass = entityClass;
 	}
+
 }

@@ -8,7 +8,7 @@ public class BriefDeviceType implements Serializable{
 	
 	protected int id;
 	
-	protected String typeName;
+	protected String name;
 	
 	public BriefDeviceType(){
 		super();
@@ -22,12 +22,12 @@ public class BriefDeviceType implements Serializable{
 		this.id = id;
 	}
 
-	public String getTypeName() {
-		return typeName;
+	public String getName() {
+		return name;
 	}
 
-	public void setTypeName(String typeName) {
-		this.typeName = typeName;
+	public void setName(String typeName) {
+		this.name = typeName;
 	}
 	
 }

@@ -9,10 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import com.hcmut.smarthome.dao.IDeviceTypeDao;
 import com.hcmut.smarthome.entity.DeviceTypeEntity;
-import com.hcmut.smarthome.model.DeviceType;
 
 @Repository
-public class DeviceTypeDaoImpl extends CommonDaoImpl<DeviceType> implements IDeviceTypeDao{
+public class DeviceTypeDaoImpl extends CommonDaoImpl<DeviceTypeEntity> implements IDeviceTypeDao{
 
 	@SuppressWarnings("unchecked")
 	@Override

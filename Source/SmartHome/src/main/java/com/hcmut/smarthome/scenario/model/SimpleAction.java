@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 public class SimpleAction implements IBlock, IAction{
 	private Object value;
 	private String name;
+	private int deviceId;
 	private Consumer<Object> action;
 	
 	public SimpleAction() {
@@ -46,6 +47,14 @@ public class SimpleAction implements IBlock, IAction{
 
 	public void setValue(Object value) {
 		this.value = value;
+	}
+
+	public int getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(int deviceId) {
+		this.deviceId = deviceId;
 	}
 
 }

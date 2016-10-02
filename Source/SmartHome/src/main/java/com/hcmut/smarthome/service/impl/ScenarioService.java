@@ -1,32 +1,16 @@
 package com.hcmut.smarthome.service.impl;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.BUZZER;
-import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_FROM_TO;
-import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF;
-import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF_ELSE;
-import static com.hcmut.smarthome.utils.ConstantUtil.EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.GAS_SENSOR;
-import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_OR_EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_THAN;
-import static com.hcmut.smarthome.utils.ConstantUtil.LESS_OR_EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
-import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT;
-import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
-import static com.hcmut.smarthome.utils.ConstantUtil.MOTION_SENSOR;
-import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF;
-import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF_ELSE;
-import static com.hcmut.smarthome.utils.ConstantUtil.TAKE_A_SHOT;
-import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
-import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE_BUZZER;
-import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE_LIGHT;
+import static com.hcmut.smarthome.utils.ConstantUtil.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Supplier;
+
+import javax.transaction.NotSupportedException;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -36,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.device.controller.IGeneralController;
 import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.model.Pair;
 import com.hcmut.smarthome.scenario.model.Action;
 import com.hcmut.smarthome.scenario.model.Condition;
 import com.hcmut.smarthome.scenario.model.ControlBlock;
@@ -51,6 +36,8 @@ import com.hcmut.smarthome.utils.ConstantUtil;
 
 @Service
 public class ScenarioService implements IScenarioService {
+
+	private static final int TIMEOUT_CHECK_CONDITION = 2000;
 
 	private JSONParser parser = new JSONParser();
 
@@ -101,7 +88,7 @@ public class ScenarioService implements IScenarioService {
 		switch (blockName) {
 
 		// CONTROL BLOCK
-		// TODO: Now Hard-code fromValue and toValue
+		// TODO: Now Hard-code fromValue and toValue . Also support range value. Maybe we consider a range as condition
 		case CONTROL_BLOCK_FROM_TO:
 			ControlBlockFromTo conFromTo = new ControlBlockFromTo();
 			block = conFromTo;
@@ -120,8 +107,18 @@ public class ScenarioService implements IScenarioService {
 
 		// deviceName = object.get(1).toString()
 		//TODO: Now hard code homeId
-		case TOGGLE_LIGHT:
-			Supplier<Void> toggleLight = () -> {
+		case TURN_ON:
+			Supplier<Void> turnOn = () -> null;
+			block = setupSimpleAction(TURN_ON, object.get(1).toString(), turnOn, Void.class);
+			break;
+			
+		case TURN_OFF:
+			Supplier<Void> turnOff = () -> null;
+			block = setupSimpleAction(TURN_OFF, object.get(1).toString(), turnOff, Void.class);
+			break;
+			
+		case TOGGLE:
+			Supplier<Void> toggle = () -> {
 				try {
 					deviceController.toggle(deviceService.getDevice(ConstantUtil.HOME_ID,
 							Integer.valueOf(object.get(1).toString())));
@@ -130,23 +127,10 @@ public class ScenarioService implements IScenarioService {
 				}
 				return null;
 			};
-			block = setupSimpleAction(TOGGLE_LIGHT, toggleLight, Void.class);
+			block = setupSimpleAction(TOGGLE, object.get(1).toString(), toggle, Void.class);
 			break;
 
-		case TOGGLE_BUZZER:
-			Supplier<Void> toggleBuzzer = () -> {
-				try {
-					deviceController.toggle(deviceService.getDevice(ConstantUtil.HOME_ID,
-							Integer.valueOf(object.get(1).toString())));
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
-				}
-				return null;
-			};
-			block = setupSimpleAction(TOGGLE_BUZZER, toggleBuzzer, Void.class);
-			break;
-
-		case TAKE_A_SHOT:
+		case TAKE_PICTURE:
 			Supplier<Object> takePicture = () -> {
 				Object picture = null;
 				try {
@@ -158,7 +142,7 @@ public class ScenarioService implements IScenarioService {
 				}
 				return picture;
 			};
-			block = setupSimpleAction(TAKE_A_SHOT, takePicture, Object.class);
+			block = setupSimpleAction(TAKE_PICTURE, object.get(1).toString(),takePicture, Object.class);
 			break;
 
 		// SETUP DEVICE CONDITION
@@ -220,9 +204,10 @@ public class ScenarioService implements IScenarioService {
 	 * @param actionExpressionType
 	 * @return
 	 */
-	private IBlock setupSimpleAction(String actionName , Supplier<?> actionExpression, Class<?> actionExpressionType){
+	private IBlock setupSimpleAction(String actionName , String deviceId, Supplier<?> actionExpression, Class<?> actionExpressionType){
 		SimpleAction simpleAction = new SimpleAction();
 		simpleAction.setName(actionName);
+		simpleAction.setDeviceId(Integer.valueOf(deviceId));
 		simpleAction.setAction(t -> simpleAction.setValue(actionExpressionType.cast(actionExpression.get())));
 		return simpleAction;
 	}
@@ -234,10 +219,14 @@ public class ScenarioService implements IScenarioService {
 	 */
 	private IBlock setupCondition(JSONArray object) {
 		IBlock block = null;
-		int deviceId = Integer.valueOf(object.get(0).toString());
-		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
-		String deviceTypeName = device.getDeviceType().getTypeName();
+		// TODO : UNcomment here , ensure device not null when pass to deviceController
+		//int deviceId = Integer.valueOf(object.get(0).toString());
+		//Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
+		//String deviceTypeName = device.getDeviceType().getTypeName();
 		Supplier<Object> LHSExpression = () -> null;
+		
+		Device device = null;
+		String deviceTypeName = object.get(0).toString();
 		
 		// Check device type 
 		// Then set up the method to be checked ( as condition )for each device 
@@ -245,7 +234,7 @@ public class ScenarioService implements IScenarioService {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					result = deviceController.isNight(device);
+					//result = deviceController.isNight(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + isNight");
 				}
@@ -256,7 +245,7 @@ public class ScenarioService implements IScenarioService {
 			LHSExpression = () -> {
 				Float temp = null;
 				try {
-					temp = deviceController.getTemperature(device);
+					//temp = deviceController.getTemperature(device);
 				} catch (Exception e) {
 
 				}
@@ -268,7 +257,7 @@ public class ScenarioService implements IScenarioService {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					result = deviceController.isDanger(device);
+					//result = deviceController.isDanger(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + isDanger");
 				}
@@ -279,7 +268,7 @@ public class ScenarioService implements IScenarioService {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					result = deviceController.hasHuman(device);
+					//result = deviceController.hasHuman(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + hasHuman");
 				}
@@ -290,7 +279,7 @@ public class ScenarioService implements IScenarioService {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					result = deviceController.isOn(device);
+					//result = deviceController.isOn(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + isOn: light");
 				}
@@ -301,7 +290,7 @@ public class ScenarioService implements IScenarioService {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					result = deviceController.isOn(device);
+					//result = deviceController.isOn(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + isOn: buzzer");
 				}
@@ -325,7 +314,8 @@ public class ScenarioService implements IScenarioService {
 	private Condition setupLHSAndRHSCondition(JSONArray object, String conditionName,
 			Supplier<Object> LHSExpression, Class<?> LHSExpressionType) {
 		Condition condition = new Condition();
-		condition.setName(conditionName);
+		//TODO Rename variable name of condition, now it store deviceId
+		condition.setName(object.get(0).toString());
 		condition.setLogicOperator(object.get(1).toString());
 		
 		if( LHSExpressionType.equals(Boolean.class) ){
@@ -402,7 +392,8 @@ public class ScenarioService implements IScenarioService {
 						runControlBlock((ControlBlock) block);
 						
 					}
-				}, 0 , 2000);
+				}, 0 , TIMEOUT_CHECK_CONDITION);
+				// TODO: Move timeout to each model
 				
 			} else if (block instanceof ControlBlockFromTo) {
 				timerService.schedule(new Date(), new Date(),
@@ -434,4 +425,219 @@ public class ScenarioService implements IScenarioService {
 	private boolean is(String device, String deviceType) {
 		return device.indexOf(deviceType) == 0;
 	}
+	
+	/**
+	 * SCENARIO VALIDATION
+	 * 
+	 */
+	
+	@Override
+	public boolean isScenarioValidate(Scenario inputScenario, List<Scenario> existedScenarios) throws NotSupportedException{
+		
+		Stack<Condition> stackConditions = new Stack<>();
+		// Find out pair of action & condition to be compared among existed list of scenario's blocks 
+		List<Pair<Condition,SimpleAction>> listActionsAndConditionsToCompare = 
+				findOutListSimpleActionsAndRequireConditions(inputScenario.getBlocks(),stackConditions); 
+		
+		// Check for each pair 
+		for( Pair<Condition,SimpleAction> actionAndConditionsGroup : listActionsAndConditionsToCompare ){
+			for (Scenario existedScenario : existedScenarios) {
+				Condition conditionToCompare = actionAndConditionsGroup.getFirst();
+				SimpleAction actionToCompare = actionAndConditionsGroup.getSecond();
+				
+				// TODO: In case existed block have only simple actions , we do not care now
+				// check existed counter action first, if any then we trace back to see whether condition is
+				// matching or not
+				// If counter action is found out 
+					// if condition to be compared is null , we make no sense to call areNestedCondtionMatching
+					// because this action always happen -> not valid script 
+					// else we need to call areNestedCondtionMatching to find out if any conditions are matching
+					// -> not valid script
+				if( isCounteractionExisted( actionToCompare, existedScenario.getBlocks())) {
+					if( conditionToCompare == null 
+							||  areNestedConditionsMatching(conditionToCompare, existedScenario.getBlocks()) )
+						return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	
+	private List<Pair<Condition,SimpleAction>> findOutListSimpleActionsAndRequireConditions(List<IBlock> blocks, Stack<Condition> stackConditions) throws NotSupportedException{
+		
+		List<Pair<Condition,SimpleAction>> pairConditionAction = new ArrayList<>();
+		
+		if( blocks == null )
+			return pairConditionAction;
+		
+		for (IBlock block : blocks) {
+			if (block instanceof SimpleAction) {
+				Condition condition = null;
+				if( stackConditions != null && !stackConditions.empty() )
+					condition = stackConditions.pop();
+					
+				pairConditionAction.add(new Pair<Condition, SimpleAction>(condition, (SimpleAction)block));
+			} 
+			// Block If, IfElse or FromTo
+			else if( block instanceof ControlBlock ){
+				// Push If condition to stack and continue finding out in block If actions 
+				stackConditions.push(((ControlBlock)block).getCondition());
+				pairConditionAction.addAll(findOutListSimpleActionsAndRequireConditions(((ControlBlock)block).getAction().getBlocks(),stackConditions));
+				
+				if ( block instanceof ControlBlockIfElse){
+					ControlBlockIfElse blockIfElse = (ControlBlockIfElse) block;
+					// Push Else condition to stack and continue finding out in block Else actions
+					
+					stackConditions.push( getElseCondition(blockIfElse.getCondition()) );
+					pairConditionAction.addAll(findOutListSimpleActionsAndRequireConditions(blockIfElse.getElseAction().getBlocks(),stackConditions));
+				}
+			}
+		}
+		
+		return pairConditionAction;
+	}
+	
+	private boolean isCounteractionExisted(SimpleAction actionToCompare,List<IBlock> existedBlocks) {
+		
+		if( existedBlocks == null )
+			return false;
+		
+		for (IBlock block : existedBlocks) {
+			boolean result = false;
+			
+			if( block instanceof SimpleAction ){
+				return isCounteraction(actionToCompare, (SimpleAction)block);
+			}
+			else if ( block instanceof ControlBlockIfElse ){
+				ControlBlockIfElse blockIfElse = (ControlBlockIfElse) block;
+				result = isCounteractionExisted(actionToCompare, blockIfElse.getAction().getBlocks())
+						|| isCounteractionExisted(actionToCompare, blockIfElse.getElseAction().getBlocks());
+			}
+			// Block If or Block From To
+			else if (block instanceof ControlBlock){
+				result = isCounteractionExisted(actionToCompare, ((ControlBlock)block).getAction().getBlocks());
+			}
+			
+			if( result )
+				return result;
+		}
+		
+		return false;
+	}
+	
+	private boolean isCounteraction(SimpleAction toCompare,
+			SimpleAction another) {
+		
+		if( toCompare.getDeviceId() != another.getDeviceId() )
+			return false;
+		
+		switch (toCompare.getName()) {
+			case ConstantUtil.TURN_ON:
+				return ConstantUtil.TURN_OFF.equals(another.getName());
+	
+			case ConstantUtil.TURN_OFF:
+				return ConstantUtil.TURN_ON.equals(another.getName());
+	
+			default:
+				// TODO: Add more counter-action if any
+				break;
+		}
+		
+		return false;
+	}
+
+	/**
+	 * Check whether the nested conditions inside existedBlock are match to or conflict with the given condition or not
+	 * @param conditionToCompare
+	 * @param existedBlocks
+	 * @return
+	 * @throws NotSupportedException
+	 */
+	private boolean areNestedConditionsMatching(Condition conditionToCompare, List<IBlock> existedBlocks) throws NotSupportedException {
+		
+		if( existedBlocks  == null )
+			return false;
+		
+		for (IBlock block : existedBlocks) {
+			
+			if( block instanceof ControlBlockIf ){
+				ControlBlockIf blockIf = (ControlBlockIf) block;
+				
+				return isConditionTheSame(conditionToCompare, blockIf.getCondition())
+						|| areNestedConditionsMatching(conditionToCompare, blockIf.getAction().getBlocks());
+			}
+			else if ( block instanceof ControlBlockIfElse ){
+				ControlBlockIfElse blockIfElse = (ControlBlockIfElse) block;
+				Condition ifCondition = blockIfElse.getCondition();
+				Condition elseCondition = getElseCondition(ifCondition);
+				
+				return isConditionTheSame(conditionToCompare, ifCondition)
+						|| isConditionTheSame(conditionToCompare, elseCondition) 
+						|| areNestedConditionsMatching(conditionToCompare, blockIfElse.getAction().getBlocks())
+						|| areNestedConditionsMatching(conditionToCompare, blockIfElse.getElseAction().getBlocks());
+			}
+			else if ( block instanceof ControlBlockFromTo ){
+				ControlBlockFromTo blockFromTo = (ControlBlockFromTo) block;
+				
+				return areNestedConditionsMatching(conditionToCompare, blockFromTo.getAction().getBlocks());
+			}
+			
+		}
+		
+		return false;
+	}
+
+	private Condition getElseCondition(Condition ifCondition) throws NotSupportedException {
+		
+		Condition elseCondition = new Condition();
+		elseCondition.setName(ifCondition.getName());
+		elseCondition.setValue(ifCondition.getValue());
+		
+		switch (ifCondition.getLogicOperator()) {
+		case EQUAL:
+			elseCondition.setLogicOperator(NOT_EQUAL);
+			break;
+		case NOT_EQUAL:
+			elseCondition.setLogicOperator(EQUAL);
+			break;
+		case GREATER_OR_EQUAL:
+			elseCondition.setLogicOperator(LESS_THAN);
+			break;
+		case GREATER_THAN:
+			elseCondition.setLogicOperator(LESS_OR_EQUAL);
+			break;
+		case LESS_OR_EQUAL:
+			elseCondition.setLogicOperator(GREATER_THAN);
+			break;
+		case LESS_THAN:
+			elseCondition.setLogicOperator(GREATER_OR_EQUAL);
+			break;
+
+		default:
+			throw new NotSupportedException("Not support: " + ifCondition.getLogicOperator() );
+		}
+		
+		return elseCondition;
+	}
+
+	// TODO: Check range value, not just equal case
+	private boolean isConditionTheSame(Condition toCompare,
+			Condition another) {
+		
+		// if either of condition is null -> false
+		// otherwise
+			// if operator is equal or not equal , just need only to check same of three value : name, operator , value
+			// otherwise
+				// check range value to see whether overlapping is occurred or not
+		
+		return toCompare.getName().equals(another.getName()) 
+				&& toCompare.getLogicOperator().equals(another.getLogicOperator())
+				&& toCompare.getValue().equals(another.getValue());
+	}
+
+	
+	
+	
+	
 }

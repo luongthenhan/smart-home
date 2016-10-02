@@ -1,5 +1,9 @@
 package com.hcmut.smarthome.service;
 
+import java.util.List;
+
+import javax.transaction.NotSupportedException;
+
 import org.json.simple.parser.ParseException;
 
 import com.hcmut.smarthome.scenario.model.Scenario;
@@ -24,4 +28,12 @@ public interface IScenarioService {
 	 * @throws ParseException
 	 */
 	Scenario JSONToScenario(String script) throws ParseException;
+	
+	/**
+	 * Check scenario validation
+	 * @param inputScenario
+	 * @param existedScenarios
+	 * @return
+	 */
+	boolean isScenarioValidate(Scenario inputScenario, List<Scenario> existedScenarios) throws NotSupportedException;
 }
