@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 
 import javax.transaction.NotSupportedException;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -36,6 +37,9 @@ import com.hcmut.smarthome.utils.ConstantUtil;
 
 @Service
 public class ScenarioService implements IScenarioService {
+	
+	private static final Logger LOGGER = Logger
+			.getLogger(ScenarioService.class);
 
 	private static final int TIMEOUT_CHECK_CONDITION = 2000;
 
@@ -129,7 +133,7 @@ public class ScenarioService implements IScenarioService {
 			};
 			block = setupSimpleAction(TOGGLE, object.get(1).toString(), toggle, Void.class);
 			break;
-
+			
 		case TAKE_PICTURE:
 			Supplier<Object> takePicture = () -> {
 				Object picture = null;
