@@ -24,7 +24,7 @@ public class Device implements Serializable {
 
 	protected Home home;
 	
-	protected int timeout;
+	protected Integer timeout;
 	
 	protected BriefDeviceType deviceType;
 	
@@ -152,12 +152,13 @@ public class Device implements Serializable {
 		this.deviceType = deviceType;
 	}
 
-	public int getTimeout() {
+	public Integer getTimeout() {
 		return timeout;
 	}
 
-	public void setTimeout(int timeout) {
+	public void setTimeout(Integer timeout) {
 		this.timeout = timeout;
 	}
+
 	
 }

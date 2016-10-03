@@ -17,7 +17,6 @@ public class Camera extends Device {
 	private int width;
 	private int height;
 	private int quality;
-	private int timeout;
 	private int sharpness;
 	private int contrast;
 	private int brightness;
@@ -95,13 +94,4 @@ public class Camera extends Device {
 	public void setWidth(int width) {
 		this.width = width;
 	}
-
-	public int getTimeout() {
-		return timeout;
-	}
-
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
-	}
-	
 }

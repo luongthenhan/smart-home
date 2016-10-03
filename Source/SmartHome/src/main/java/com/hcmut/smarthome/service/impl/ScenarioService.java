@@ -43,7 +43,6 @@ import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.device.controller.IGeneralController;
 import com.hcmut.smarthome.model.Device;
-import com.hcmut.smarthome.model.Pair;
 import com.hcmut.smarthome.scenario.model.Action;
 import com.hcmut.smarthome.scenario.model.Condition;
 import com.hcmut.smarthome.scenario.model.ControlBlock;
@@ -56,6 +55,7 @@ import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConstantUtil;
+import com.hcmut.smarthome.utils.Pair;
 
 @Service
 public class ScenarioService implements IScenarioService {

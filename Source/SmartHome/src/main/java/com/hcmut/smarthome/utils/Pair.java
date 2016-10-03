@@ -1,4 +1,4 @@
-package com.hcmut.smarthome.model;
+package com.hcmut.smarthome.utils;
 
 public class Pair<U,V> {
 	private U first;
