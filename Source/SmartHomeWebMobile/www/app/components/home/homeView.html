@@ -1,6 +1,19 @@
+<<<<<<< HEAD
+<navbar></navbar>
+<div class="wrapper-content" ng-controller="HomeController as homeCtrl" ng-init="homeCtrl.init()">
+    <span class="mode-label">Mode: </span>
+    <select class="combobox" ng-model="homeCtrl.selectedMode">
+        <option ng-repeat="mode in homeCtrl.modes" value="{{mode.id}}">{{mode.name}}</option>
+    </select>
+    <p></p>
+    <div class="row form-row form-title">Device Categories</div>
+    <device-type-button ng-repeat="deviceType in homeCtrl.deviceTypes" devicetype="deviceType"></device-type-button>
+</div>
+=======
 <navbar></navbar>
 <div class="wrapper-content" ng-controller="HomeController as homeCtrl" ng-init="homeCtrl.init()">
     <div class="row form-row form-title">Device Categories</div>
 
     <device-type-button ng-repeat="deviceType in homeCtrl.deviceTypes" devicetype="deviceType"></device-type-button>
 </div>
+>>>>>>> 0704e7edb4a1e704f859268bfa4c87efd7acf1d6

@@ -93,3 +93,15 @@
 .device-panel-custom-script-input {
     margin-top: 2px;
 }
+
+.detail-button {
+    font-weight: bold;
+}
+
+.mode-row {
+    background: #FF7F00;
+    color: white;
+    font-weight: bold;
+    padding-left: 10px;
+    margin-bottom: 10px;
+}

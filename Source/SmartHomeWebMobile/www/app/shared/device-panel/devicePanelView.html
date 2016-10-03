@@ -33,13 +33,40 @@
                         <span class="glyphicon glyphicon-trash"></span> Remove
                     </button>
                 </div>
-                <device-script-when-then></device-script-when-then>
-                <device-script-from-to></device-script-from-to>
-                <device-script-custom></device-script-custom>
+                <div ng-show="devicePanelCtrl.isShowDetails == false">
+                    <device-script-when-then></device-script-when-then>
+                    <device-script-from-to></device-script-from-to>
+                    <device-script-custom></device-script-custom>
+                    <div class="row">
+                        <button class="add-script-button pull-right detail-button" ng-click="devicePanelCtrl.toggleShowDetails()">
+                            Details...
+                            <span class="glyphicon glyphicon-triangle-bottom"></span>
+                        </button>
+                    </div>
+                </div>
+                <div ng-show="devicePanelCtrl.isShowDetails == true">
+                    <div class="row mode-row">
+                        Default
+                    </div>
+                    <device-script-when-then></device-script-when-then>
+                    <device-script-from-to></device-script-from-to>
+                    <device-script-custom></device-script-custom>
+                    <div class="row mode-row">
+                        Vacation
+                    </div>
+                    <device-script-custom></device-script-custom>
+                    <device-script-from-to></device-script-from-to>
+                    <div class="row">
+                        <button class="add-script-button pull-right detail-button" ng-click="devicePanelCtrl.toggleShowDetails()">
+                            Details...
+                            <span class="glyphicon glyphicon-triangle-top"></span>
+                        </button>
+                    </div>
+                </div>
                 <div class="row">
                     <button class="add-script-button pull-right" data-toggle="modal" data-target="#device-panel-add-script-modal{{device.id}}">
                         <span class="glyphicon glyphicon-plus-sign"/>
-                        Add more...
+                        Add more
                     </button>
                 </div>
             </div>
@@ -55,6 +82,11 @@
                         <h4 class="modal-title">Add Script For {{device.name}}</h4>
                     </div>
                     <div class="modal-body">
+                        <span style="font-weight: bold">Mode: </span>
+                        <select class="combobox" ng-model="devicePanelCtrl.selectedMode">
+                            <option ng-repeat="mode in devicePanelCtrl.modes" value="{{mode.id}}">{{mode.name}}</option>
+                        </select>
+                        <p></p>
                         <div style="font-weight: bold">Choose Script Type: </div>
                         <form>
                             <div class="radio">
