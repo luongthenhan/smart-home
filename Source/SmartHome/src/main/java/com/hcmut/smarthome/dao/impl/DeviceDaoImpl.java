@@ -28,11 +28,29 @@ public class DeviceDaoImpl extends CommonDaoImpl<DeviceEntity> implements IDevic
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@Transactional
 	public List<DeviceEntity> getAll(int homeId) {
 		String query = "SELECT * FROM public.device WHERE device.home_id = :homeId ;";
 		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query.toString()).addEntity(DeviceEntity.class);
 		sqlStatement.setParameter("homeId", homeId);
 		
 		return sqlStatement.list();
+	}
+
+	@Override
+	@Transactional
+	public boolean updateDevice(int deviceId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	@Transactional
+	public boolean deleteDevice(int deviceId) {
+		String query = "DELETE FROM device WHERE id = :deviceId ;";
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
+		sqlStatement.setParameter("deviceId", deviceId);
+		
+		return sqlStatement.executeUpdate() != 0;
 	}
 }

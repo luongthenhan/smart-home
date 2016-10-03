@@ -126,7 +126,7 @@ public class Device implements Serializable {
 	public Integer getGPIO() {
 		return GPIOPin;
 	}
-	public void setGPIOPin(Integer gPIOPin) {
+	public void setGPIO(Integer gPIOPin) {
 		GPIOPin = gPIOPin;
 	}
 	public String getGPIOType() {

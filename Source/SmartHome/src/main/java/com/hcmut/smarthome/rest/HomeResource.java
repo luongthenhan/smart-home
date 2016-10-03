@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,41 @@ public class HomeResource {
 	@Autowired
 	private IDeviceTypeService deviceTypeService;
 	
+	/**
+	 * Delete device given device id
+	 * @param deviceId
+	 * @param updatedDevice
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.DELETE, path = "/{homeId}/devices/{deviceId}")
+	public ResponseEntity<Void> deleteDevice(@PathVariable int deviceId){
+		deviceService.deleteDevice(deviceId);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
+	
+	/**
+	 * Add new device given home and device type
+	 * @param deviceTypeId
+	 * @param homeId
+	 * @param device
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.POST, path = "/{homeId}/deviceTypes/{deviceTypeId}/devices")
+	public ResponseEntity<Void> updateDevice(@PathVariable int deviceTypeId, @PathVariable int homeId, @RequestBody Device device){
+		deviceService.addDevice(homeId, deviceTypeId, device);
+		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	}
+	
+	/**
+	 * Update device
+	 * @param homeId
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.PUT, path = "/{homeId}/deviceTypes/{deviceTypeId}/devices/{deviceId}")
+	public ResponseEntity<Void> updateDevice(@PathVariable int homeId, @PathVariable int deviceId, @PathVariable int deviceTypeId, @RequestBody Device updatedDevice){
+		deviceService.updateDevice(homeId, deviceId, deviceTypeId, updatedDevice);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
 
 	/**
 	 * Get all device types that user have
@@ -55,7 +91,7 @@ public class HomeResource {
 	 * @throws NotSupportedException
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "/{homeId}/deviceTypes/{deviceTypeId}/devices")
-	public ResponseEntity<List<Device>> getAllDevicesGivenHomeAndDeviceType(@PathVariable int homeId, @PathVariable int deviceTypeId) throws NotSupportedException {
+	public ResponseEntity<List<Device>> getAllDevicesGivenHomeAndDeviceType( @PathVariable int deviceTypeId, @PathVariable int homeId) throws NotSupportedException {
 		return new ResponseEntity<List<Device>>(deviceService.getAllGivenHomeAndDeviceType(homeId, deviceTypeId), HttpStatus.OK);
 	}
 	

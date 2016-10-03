@@ -14,6 +14,8 @@ import com.hcmut.smarthome.converter.ScriptConverter;
 import com.hcmut.smarthome.dao.IDeviceDao;
 import com.hcmut.smarthome.dao.IScriptDao;
 import com.hcmut.smarthome.entity.DeviceEntity;
+import com.hcmut.smarthome.entity.DeviceTypeEntity;
+import com.hcmut.smarthome.entity.HomeEntity;
 import com.hcmut.smarthome.entity.ModeEntity;
 import com.hcmut.smarthome.entity.ScriptEntity;
 import com.hcmut.smarthome.entity.ScriptTypeEntity;
@@ -21,6 +23,7 @@ import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.utils.ConstantUtil;
+
 import static com.hcmut.smarthome.utils.ConstantUtil.ALL_GPIO;
 import static com.hcmut.smarthome.utils.ConstantUtil.ALWAYS_AVAILABLE_GPIO;
 
@@ -46,6 +49,30 @@ public class DeviceService implements IDeviceService {
 	@PostConstruct
 	private void init(){
 		mapHomeDevices.put(ConstantUtil.HOME_ID, getAllDevices(ConstantUtil.HOME_ID));
+	}
+	
+	@Override
+	public boolean updateDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice) {
+		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
+		initEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
+		
+		return deviceDao.update(deviceEntity);
+	}
+
+	@Override
+	public boolean addDevice(int homeId, int deviceTypeId, Device device) {
+		DeviceEntity deviceEntity = new DeviceEntity();
+		
+		initEntityBeforeSaveOrUpdate(homeId, deviceTypeId, device, deviceEntity);
+
+		deviceDao.save(deviceEntity);
+		
+		return false;
+	}
+
+	@Override
+	public boolean deleteDevice(int deviceId) {
+		return deviceDao.deleteDevice(deviceId);
 	}
 	
 	@Override
@@ -91,8 +118,8 @@ public class DeviceService implements IDeviceService {
 		ScriptEntity updatedScriptEntity = scriptDao.getById(scriptId);
 		updatedScriptEntity.setContent(updatedScript.getContent());
 		updatedScriptEntity.setName(updatedScript.getName());
-		scriptDao.update(updatedScriptEntity);
-		return false;
+		
+		return scriptDao.update(updatedScriptEntity);
 	}
 
 
@@ -158,6 +185,27 @@ public class DeviceService implements IDeviceService {
 		return false;
 	}
 	
+	private void initEntityBeforeSaveOrUpdate(int homeId, int deviceTypeId, Device updatedDevice,
+			DeviceEntity deviceEntity) {
+		deviceEntity.setCode(updatedDevice.getCode());
+		deviceEntity.setDescription(updatedDevice.getDescription());
+		deviceEntity.setEnabled(updatedDevice.isEnabled());
+		deviceEntity.setGPIOPin(updatedDevice.getGPIO());
+		deviceEntity.setGPIOType(updatedDevice.getGPIOType());
+		deviceEntity.setLocation(updatedDevice.getLocation());
+		deviceEntity.setName(updatedDevice.getName());
+		deviceEntity.setTimeout(updatedDevice.getTimeout());
+		
+		HomeEntity homeEntity = new HomeEntity();
+		homeEntity.setId(homeId);
+		deviceEntity.setHome(homeEntity);
+		
+		DeviceTypeEntity deviceTypeEntity = new DeviceTypeEntity();
+		deviceTypeEntity.setId(deviceTypeId);
+		deviceEntity.setDeviceType(deviceTypeEntity);
+	}
+	
+	
 	/// AVAILABLE FOR TESTING PURPOSE 
 	// TODO: Remove later 
 	public void toggleLight(String deviceName){
@@ -211,6 +259,4 @@ public class DeviceService implements IDeviceService {
 	public void takeAShot(String deviceName) {
 		System.out.println("Take a shot from " + deviceName);
 	}
-
-
 }

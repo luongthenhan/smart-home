@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,11 +33,15 @@ public class HomeEntity implements Serializable{
 	@Column(name="description", nullable = true , length = 512)
 	private String description;
 	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="current_mode_id", nullable = true, unique= true )
+	private ModeEntity currentMode;
+	
 	@ManyToOne
 	@JoinColumn(name = "user_id" , nullable = false)
 	private UserEntity user;
 	
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="home")
+	@OneToMany(fetch=FetchType.EAGER,cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="home")
 	private List<ModeEntity> modes; 
 	
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="home")
@@ -86,6 +91,12 @@ public class HomeEntity implements Serializable{
 	}
 	public void setDevices(List<DeviceEntity> devices) {
 		this.devices = devices;
+	}
+	public ModeEntity getCurrentMode() {
+		return currentMode;
+	}
+	public void setCurrentMode(ModeEntity currentMode) {
+		this.currentMode = currentMode;
 	}
 	
 	

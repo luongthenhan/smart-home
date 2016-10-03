@@ -1,6 +1,7 @@
 package com.hcmut.smarthome.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Home implements Serializable{
 
@@ -13,6 +14,10 @@ public class Home implements Serializable{
 	private String address;
 	
 	private String description;
+	
+	private Mode currentMode;
+	
+	private List<Mode> modes;
 	
 	public Home() {
 		super();
@@ -40,5 +45,17 @@ public class Home implements Serializable{
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public Mode getCurrentMode() {
+		return currentMode;
+	}
+	public void setCurrentMode(Mode currentMode) {
+		this.currentMode = currentMode;
+	}
+	public List<Mode> getModes() {
+		return modes;
+	}
+	public void setModes(List<Mode> modes) {
+		this.modes = modes;
 	}
 }
