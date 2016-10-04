@@ -54,7 +54,7 @@ public class DeviceEntity implements Serializable{
 	@Column(name="gpio_pin", nullable = false)
 	private int GPIOPin;
 	
-	@Column(name="gpio_type", nullable = false , length = 45)
+	@Column(name="gpio_type", nullable = true , length = 45)
 	private String GPIOType;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="device")
