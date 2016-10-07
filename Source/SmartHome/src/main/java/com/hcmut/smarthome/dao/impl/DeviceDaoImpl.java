@@ -18,12 +18,13 @@ public class DeviceDaoImpl extends CommonDaoImpl<DeviceEntity> implements IDevic
 	@Transactional
 	@Override
 	public List<DeviceEntity> getAllGivenHomeAndDeviceType(int homeId , int deviceTypeId){
-		String query = "SELECT * FROM public.device WHERE device.home_id = :homeId AND device.device_type_id = :deviceTypeId ;";
-		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query.toString()).addEntity(DeviceEntity.class);
-		sqlStatement.setParameter("homeId", homeId);
-		sqlStatement.setParameter("deviceTypeId", deviceTypeId);
-		
-		return sqlStatement.list();
+//		String query = "SELECT * FROM public.device WHERE device.home_id = :homeId AND device.device_type_id = :deviceTypeId ;";
+//		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query.toString()).addEntity(DeviceEntity.class);
+//		sqlStatement.setParameter("homeId", homeId);
+//		sqlStatement.setParameter("deviceTypeId", deviceTypeId);
+//		
+//		return sqlStatement.list();
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -47,10 +48,11 @@ public class DeviceDaoImpl extends CommonDaoImpl<DeviceEntity> implements IDevic
 	@Override
 	@Transactional
 	public boolean deleteDevice(int deviceId) {
-		String query = "DELETE FROM device WHERE id = :deviceId ;";
-		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
-		sqlStatement.setParameter("deviceId", deviceId);
-		
-		return sqlStatement.executeUpdate() != 0;
+//		String query = "DELETE FROM device WHERE id = :deviceId ;";
+//		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
+//		sqlStatement.setParameter("deviceId", deviceId);
+//		
+//		return sqlStatement.executeUpdate() != 0;
+		return delete(deviceId);
 	}
 }
