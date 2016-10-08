@@ -5,5 +5,7 @@ import java.util.List;
 import com.hcmut.smarthome.model.Home;
 
 public interface IHomeService {
+	
 	List<Home> getAllHomes(int userId);
+	boolean updateEnabled(int homeId, boolean enabled);
 }

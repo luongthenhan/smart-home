@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import com.hcmut.smarthome.dao.IHomeDao;
@@ -22,6 +24,21 @@ public class HomeDaoImpl extends CommonDaoImpl<HomeEntity> implements IHomeDao{
 		sqlStatement.setParameter("userId", userId);
 		
 		return sqlStatement.list();
+	}
+
+	@Override
+	public boolean updateEnabled(int homeId, boolean enabled) {
+		
+		Session session = getCurrentSession();
+		
+		String hqlUpdateEnabled = "Update HomeEntity h set h.enabled = :enabled where h.id = :homeId";
+		Query hqlUpdateEnabledQuery = session.createQuery(hqlUpdateEnabled);
+		hqlUpdateEnabledQuery.setParameter("enabled", enabled);
+		hqlUpdateEnabledQuery.setParameter("homeId", homeId);
+		
+		int updatedEntities = hqlUpdateEnabledQuery.executeUpdate();
+		
+		return updatedEntities > 0;
 	}
 
 	

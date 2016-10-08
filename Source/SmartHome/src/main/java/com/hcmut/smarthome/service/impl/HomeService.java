@@ -21,4 +21,9 @@ public class HomeService implements IHomeService{
 		return HomeConverter.toListModel(homeDao.getAllHomes(userId));
 	}
 
+	@Override
+	public boolean updateEnabled(int homeId, boolean enabled) {
+		return homeDao.updateEnabled(homeId, enabled);
+	}
+
 }

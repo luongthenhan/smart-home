@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hcmut.smarthome.model.Device;
@@ -22,6 +23,7 @@ import com.hcmut.smarthome.model.DeviceType;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IDeviceTypeService;
+import com.hcmut.smarthome.service.IHomeService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConstantUtil;
 
@@ -29,6 +31,9 @@ import com.hcmut.smarthome.utils.ConstantUtil;
 @RestController
 @RequestMapping("/homes")
 public class HomeResource {
+	
+	@Autowired
+	private IHomeService homeService;
 
 	@Autowired
 	private IDeviceService deviceService;
@@ -38,6 +43,19 @@ public class HomeResource {
 	
 	@Autowired
 	private IDeviceTypeService deviceTypeService;
+	
+	@RequestMapping(method = RequestMethod.PUT, path = "/{homeId}")
+	public ResponseEntity<Void> updateEnabled(@PathVariable int homeId, @RequestParam("enabled") boolean enabled) {
+		
+		boolean updateSuccess = homeService.updateEnabled(homeId, enabled);
+		
+		if(updateSuccess) {
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY);
+		
+	}
 	
 	/**
 	 * Delete device given device id
