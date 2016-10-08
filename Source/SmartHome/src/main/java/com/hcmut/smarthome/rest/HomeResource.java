@@ -117,7 +117,7 @@ public class HomeResource {
 	 * Get all gpio
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, path = "/allGpio")
+	@RequestMapping(method = RequestMethod.GET, path = "/all-gpios")
 	public ResponseEntity<List<Integer>> getAllGpio() {
 		return new ResponseEntity<List<Integer>>(ALL_GPIO, HttpStatus.OK);
 	}
