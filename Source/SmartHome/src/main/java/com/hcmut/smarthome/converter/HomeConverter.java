@@ -13,6 +13,7 @@ public class HomeConverter {
 		home.setName(homeEntity.getName());
 		home.setAddress(homeEntity.getAddress());
 		home.setDescription(homeEntity.getDescription());
+		home.setEnabled(homeEntity.isEnabled());
 		home.setCurrentMode(ModeConverter.toModel(homeEntity.getCurrentMode()));
 		home.setModes(ModeConverter.toListModel(homeEntity.getModes()));
 		

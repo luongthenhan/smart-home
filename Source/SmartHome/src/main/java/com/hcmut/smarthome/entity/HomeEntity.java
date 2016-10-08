@@ -33,6 +33,9 @@ public class HomeEntity implements Serializable{
 	@Column(name="description", nullable = true , length = 512)
 	private String description;
 	
+	@Column (name = "enabled", nullable = false)
+	private boolean enabled;
+	
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="current_mode_id", nullable = true, unique= true )
 	private ModeEntity currentMode;
@@ -97,6 +100,12 @@ public class HomeEntity implements Serializable{
 	}
 	public void setCurrentMode(ModeEntity currentMode) {
 		this.currentMode = currentMode;
+	}
+	public boolean isEnabled() {
+		return enabled;
+	}
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 	
