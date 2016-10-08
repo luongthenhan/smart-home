@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.rest;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.ALL_GPIO;
+
 import java.util.List;
 
 import javax.transaction.NotSupportedException;
@@ -95,6 +97,7 @@ public class HomeResource {
 		return new ResponseEntity<List<Device>>(deviceService.getAllGivenHomeAndDeviceType(homeId, deviceTypeId), HttpStatus.OK);
 	}
 	
+	
 	/**
 	 * Get all devices in home
 	 * @return
@@ -108,6 +111,15 @@ public class HomeResource {
 	@RequestMapping(method = RequestMethod.GET, path="{homeId}/availableGPIOs")
 	public ResponseEntity<List<Integer>> getAllAvailableGPIOs(@PathVariable int homeId) {
 		return new ResponseEntity<List<Integer>>(deviceService.getAllAvailableGpio(homeId),HttpStatus.OK);
+	}
+	
+	/**
+	 * Get all gpio
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.GET, path = "/allGpio")
+	public ResponseEntity<List<Integer>> getAllGpio() {
+		return new ResponseEntity<List<Integer>>(ALL_GPIO, HttpStatus.OK);
 	}
 	
 	/**
@@ -133,5 +145,4 @@ public class HomeResource {
 		return null;
 	}
 
-	
 }
