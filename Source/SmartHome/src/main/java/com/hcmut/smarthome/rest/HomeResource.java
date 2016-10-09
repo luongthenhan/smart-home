@@ -3,6 +3,7 @@ package com.hcmut.smarthome.rest;
 import static com.hcmut.smarthome.utils.ConstantUtil.ALL_GPIO;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.NotSupportedException;
 
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hcmut.smarthome.model.Device;
@@ -44,10 +44,14 @@ public class HomeResource {
 	@Autowired
 	private IDeviceTypeService deviceTypeService;
 	
-	@RequestMapping(method = RequestMethod.PUT, path = "/{homeId}")
-	public ResponseEntity<Void> updateEnabled(@PathVariable int homeId, @RequestParam("enabled") boolean enabled) {
+	@RequestMapping(method = RequestMethod.PATCH, path = "/{homeId}")
+	public ResponseEntity<Void> updateEnabled(@PathVariable int homeId, @RequestBody Map<String, Boolean> updateMap) {
 		
-		boolean updateSuccess = homeService.updateEnabled(homeId, enabled);
+		if(!updateMap.containsKey("enabled")) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
+		
+		boolean updateSuccess = homeService.updateEnabled(homeId, updateMap.get("enabled"));
 		
 		if(updateSuccess) {
 			return new ResponseEntity<Void>(HttpStatus.OK);
