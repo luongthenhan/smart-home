@@ -4,9 +4,12 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.hcmut.smarthome.dao.IHomeDao;
@@ -39,6 +42,16 @@ public class HomeDaoImpl extends CommonDaoImpl<HomeEntity> implements IHomeDao{
 		int updatedEntities = hqlUpdateEnabledQuery.executeUpdate();
 		
 		return updatedEntities > 0;
+	}
+
+	@Override
+	public boolean isEnabled(int homeId) {
+		
+		Criteria crit = getCurrentSession().createCriteria(HomeEntity.class);
+		crit.add(Restrictions.eq("id", homeId));
+		crit.setProjection(Projections.property("enabled"));
+		
+		return (boolean) crit.uniqueResult();
 	}
 
 	

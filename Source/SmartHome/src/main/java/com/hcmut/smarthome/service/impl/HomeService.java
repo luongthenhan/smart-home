@@ -26,4 +26,9 @@ public class HomeService implements IHomeService{
 		return homeDao.updateEnabled(homeId, enabled);
 	}
 
+	@Override
+	public boolean isEnabled(int homeId) {
+		return homeDao.isEnabled(homeId);
+	}
+
 }
