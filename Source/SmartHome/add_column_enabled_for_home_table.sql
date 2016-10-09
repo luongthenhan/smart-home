@@ -1,1 +1,0 @@
-alter table home add column enabled boolean not null default true;
