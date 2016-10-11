@@ -3,7 +3,10 @@ package com.hcmut.smarthome.scenario.model;
 import java.util.List;
 
 public class Scenario {
+	
 	private Integer id;
+	
+	private int homeId;
 	
 	List<IBlock> blocks;
 
@@ -22,4 +25,13 @@ public class Scenario {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
+	public int getHomeId() {
+		return homeId;
+	}
+
+	public void setHomeId(int homeId) {
+		this.homeId = homeId;
+	}
+	
 }

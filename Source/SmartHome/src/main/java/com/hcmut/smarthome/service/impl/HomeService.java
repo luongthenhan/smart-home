@@ -133,4 +133,14 @@ public class HomeService implements IHomeService{
 		return ModeConverter.toListModel(modeDao.getAllModes(homeId));
 	}
 
+	@Override
+	public boolean updateEnabled(int homeId, boolean enabled) {
+		return homeDao.updateEnabled(homeId, enabled);
+	}
+
+	@Override
+	public boolean isEnabled(int homeId) {
+		return homeDao.isEnabled(homeId);
+	}
+
 }

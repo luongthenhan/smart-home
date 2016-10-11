@@ -13,4 +13,8 @@ public interface IHomeDao extends ICommonDao<HomeEntity>{
 	boolean deleteHome(int userId, int homeId);
 
 	boolean updatePartialHome(int homeId, Home home);
+	
+	boolean updateEnabled(int homeId, boolean enabled);
+	
+	boolean isEnabled(int homeId);
 }

@@ -6,7 +6,12 @@ import com.hcmut.smarthome.model.Home;
 import com.hcmut.smarthome.model.Mode;
 
 public interface IHomeService {
+	
 	List<Home> getAllHomes(int userId);
+	
+	boolean updateEnabled(int homeId, boolean enabled);
+	
+	boolean isEnabled(int homeId);
 
 	Home getHome(int userId, int homeId);
 	
