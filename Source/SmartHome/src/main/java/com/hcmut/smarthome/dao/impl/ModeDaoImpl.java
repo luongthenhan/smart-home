@@ -8,7 +8,6 @@ import org.hibernate.SQLQuery;
 import org.springframework.stereotype.Repository;
 
 import com.hcmut.smarthome.dao.IModeDao;
-import com.hcmut.smarthome.entity.HomeEntity;
 import com.hcmut.smarthome.entity.ModeEntity;
 
 @Repository
@@ -29,7 +28,7 @@ public class ModeDaoImpl extends CommonDaoImpl<ModeEntity> implements IModeDao{
 	@Transactional
 	public List<ModeEntity> getAllModes(int homeId) {
 		String query = "SELECT * FROM public.mode WHERE mode.home_id = :homeId ;";
-		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query).addEntity(HomeEntity.class);
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query).addEntity(ModeEntity.class);
 		sqlStatement.setParameter("homeId", homeId);
 		
 		return sqlStatement.list();

@@ -43,7 +43,7 @@ public class DeviceResource {
 	 * @param updatedDevice
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.DELETE, path = "/devices/{deviceId}")
+	@RequestMapping(method = RequestMethod.DELETE, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
 	public ResponseEntity<Void> deleteDevice(@PathVariable int homeId, @PathVariable int deviceId){
 		deviceService.deleteDevice(homeId, deviceId);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -56,11 +56,14 @@ public class DeviceResource {
 	 * @param device
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.POST, path = "/deviceTypes/{deviceTypeId}/devices")
-	public ResponseEntity<Void> updateDevice(@PathVariable int deviceTypeId, @PathVariable int homeId, @RequestBody Device device){
-		if( deviceService.addDevice(homeId, deviceTypeId, device) )
-			return new ResponseEntity<Void>(HttpStatus.CREATED);
-		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+	@RequestMapping(method = RequestMethod.POST, path = "/device-types/{deviceTypeId}/devices")
+	public ResponseEntity<String> addDevice(@PathVariable int deviceTypeId, @PathVariable int homeId, @RequestBody Device device){
+		int addedDeviceId = deviceService.addDevice(homeId, deviceTypeId, device);
+		if( addedDeviceId > 0 ){
+			String URINewAddedObject = String.format("homes/%s/device-types/%s/devices/%s", homeId, deviceTypeId, addedDeviceId);
+			return new ResponseEntity<String>(URINewAddedObject,HttpStatus.CREATED);
+		}
+		else return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 	}
 	
 	/**
@@ -68,9 +71,16 @@ public class DeviceResource {
 	 * @param homeId
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.PUT, path = "/deviceTypes/{deviceTypeId}/devices/{deviceId}")
+	@RequestMapping(method = RequestMethod.PUT, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
 	public ResponseEntity<Void> updateDevice(@PathVariable int homeId, @PathVariable int deviceId, @PathVariable int deviceTypeId, @RequestBody Device updatedDevice){
 		if( deviceService.updateDevice(homeId, deviceId, deviceTypeId, updatedDevice))
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+	}
+	
+	@RequestMapping(method = RequestMethod.PATCH, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
+	public ResponseEntity<Void> updatePartialDevice(@PathVariable int homeId, @PathVariable int deviceId, @PathVariable int deviceTypeId, @RequestBody Device updatedDevice){
+		if( deviceService.updatePartialDevice(homeId, deviceId, deviceTypeId, updatedDevice))
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 	}
@@ -80,7 +90,7 @@ public class DeviceResource {
 	 * @param homeId
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, path = "/deviceTypes")
+	@RequestMapping(method = RequestMethod.GET, path = "/device-types")
 	public ResponseEntity<List<DeviceType>> getAllDevicesTypeUserHave(@PathVariable int homeId){
 		return new ResponseEntity<List<DeviceType>>(deviceTypeService.getAll(ConstantUtil.VALID_USER_ID, homeId), HttpStatus.OK);
 	}
@@ -92,7 +102,7 @@ public class DeviceResource {
 	 * @return
 	 * @throws NotSupportedException
 	 */
-	@RequestMapping(method = RequestMethod.GET, path = "/deviceTypes/{deviceTypeId}/devices")
+	@RequestMapping(method = RequestMethod.GET, path = "/device-types/{deviceTypeId}/devices")
 	public ResponseEntity<List<Device>> getAllDevicesGivenHomeAndDeviceType( @PathVariable int deviceTypeId, @PathVariable int homeId) throws NotSupportedException {
 		return new ResponseEntity<List<Device>>(deviceService.getAllGivenHomeAndDeviceType(homeId, deviceTypeId), HttpStatus.OK);
 	}
@@ -105,11 +115,6 @@ public class DeviceResource {
 	@RequestMapping(method = RequestMethod.GET, path="/devices")
 	public ResponseEntity<List<Device>> getAllDevices(@PathVariable int homeId) throws NotSupportedException {
 		return new ResponseEntity<List<Device>>(deviceService.getAllDevices(homeId),HttpStatus.OK);
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, path="/availableGPIOs")
-	public ResponseEntity<List<Integer>> getAllAvailableGPIOs(@PathVariable int homeId) {
-		return new ResponseEntity<List<Integer>>(deviceService.getAllAvailableGpio(homeId),HttpStatus.OK);
 	}
 	
 	/**

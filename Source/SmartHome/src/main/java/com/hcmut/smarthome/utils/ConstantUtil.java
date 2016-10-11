@@ -67,6 +67,7 @@ public class ConstantUtil {
 			"Device base cannot cast to correct model");
 	public static final Exception DEVICE_CANNOT_PERFORM_THIS_ACTION = new Exception(
 			"Device cannot perform this action");
+	public static final int ADD_UNSUCCESSFULLY = -1;
 
 	// Hard code
 	public static int HOME_ID = 1;

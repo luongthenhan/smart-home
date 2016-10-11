@@ -65,108 +65,14 @@ public class ScriptResource {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Void> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ){
-		deviceService.addScript(script,deviceId, modeId);
-		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	public ResponseEntity<String> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ){
+		int addedScriptId = deviceService.addScript(script,deviceId, modeId);
+		
+		if( addedScriptId > 0 ){
+			String URINewAddedObject = String.format("devices/%s/modes/%s/scripts/%s", deviceId, modeId, addedScriptId);
+			return new ResponseEntity<String>(URINewAddedObject,HttpStatus.CREATED);
+		}
+		
+		return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 	}
-	
-	/*@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}")
-	public ResponseEntity<Void> getDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Void> addNewDevice(@RequestBody Device newDevice)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.PUT, path = "/{deviceId}")
-	public ResponseEntity<Void> updateDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.DELETE, path = "/{deviceId}")
-	public ResponseEntity<Void> removeDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-	*/
-
-	/*
-	@RequestMapping(method = RequestMethod.GET, path = "/status")
-	public ResponseEntity<Void> getStatusAllDevices()
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/scenarios")
-	public ResponseEntity<Void> getAllScenariosOfDevice(
-			@PathVariable int deviceId) throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/scenarios")
-	public ResponseEntity<Void> getPresetScenariosOfDevice(
-			@PathVariable int deviceId,
-			@RequestParam(value = "preset", required = true, defaultValue = "true") boolean isPreset)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/scenarios/{scenarioId}")
-	public ResponseEntity<Void> getScenarioByIdOfDevice(
-			@PathVariable int deviceId, @PathVariable int scenarioId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.POST, path = "/{deviceId}/scenario")
-	public ResponseEntity<Void> addNewScenarioOfDevice(
-			@PathVariable int deviceId, @RequestBody Scenario newScenario)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.PUT, path = "/{deviceId}/scenario/{scenarioId}")
-	public ResponseEntity<Void> updateScenarioOfDevice(
-			@PathVariable int deviceId, @PathVariable int scenarioId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.DELETE, path = "/{deviceId}/scenarios/{scenarioId}")
-	public ResponseEntity<Void> removeScenarioOfDevice(
-			@PathVariable int deviceId, @PathVariable int scenarioId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}*/
-
-	
-
-	/*@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/toggle")
-	public ResponseEntity<Void> toggleDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/turnOn")
-	public ResponseEntity<Void> turnOnDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/turnOff")
-	public ResponseEntity<Void> turnOffDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/capture")
-	public ResponseEntity<Void> capture(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}*/
 }

@@ -1,11 +1,12 @@
 package com.hcmut.smarthome.entity;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,6 +14,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name="mode")
@@ -34,8 +38,9 @@ public class ModeEntity implements Serializable {
 	@JoinColumn(name="home_id")
 	private HomeEntity home;
 	
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="device")
-	List<ScriptEntity> scripts;
+	@OnDelete(action=OnDeleteAction.CASCADE)
+	@OneToMany(fetch= FetchType.LAZY, cascade=CascadeType.ALL, orphanRemoval=true, mappedBy="mode")
+	private Set<ScriptEntity> scripts;
 	
 	public ModeEntity(){
 		super();
@@ -73,13 +78,11 @@ public class ModeEntity implements Serializable {
 		this.home = home;
 	}
 
-	public List<ScriptEntity> getScripts() {
+	public Set<ScriptEntity> getScripts() {
 		return scripts;
 	}
 
-	public void setScripts(List<ScriptEntity> scripts) {
+	public void setScripts(Set<ScriptEntity> scripts) {
 		this.scripts = scripts;
 	}
-	
-	
 }
