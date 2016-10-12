@@ -133,9 +133,10 @@ public class DeviceResource {
 	
 	@RequestMapping(method = RequestMethod.GET, path ="/test2")
 	public ResponseEntity<Void> test2() throws ParseException{
-		String script1 = "[['If',['5','>', '31.0'],[['TurnOnBuzzer','6']]]]";
+		String script1 = "[['If',['5','>=', '31.0'],[['TurnOn','2']]]]";
 		Scenario scenario = scenarioService.JSONToScenario(script1);
 		scenario.setId(2);
+		scenario.setHomeId(ConstantUtil.HOME_ID);
 		scenarioService.runScenario(scenario);
 		return null;
 	}

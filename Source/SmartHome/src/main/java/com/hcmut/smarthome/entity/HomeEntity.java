@@ -48,7 +48,7 @@ public class HomeEntity implements Serializable{
 	private UserEntity user;
 	
 	@OnDelete(action=OnDeleteAction.CASCADE)
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL,orphanRemoval=true, mappedBy="home")
+	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL,orphanRemoval=true, mappedBy="home")
 	private List<ModeEntity> modes; 
 	
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="home")

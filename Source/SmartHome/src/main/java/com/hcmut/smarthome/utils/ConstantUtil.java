@@ -16,8 +16,8 @@ public class ConstantUtil {
 	// ACTION NAME
 
 	// For output device
-	public static final String TURN_ON = "Turn On";
-	public static final String TURN_OFF = "Turn Off";
+	public static final String TURN_ON = "TurnOn";
+	public static final String TURN_OFF = "TurnOff";
 	public static final String TOGGLE = "Toggle";
 
 	// Camera
