@@ -309,7 +309,6 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 	}
 
 	private void turnOnLightBulb(Device deviceBase) throws Exception {
-		System.out.println("AAAAAAA");
 		LightBulb lightBulb = null;
 
 		try {

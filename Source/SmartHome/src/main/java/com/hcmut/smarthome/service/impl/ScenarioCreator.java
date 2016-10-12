@@ -1,30 +1,12 @@
 package com.hcmut.smarthome.service.impl;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.BUZZER;
-import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_FROM_TO;
-import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF;
-import static com.hcmut.smarthome.utils.ConstantUtil.EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.GAS_SENSOR;
-import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_OR_EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_THAN;
-import static com.hcmut.smarthome.utils.ConstantUtil.LESS_OR_EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
-import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT;
-import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
-import static com.hcmut.smarthome.utils.ConstantUtil.MOTION_SENSOR;
-import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF;
-import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF_ELSE;
-import static com.hcmut.smarthome.utils.ConstantUtil.TAKE_PICTURE;
-import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
-import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE;
-import static com.hcmut.smarthome.utils.ConstantUtil.TURN_OFF;
-import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
+import static com.hcmut.smarthome.utils.ConstantUtil.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.function.Supplier;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -47,6 +29,8 @@ import com.hcmut.smarthome.utils.ConstantUtil;
 
 @Service
 public class ScenarioCreator {
+	private final static Logger LOGGER = Logger.getLogger(ScenarioCreator.class);
+	
 	private JSONParser parser = new JSONParser();
 	
 	@Autowired
@@ -115,7 +99,7 @@ public class ScenarioCreator {
 							ConstantUtil.HOME_ID,
 							Integer.valueOf(object.get(1).toString())));
 				} catch (Exception e) {
-					System.out.println("Error: " + e.getMessage());
+					LOGGER.debug("Error: " + e.getMessage());
 				}
 				return null;
 			};
@@ -130,7 +114,7 @@ public class ScenarioCreator {
 							ConstantUtil.HOME_ID,
 							Integer.valueOf(object.get(1).toString())));
 				} catch (Exception e) {
-					System.out.println("Error: " + e.getMessage());
+					LOGGER.debug("Error: " + e.getMessage());
 				}
 				return null;
 			};
@@ -145,7 +129,7 @@ public class ScenarioCreator {
 							ConstantUtil.HOME_ID,
 							Integer.valueOf(object.get(1).toString())));
 				} catch (Exception e) {
-					System.out.println("Error: " + e.getMessage());
+					LOGGER.debug("Error: " + e.getMessage());
 				}
 				return null;
 			};
@@ -161,7 +145,7 @@ public class ScenarioCreator {
 							.getDevice(ConstantUtil.HOME_ID,
 									Integer.valueOf(object.get(1).toString())));
 				} catch (Exception e) {
-					System.out.println(e.getMessage());
+					LOGGER.debug(e.getMessage());
 				}
 				return picture;
 			};
@@ -264,7 +248,7 @@ public class ScenarioCreator {
 				try {
 					result = deviceController.isNight(device);
 				} catch (Exception e) {
-					System.out.println("Error: setupConditions + isNight");
+					LOGGER.debug("Error: setupConditions + isNight");
 				}
 				return result;
 			};
@@ -288,7 +272,7 @@ public class ScenarioCreator {
 				try {
 					result = deviceController.isDanger(device);
 				} catch (Exception e) {
-					System.out.println("Error: setupConditions + isDanger");
+					LOGGER.debug("Error: setupConditions + isDanger");
 				}
 				return result;
 			};
@@ -300,7 +284,7 @@ public class ScenarioCreator {
 				try {
 					result = deviceController.hasHuman(device);
 				} catch (Exception e) {
-					System.out.println("Error: setupConditions + hasHuman");
+					LOGGER.debug("Error: setupConditions + hasHuman");
 				}
 				return result;
 			};
@@ -312,7 +296,7 @@ public class ScenarioCreator {
 				try {
 					result = deviceController.isOn(device);
 				} catch (Exception e) {
-					System.out.println("Error: setupConditions + isOn: light");
+					LOGGER.debug("Error: setupConditions + isOn: light");
 				}
 				return result;
 			};
@@ -324,7 +308,7 @@ public class ScenarioCreator {
 				try {
 					result = deviceController.isOn(device);
 				} catch (Exception e) {
-					System.out.println("Error: setupConditions + isOn: buzzer");
+					LOGGER.debug("Error: setupConditions + isOn: buzzer");
 				}
 				return result;
 			};
@@ -390,7 +374,7 @@ public class ScenarioCreator {
 			break;
 
 		default:
-			System.out.println("Not support operator "
+			LOGGER.debug("Not support operator "
 					+ condition.getLogicOperator());
 			break;
 		}
