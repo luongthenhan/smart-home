@@ -251,14 +251,10 @@ public class ScenarioCreator {
 		IBlock block = null;
 		// TODO : UNcomment here , ensure device not null when pass to
 		// deviceController
-		 int deviceId = Integer.valueOf(object.get(0).toString());
-		 Device device = deviceService.getDevice(ConstantUtil.HOME_ID,
-		 deviceId);
-		 String deviceTypeName = device.getDeviceType().getName();
+		int deviceId = Integer.valueOf(object.get(0).toString());
+		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
+		String deviceTypeName = device.getDeviceType().getName();
 		Supplier<Object> LHSExpression = () -> null;
-
-		//Device device = null;
-		//String deviceTypeName = object.get(0).toString();
 
 		// Check device type
 		// Then set up the method to be checked ( as condition )for each device
@@ -266,7 +262,7 @@ public class ScenarioCreator {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					// result = deviceController.isNight(device);
+					result = deviceController.isNight(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + isNight");
 				}
@@ -290,7 +286,7 @@ public class ScenarioCreator {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					// result = deviceController.isDanger(device);
+					result = deviceController.isDanger(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + isDanger");
 				}
@@ -302,7 +298,7 @@ public class ScenarioCreator {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					// result = deviceController.hasHuman(device);
+					result = deviceController.hasHuman(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + hasHuman");
 				}
@@ -314,7 +310,7 @@ public class ScenarioCreator {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					// result = deviceController.isOn(device);
+					result = deviceController.isOn(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + isOn: light");
 				}
@@ -326,7 +322,7 @@ public class ScenarioCreator {
 			LHSExpression = () -> {
 				Boolean result = null;
 				try {
-					// result = deviceController.isOn(device);
+					result = deviceController.isOn(device);
 				} catch (Exception e) {
 					System.out.println("Error: setupConditions + isOn: buzzer");
 				}
