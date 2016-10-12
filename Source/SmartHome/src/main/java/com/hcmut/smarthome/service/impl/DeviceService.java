@@ -1,10 +1,8 @@
 package com.hcmut.smarthome.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import static com.hcmut.smarthome.utils.ConstantUtil.ADD_UNSUCCESSFULLY;
 
-import javax.annotation.PostConstruct;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.hcmut.smarthome.converter.DeviceConverter;
 import com.hcmut.smarthome.converter.ScriptConverter;
 import com.hcmut.smarthome.dao.IDeviceDao;
+import com.hcmut.smarthome.dao.IHomeDao;
+import com.hcmut.smarthome.dao.IModeDao;
 import com.hcmut.smarthome.dao.IScriptDao;
 import com.hcmut.smarthome.entity.DeviceEntity;
 import com.hcmut.smarthome.entity.DeviceTypeEntity;
@@ -22,20 +22,13 @@ import com.hcmut.smarthome.entity.ScriptTypeEntity;
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.service.IDeviceService;
-import com.hcmut.smarthome.utils.ConstantUtil;
-
-import static com.hcmut.smarthome.utils.ConstantUtil.ALL_GPIO;
-import static com.hcmut.smarthome.utils.ConstantUtil.ALWAYS_AVAILABLE_GPIO;
 
 @Service
 public class DeviceService implements IDeviceService {
-	private boolean isLightOn = true;
-	private boolean isBuzzerBeep = true;
-	private boolean isDayLight = true;
-	
 	// TODO : Update map after add new / update / delete something. Also in this time
-	// call stopOrRemoveScenario
-	private HashMap<Integer,List<Device>> mapHomeDevices = new HashMap<>();
+	// call stopOrRemoveScenario. 
+	// * Handle add new home ?
+	//private HashMap<Integer,List<Device>> mapHomeDevices = new HashMap<>();
 	
 	@Autowired
 	private ScenarioService scenarioService;
@@ -46,57 +39,82 @@ public class DeviceService implements IDeviceService {
 	@Autowired
 	private IScriptDao scriptDao;
 	
-	@PostConstruct
-	private void init(){
-		mapHomeDevices.put(ConstantUtil.HOME_ID, getAllDevices(ConstantUtil.HOME_ID));
+	@Autowired
+	private IHomeDao homeDao;
+
+	@Autowired
+	private IModeDao modeDao;
+	
+//	@PostConstruct
+//	private void init(){
+//		mapHomeDevices.put(HOME_ID, getAllDevices(HOME_ID));
+//	}
+	
+	@Override
+	public int addDevice(int homeId, int deviceTypeId, Device device) {
+		
+		DeviceEntity deviceEntity = new DeviceEntity();
+		initEntityBeforeSaveOrUpdate(homeId, deviceTypeId, device, deviceEntity);
+
+		int deviceId = deviceDao.save(deviceEntity).intValue();
+		if( deviceId > 0 ){
+//			deviceEntity = deviceDao.getById(deviceId);
+//			updateMapHomeDevices(homeId, deviceId, deviceEntity);
+			return deviceId;
+		}
+		return ADD_UNSUCCESSFULLY;
 	}
 	
 	@Override
 	public boolean updateDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice) {
 		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
+	
 		initEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
 		
-		return deviceDao.update(deviceEntity);
-	}
-
-	@Override
-	public boolean addDevice(int homeId, int deviceTypeId, Device device) {
-		DeviceEntity deviceEntity = new DeviceEntity();
-		
-		initEntityBeforeSaveOrUpdate(homeId, deviceTypeId, device, deviceEntity);
-
-		deviceDao.save(deviceEntity);
-		
+		if( deviceDao.update(deviceEntity)){
+			// TODO : When we have already had the function to create home , this case will not happen anymore
+			//updateMapHomeDevices(homeId, deviceId, deviceEntity);
+			return true;
+		}
 		return false;
 	}
-
+	
 	@Override
-	public boolean deleteDevice(int deviceId) {
-		return deviceDao.deleteDevice(deviceId);
+	public boolean deleteDevice(int homeId, int deviceId) {
+		if( deviceDao.delete(deviceId) ){
+			//updateMapHomeDevices(homeId, deviceId, null);
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
 	public List<Device> getAllGivenHomeAndDeviceType(int homeId, int deviceTypeId){
-		List<DeviceEntity> devices = deviceDao.getAllGivenHomeAndDeviceType(homeId, deviceTypeId);
-		return DeviceConverter.toListModel(devices);
+		return DeviceConverter.toListModel(deviceDao.getAllGivenHomeAndDeviceType(homeId, deviceTypeId));
+//		if( !mapHomeDevices.containsKey(homeId) ){
+//			List<DeviceEntity> deviceEntities = deviceDao.getAll(homeId);
+//			mapHomeDevices.put(homeId, DeviceConverter.toListModel(deviceEntities));
+//		}
+//		return mapHomeDevices.get(homeId).stream().filter(d->d.getDeviceType().getId() == deviceTypeId).collect(Collectors.toList()) ;
 	}
 
 	@Override
 	public List<Device> getAllDevices(int homeId) {
-		if( !mapHomeDevices.containsKey(homeId) ){
-			List<DeviceEntity> deviceEntities = deviceDao.getAll(homeId);
-			mapHomeDevices.put(homeId, DeviceConverter.toListModel(deviceEntities));
-		}
-		return mapHomeDevices.get(homeId);
+		return DeviceConverter.toListModel(deviceDao.getAll(homeId));
+//		if( !mapHomeDevices.containsKey(homeId) ){
+//			List<DeviceEntity> deviceEntities = deviceDao.getAll(homeId);
+//			mapHomeDevices.put(homeId, DeviceConverter.toListModel(deviceEntities));
+//		}
+//		return mapHomeDevices.get(homeId);
 	}
 	
 	@Override
 	public Device getDevice(int homeId, int deviceId) {
-		System.out.println("Call get device by id");
-		if( mapHomeDevices.containsKey(homeId) ){
-			return mapHomeDevices.get(homeId).stream().filter(t -> t.getId() == deviceId).findFirst().orElse(null);
-		}
-		return null;
+		return DeviceConverter.toModel(deviceDao.getById(deviceId));
+//		if( mapHomeDevices.containsKey(homeId) ){
+//			return mapHomeDevices.get(homeId).stream().filter(t -> t.getId() == deviceId).findFirst().orElse(null);
+//		}
+//		return null;
 	}
 	
 	@Override
@@ -106,25 +124,51 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	@Override
-	public boolean deleteScript(int scriptId) {
-		scriptDao.deleteScript(scriptId);
-		//scenarioService.stopForeverScenario(scriptId);
-		return true;
+	public boolean deleteScript( int deviceId, int scriptId) {
+		if (scriptDao.deleteScript(scriptId)) {
+			// scenarioService.stopForeverScenario(scriptId);
+			
+//			int homeId = homeDao.getHomeIdGivenDevice(deviceId);
+//			
+//			if( mapHomeDevices.containsKey(homeId) ){
+//				List<Device> devices = mapHomeDevices.get(homeId);
+//				devices.removeIf(d -> d.getScripts().stream().filter(s -> s.getId() == scriptId).findFirst().orElse(null) != null);
+//			}
+			return true;
+		}
+		return false;
 	}
 
 	// TODO: Now update a script involved so many queries -> need to improve performance
 	@Override
 	public boolean updateScript(int scriptId, Script updatedScript) {
 		ScriptEntity updatedScriptEntity = scriptDao.getById(scriptId);
-		updatedScriptEntity.setContent(updatedScript.getContent());
-		updatedScriptEntity.setName(updatedScript.getName());
 		
-		return scriptDao.update(updatedScriptEntity);
+		if( updatedScript.getContent() != null )
+			updatedScriptEntity.setContent(updatedScript.getContent());
+		
+		if( updatedScript.getName() != null )
+			updatedScriptEntity.setName(updatedScript.getName());
+		
+		if( updatedScript.getType() != null && updatedScript.getType().getId() > 0 ){
+			ScriptTypeEntity scriptTypeEntity = new ScriptTypeEntity();
+			scriptTypeEntity.setId(updatedScript.getType().getId());
+			updatedScriptEntity.setScriptType(scriptTypeEntity);
+		}
+		
+		if( scriptDao.update(updatedScriptEntity) ){
+//			if( mapHomeDevices.containsKey(homeId) ){
+//				List<Device> devices = mapHomeDevices.get(homeId);
+//				devices.removeIf(d -> d.getScripts().stream().filter(s -> s.getId() == scriptId).findFirst().get() != null);
+//			}
+			return true;
+		}
+		return false;
 	}
 
 
 	@Override
-	public boolean addScript(Script script, int deviceId , int modeId) {
+	public int addScript(Script script, int deviceId , int modeId) {
 		ScriptEntity scriptEntity = new ScriptEntity();
 		scriptEntity.setName(script.getName());
 		scriptEntity.setContent(script.getContent());
@@ -141,122 +185,76 @@ public class DeviceService implements IDeviceService {
 		device.setId(deviceId);
 		scriptEntity.setDevice(device);
 		
-		scriptDao.save(scriptEntity);
-		return false;
+		int scriptId = scriptDao.save(scriptEntity);
+		return (scriptId > 0 ? scriptId : ADD_UNSUCCESSFULLY);
 	}
 	
 	@Override
-	public List<Integer> getAllAvailableGpio(int homeId) {
-		List<Integer> availableGpio = new ArrayList<Integer>();
-		List<Device> devices = getAllDevices(homeId);
-		
-		for( int i = 0; i < ALL_GPIO.size(); i++ ) {
-			if(isAvailable(ALL_GPIO.get(i).intValue(), devices)) {
-				availableGpio.add(ALL_GPIO.get(i));
-			}
-		}
-		
-		return availableGpio;
-	}
-	
-	private boolean isAvailable(int gpio, List<Device> devices) {
-		
-		if( isAlwaysAvailable(gpio) ) {
+	public boolean updatePartialDevice(int homeId, int deviceId,
+			int deviceTypeId, Device updatedDevice) {
+//		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
+//		
+//		deviceEntity.setEnabled(updatedDevice.isEnabled());
+//		
+//		if( deviceDao.update(deviceEntity)){
+//			updateMapHomeDevices(homeId, deviceId, deviceEntity);
+//			return true;
+//		}
+//		return false;
+		if( deviceDao.updatePartialDevice(deviceId, updatedDevice) )
 			return true;
-		}
-		
-		for(Device device : devices) {
-			if(device.isEnabled() && (device.getGPIO().intValue() == gpio) ) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	private boolean isAlwaysAvailable(int gpio) {
-		
-		for(int i = 0; i < ALWAYS_AVAILABLE_GPIO.size(); i++) {
-			if(gpio == ALWAYS_AVAILABLE_GPIO.get(i).intValue()) {
-				return true;
-			}
-		}
-		
 		return false;
+	}
+
+	@Override
+	public List<Integer> getAllAvailableGpio(int homeId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	private void initEntityBeforeSaveOrUpdate(int homeId, int deviceTypeId, Device updatedDevice,
 			DeviceEntity deviceEntity) {
-		deviceEntity.setCode(updatedDevice.getCode());
-		deviceEntity.setDescription(updatedDevice.getDescription());
-		deviceEntity.setEnabled(updatedDevice.isEnabled());
-		deviceEntity.setGPIOPin(updatedDevice.getGPIO());
-		deviceEntity.setGPIOType(updatedDevice.getGPIOType());
-		deviceEntity.setLocation(updatedDevice.getLocation());
-		deviceEntity.setName(updatedDevice.getName());
-		deviceEntity.setTimeout(updatedDevice.getTimeout());
+		if( updatedDevice.getCode() != null )
+			deviceEntity.setCode(updatedDevice.getCode());
 		
-		HomeEntity homeEntity = new HomeEntity();
-		homeEntity.setId(homeId);
-		deviceEntity.setHome(homeEntity);
+		if( updatedDevice.getDescription() != null )
+			deviceEntity.setDescription(updatedDevice.getDescription());
 		
-		DeviceTypeEntity deviceTypeEntity = new DeviceTypeEntity();
-		deviceTypeEntity.setId(deviceTypeId);
-		deviceEntity.setDeviceType(deviceTypeEntity);
-	}
-	
-	
-	/// AVAILABLE FOR TESTING PURPOSE 
-	// TODO: Remove later 
-	public void toggleLight(String deviceName){
-		if( isLightOn )
-			System.out.println("Turn " + deviceName + " on .....");
-		else System.out.println("Turn " + deviceName + " off .....");
-		isLightOn = !isLightOn;
-	}
-	
-	public boolean isLightOn(String deviceName){
-		System.out.println("Check " + deviceName + " is on...");
-		return isLightOn;
-	}
-	
-	public boolean isBuzzerBeep(String deviceName){
-		System.out.println("Check " + deviceName + " is beep...");
-		return isBuzzerBeep;
-	}
-	
-	public void toggleBuzzer(String deviceName){
-		if( isBuzzerBeep )
-			System.out.println(deviceName + " beep .....");
-		else System.out.println( deviceName + " is silent .....");
-		isBuzzerBeep = !isBuzzerBeep;
+		if( deviceEntity.isEnabled() != updatedDevice.isEnabled() )
+			deviceEntity.setEnabled(updatedDevice.isEnabled());
 		
-	}
-	
-	public boolean isDayLight(String deviceName){
-		System.out.println("Check " + deviceName + " is day light...");
-		return isDayLight;
-	}
-	
-	public float getLightIntensity(String deviceName){
-		System.out.println("Get light intensity from " + deviceName);
-		return 35.5F;
-	}
-	
-	private float temp = 32.5F;
-	public float getTemperature(String deviceName){
-		temp = temp + 1 ;
-		System.out.println("Get temperature from " + deviceName + " :" +temp);
-		
-		return temp;
-	}
-	
-	public float getGasThreshold(String deviceName){
-		System.out.println("Get gas threshold from " + deviceName);
-		return 0.95F;
-	}
+		// TODO: Not implement check valid GPIO yet
+		if( updatedDevice.getGPIO() != null && updatedDevice.getGPIO() > 0 )
+			deviceEntity.setGPIOPin(updatedDevice.getGPIO());
 
-	public void takeAShot(String deviceName) {
-		System.out.println("Take a shot from " + deviceName);
+		if( updatedDevice.getGPIOType() != null )
+			deviceEntity.setGPIOType(updatedDevice.getGPIOType());
+		
+		if( updatedDevice.getLocation() != null )
+			deviceEntity.setLocation(updatedDevice.getLocation());
+		
+		if( updatedDevice.getName() != null )
+			deviceEntity.setName(updatedDevice.getName());
+		
+		if( updatedDevice.getTimeout() != null )
+			deviceEntity.setTimeout(updatedDevice.getTimeout());
+		
+		HomeEntity home = new HomeEntity();
+		home.setId(homeId);
+		
+		DeviceTypeEntity deviceType = new DeviceTypeEntity();
+		deviceType.setId(deviceTypeId);
+		
+		deviceEntity.setHome(home);
+		deviceEntity.setDeviceType(deviceType);
 	}
+	
+//	private void updateMapHomeDevices(int homeId, int deviceId, DeviceEntity device){
+//		if( mapHomeDevices.containsKey(homeId) ){
+//			List<Device> devices = mapHomeDevices.get(homeId);
+//			devices.removeIf(d -> d.getId() == deviceId);
+//			if( device != null )
+//				devices.add(DeviceConverter.toModel(device));
+//		}
+//	}
 }

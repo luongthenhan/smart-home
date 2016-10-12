@@ -1,13 +1,11 @@
 package com.hcmut.smarthome.rest;
 
 import static com.hcmut.smarthome.utils.ConstantUtil.ALL_GPIO;
+import static com.hcmut.smarthome.utils.ConstantUtil.VALID_USER_ID;
 
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.NotSupportedException;
-
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,31 +16,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hcmut.smarthome.model.Device;
-import com.hcmut.smarthome.model.DeviceType;
-import com.hcmut.smarthome.scenario.model.Scenario;
-import com.hcmut.smarthome.service.IDeviceService;
-import com.hcmut.smarthome.service.IDeviceTypeService;
+import com.hcmut.smarthome.model.Home;
+import com.hcmut.smarthome.model.Mode;
 import com.hcmut.smarthome.service.IHomeService;
-import com.hcmut.smarthome.service.IScenarioService;
-import com.hcmut.smarthome.utils.ConstantUtil;
 
-@CrossOrigin
 @RestController
-@RequestMapping("/homes")
+@RequestMapping(path="/homes")
+@CrossOrigin
 public class HomeResource {
-	
+
 	@Autowired
 	private IHomeService homeService;
-
-	@Autowired
-	private IDeviceService deviceService;
 	
-	@Autowired
-	private IScenarioService scenarioService;
+	// TODO : Replace hard-coded USER ID when token is implemented
 	
-	@Autowired
-	private IDeviceTypeService deviceTypeService;
+	@RequestMapping(method = RequestMethod.GET, path = "/{homeId}")
+	public ResponseEntity<Home> getHome(@PathVariable int homeId){
+		Home home = homeService.getHome(VALID_USER_ID, homeId);
+		if( home != null )
+			return new ResponseEntity<Home>( home, HttpStatus.OK);
+		else return new ResponseEntity<Home>(HttpStatus.NOT_FOUND);
+	}
 	
 	@RequestMapping(method = RequestMethod.PATCH, path = "/{homeId}")
 	public ResponseEntity<Void> updateEnabled(@PathVariable int homeId, @RequestBody Map<String, Boolean> updateMap) {
@@ -61,78 +55,62 @@ public class HomeResource {
 		
 	}
 	
-	/**
-	 * Delete device given device id
-	 * @param deviceId
-	 * @param updatedDevice
-	 * @return
-	 */
-	@RequestMapping(method = RequestMethod.DELETE, path = "/{homeId}/devices/{deviceId}")
-	public ResponseEntity<Void> deleteDevice(@PathVariable int deviceId){
-		deviceService.deleteDevice(deviceId);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	@RequestMapping(method = RequestMethod.DELETE, path = "/{homeId}")
+	public ResponseEntity<Void> deleteHome(@PathVariable int homeId){
+		if( homeService.deleteHome(VALID_USER_ID, homeId) )
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 	}
 	
-	/**
-	 * Add new device given home and device type
-	 * @param deviceTypeId
-	 * @param homeId
-	 * @param device
-	 * @return
-	 */
-	@RequestMapping(method = RequestMethod.POST, path = "/{homeId}/deviceTypes/{deviceTypeId}/devices")
-	public ResponseEntity<Void> updateDevice(@PathVariable int deviceTypeId, @PathVariable int homeId, @RequestBody Device device){
-		deviceService.addDevice(homeId, deviceTypeId, device);
-		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	@RequestMapping(method = RequestMethod.PUT, path = "/{homeId}")
+	public ResponseEntity<Void> updateHome(@PathVariable int homeId, @RequestBody Home home){
+		if( homeService.updateHome(VALID_USER_ID, homeId, home) )
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 	}
 	
-	/**
-	 * Update device
-	 * @param homeId
-	 * @return
-	 */
-	@RequestMapping(method = RequestMethod.PUT, path = "/{homeId}/deviceTypes/{deviceTypeId}/devices/{deviceId}")
-	public ResponseEntity<Void> updateDevice(@PathVariable int homeId, @PathVariable int deviceId, @PathVariable int deviceTypeId, @RequestBody Device updatedDevice){
-		deviceService.updateDevice(homeId, deviceId, deviceTypeId, updatedDevice);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-	}
-
-	/**
-	 * Get all device types that user have
-	 * @param homeId
-	 * @return
-	 */
-	@RequestMapping(method = RequestMethod.GET, path = "/{homeId}/deviceTypes")
-	public ResponseEntity<List<DeviceType>> getAllDevicesTypeUserHave(@PathVariable int homeId){
-		return new ResponseEntity<List<DeviceType>>(deviceTypeService.getAll(ConstantUtil.VALID_USER_ID, homeId), HttpStatus.OK);
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<String> addHome( @RequestBody Home home){
+		int addedHomeId = homeService.addHome( VALID_USER_ID, home);
+		if( addedHomeId > 0 ){
+			String URINewAddedObject = String.format("homes/%s", addedHomeId);
+			return new ResponseEntity<String>(URINewAddedObject, HttpStatus.CREATED);
+		}
+		else return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 	}
 	
-	/**
-	 * Get all devices given home and device type
-	 * @param homeId
-	 * @param deviceTypeId
-	 * @return
-	 * @throws NotSupportedException
-	 */
-	@RequestMapping(method = RequestMethod.GET, path = "/{homeId}/deviceTypes/{deviceTypeId}/devices")
-	public ResponseEntity<List<Device>> getAllDevicesGivenHomeAndDeviceType( @PathVariable int deviceTypeId, @PathVariable int homeId) throws NotSupportedException {
-		return new ResponseEntity<List<Device>>(deviceService.getAllGivenHomeAndDeviceType(homeId, deviceTypeId), HttpStatus.OK);
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<List<Home>> getHomes(){
+		return new ResponseEntity<List<Home>>(homeService.getAllHomes(VALID_USER_ID),HttpStatus.OK);
 	}
 	
-	
-	/**
-	 * Get all devices in home
-	 * @return
-	 * @throws NotSupportedException
-	 */
-	@RequestMapping(method = RequestMethod.GET, path="/devices")
-	public ResponseEntity<List<Device>> getAllDevices() throws NotSupportedException {
-		return new ResponseEntity<List<Device>>(deviceService.getAllDevices(1),HttpStatus.OK);
+	@RequestMapping(method = RequestMethod.DELETE, path = "/{homeId}/modes/{modeId}")
+	public ResponseEntity<Void> deleteMode(@PathVariable int homeId, @PathVariable int modeId){
+		if( homeService.deleteMode(homeId, modeId) )
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path="{homeId}/availableGPIOs")
-	public ResponseEntity<List<Integer>> getAllAvailableGPIOs(@PathVariable int homeId) {
-		return new ResponseEntity<List<Integer>>(deviceService.getAllAvailableGpio(homeId),HttpStatus.OK);
+	@RequestMapping(method = RequestMethod.PUT, path = "/{homeId}/modes/{modeId}")
+	public ResponseEntity<Void> updateMode(@PathVariable int homeId, @PathVariable int modeId, @RequestBody Mode mode){
+		if( homeService.updateMode( homeId, modeId, mode) )
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/{homeId}/modes")
+	public ResponseEntity<String> addMode( @PathVariable int homeId, @RequestBody Mode mode){
+		int addedModeId = homeService.addMode( homeId, mode);
+		if( addedModeId > 0 ){
+			String URINewAddedObject = String.format("homes/%s/modes/%s", homeId, addedModeId);
+			return new ResponseEntity<String>(URINewAddedObject , HttpStatus.CREATED);
+		}
+		else return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path= "/{homeId}/modes")
+	public ResponseEntity<List<Mode>> getModes(@PathVariable int homeId){
+		return new ResponseEntity<List<Mode>>(homeService.getAllModes(homeId),HttpStatus.OK);
 	}
 	
 	/**
@@ -143,30 +121,6 @@ public class HomeResource {
 	public ResponseEntity<List<Integer>> getAllGpio() {
 		return new ResponseEntity<List<Integer>>(ALL_GPIO, HttpStatus.OK);
 	}
-	
-	/**
-	 * For testing purpose
-	 * @return
-	 * @throws ParseException
-	 */
-	@RequestMapping(method = RequestMethod.GET, path ="/test1")
-	public ResponseEntity<Void> test() throws ParseException{
-		String script3 = "[['If',['4','=', 'true'],[['TurnOnLight','2']]]]";
-		Scenario scenario = scenarioService.JSONToScenario(script3);
-		scenario.setId(1);
-		scenario.setHomeId(1);
-		scenarioService.runScenario(scenario);
-		return null;
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, path ="/test2")
-	public ResponseEntity<Void> test2() throws ParseException{
-		String script1 = "[['If',['5','>', '31.0'],[['TurnOnBuzzer','6']]]]";
-		Scenario scenario = scenarioService.JSONToScenario(script1);
-		scenario.setId(2);
-		scenario.setHomeId(1);
-		scenarioService.runScenario(scenario);
-		return null;
-	}
+
 
 }

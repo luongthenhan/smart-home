@@ -16,8 +16,8 @@ public class ConstantUtil {
 	// ACTION NAME
 
 	// For output device
-	public static final String TURN_ON = "Turn On";
-	public static final String TURN_OFF = "Turn Off";
+	public static final String TURN_ON = "TurnOn";
+	public static final String TURN_OFF = "TurnOff";
 	public static final String TOGGLE = "Toggle";
 
 	// Camera
@@ -67,10 +67,12 @@ public class ConstantUtil {
 			"Device base cannot cast to correct model");
 	public static final Exception DEVICE_CANNOT_PERFORM_THIS_ACTION = new Exception(
 			"Device cannot perform this action");
+	public static final int ADD_UNSUCCESSFULLY = -1;
 
 	// Hard code
 	public static int HOME_ID = 1;
 	public static int VALID_USER_ID = 2;
+	public static final int TIMEOUT_CHECK_CONDITION = 2000;
 
 	// List gpio
 	public static List<Integer> ALL_GPIO = Arrays.asList(3, 5, 7, 8, 10, 11,

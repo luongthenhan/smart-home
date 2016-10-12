@@ -14,9 +14,9 @@ public interface IDeviceService {
 	
 	List<Script> getScripts(int modeId, int deviceId);
 	
-	boolean addScript(Script script, int deviceId , int modeId);
+	int addScript(Script script, int deviceId , int modeId);
 	
-	boolean deleteScript(int scriptId);
+	boolean deleteScript( int deviceId, int scriptId);
 	
 	boolean updateScript(int scriptId, Script updatedScript);
 	
@@ -24,7 +24,9 @@ public interface IDeviceService {
 
 	boolean updateDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice);
 	
-	boolean addDevice(int homeId, int deviceTypeId, Device device);
+	int addDevice(int homeId, int deviceTypeId, Device device);
 	
-	boolean deleteDevice(int deviceId);
+	boolean deleteDevice(int homeId, int deviceId);
+
+	boolean updatePartialDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice);
 }

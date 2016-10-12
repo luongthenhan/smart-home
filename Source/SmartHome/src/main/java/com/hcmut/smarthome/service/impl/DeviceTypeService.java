@@ -12,7 +12,7 @@ import com.hcmut.smarthome.model.DeviceType;
 import com.hcmut.smarthome.service.IDeviceTypeService;
 
 @Service
-public class DeviceTypeServiceImpl implements IDeviceTypeService{
+public class DeviceTypeService implements IDeviceTypeService{
 
 	@Autowired
 	IDeviceTypeDao deviceTypeDao;

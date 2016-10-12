@@ -30,8 +30,8 @@ public class CommonDaoImpl<K extends Object> implements ICommonDao<K> {
 					.getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-	public void merge(K entity) throws Exception {
-		sessionFactory.getCurrentSession().merge(entity);
+	public K merge(K entity) throws Exception {
+		return (K) sessionFactory.getCurrentSession().merge(entity);
 	}
 
 	public void persist(K entity) throws Exception {
@@ -44,13 +44,12 @@ public class CommonDaoImpl<K extends Object> implements ICommonDao<K> {
 	}
 
 	@Override
-	public Long save(K item) {
+	public Integer save(K item) {
 		try {
-			persist(item);
-			return (Long) this.sessionFactory.getCurrentSession().save(item);
+			return (Integer) this.sessionFactory.getCurrentSession().save(item);
 		} catch (Exception ex) {
 			LOGGER.error(ex.getMessage());
-			return -1L;
+			return -1;
 		}
 	}
 
@@ -87,6 +86,7 @@ public class CommonDaoImpl<K extends Object> implements ICommonDao<K> {
 			merge(entity);
 			//getCurrentSession().saveOrUpdate(entity);
 		} catch (Exception e) {
+			return false;
 		}
 
 		return true;
