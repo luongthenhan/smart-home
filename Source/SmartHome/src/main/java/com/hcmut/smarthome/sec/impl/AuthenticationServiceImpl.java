@@ -25,6 +25,8 @@ import com.hcmut.smarthome.sec.TokenInfo;
  */
 public class AuthenticationServiceImpl implements IAuthenticationService {
 
+	private static final int USER_CANNOT_BE_FOUND = -1;
+
 	@Autowired
 	private ApplicationContext applicationContext;
 
@@ -127,5 +129,16 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public int getCurrentUserId() {
+		
+		CustomUserDetails currentUser = (CustomUserDetails) currentUser();
+		if(currentUser == null) {
+			return USER_CANNOT_BE_FOUND;
+		}
+		
+		return currentUser.getUserEntity().getId();
 	}
 }

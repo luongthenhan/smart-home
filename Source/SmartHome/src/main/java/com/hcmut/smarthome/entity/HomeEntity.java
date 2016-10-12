@@ -15,6 +15,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 @Entity
 @Table(name = "home")
 public class HomeEntity implements Serializable{
@@ -36,18 +39,19 @@ public class HomeEntity implements Serializable{
 	@Column (name = "enabled", nullable = false)
 	private boolean enabled;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="current_mode_id", nullable = true, unique= true )
+	@ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.REMOVE)
+	@JoinColumn(name="current_mode_id", nullable = true)
 	private ModeEntity currentMode;
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id" , nullable = false)
 	private UserEntity user;
 	
-	@OneToMany(fetch=FetchType.EAGER,cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="home")
+	@OnDelete(action=OnDeleteAction.CASCADE)
+	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL,orphanRemoval=true, mappedBy="home")
 	private List<ModeEntity> modes; 
 	
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="home")
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="home")
 	private List<DeviceEntity> devices;
 	
 	public HomeEntity() {

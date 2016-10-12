@@ -6,14 +6,14 @@ import java.util.List;
 import org.hibernate.Session;
 
 public interface ICommonDao<T extends Object> {
-
+	T merge(T entity) throws Exception;
 	/**
 	 * function for saving object into database
 	 * 
 	 * @param t
 	 * @return id of object after be created
 	 */
-	Long save(T t);
+	Integer save(T t);
 
 	/**
 	 * function for getting object from database base on object' id

@@ -34,5 +34,7 @@ public interface IAuthenticationService {
 	UserDetails currentUser();
 	
 	boolean isAccessable(int selectedHomeId);
+	
+	int getCurrentUserId();
 }
 

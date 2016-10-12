@@ -2,6 +2,9 @@ package com.hcmut.smarthome.rest;
 
 import java.util.List;
 
+import javax.transaction.NotSupportedException;
+
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,161 +15,131 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hcmut.smarthome.model.Script;
+import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.model.DeviceType;
+import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IDeviceService;
+import com.hcmut.smarthome.service.IDeviceTypeService;
+import com.hcmut.smarthome.service.IScenarioService;
+import com.hcmut.smarthome.utils.ConstantUtil;
 
-@RestController
-@RequestMapping("devices/{deviceId}/modes/{modeId}/scripts")
 @CrossOrigin
+@RestController
+@RequestMapping("/homes/{homeId}")
 public class DeviceResource {
 
 	@Autowired
 	private IDeviceService deviceService;
 	
+	@Autowired
+	private IScenarioService scenarioService;
+	
+	@Autowired
+	private IDeviceTypeService deviceTypeService;
+	
 	/**
-	 * Delete one script given scriptId
-	 * @param scriptId
+	 * Delete device given device id
+	 * @param deviceId
+	 * @param updatedDevice
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.DELETE, path="/{scriptId}")
-	public ResponseEntity<Void> deleteScript(@PathVariable int scriptId){
-		deviceService.deleteScript(scriptId);
+	@RequestMapping(method = RequestMethod.DELETE, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
+	public ResponseEntity<Void> deleteDevice(@PathVariable int homeId, @PathVariable int deviceId){
+		deviceService.deleteDevice(homeId, deviceId);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
 	/**
-	 * Get all scripts given mode and device
-	 * @param deviceId
-	 * @param modeId
+	 * Add new device given home and device type
+	 * @param deviceTypeId
+	 * @param homeId
+	 * @param device
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<Script>> getScripts(@PathVariable int deviceId,@PathVariable int modeId){
-		return new ResponseEntity<List<Script>>(deviceService.getScripts( modeId, deviceId),HttpStatus.OK);
+	@RequestMapping(method = RequestMethod.POST, path = "/device-types/{deviceTypeId}/devices")
+	public ResponseEntity<String> addDevice(@PathVariable int deviceTypeId, @PathVariable int homeId, @RequestBody Device device){
+		int addedDeviceId = deviceService.addDevice(homeId, deviceTypeId, device);
+		if( addedDeviceId > 0 ){
+			String URINewAddedObject = String.format("homes/%s/device-types/%s/devices/%s", homeId, deviceTypeId, addedDeviceId);
+			return new ResponseEntity<String>(URINewAddedObject,HttpStatus.CREATED);
+		}
+		else return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 	}
 	
 	/**
-	 * Update one script
-	 * @param scriptId
-	 * @param script
+	 * Update device
+	 * @param homeId
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.PUT, path="/{scriptId}")
-	public ResponseEntity<Void> updateScript(@PathVariable int scriptId, @RequestBody Script script ){
-		deviceService.updateScript(scriptId,script);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	@RequestMapping(method = RequestMethod.PUT, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
+	public ResponseEntity<Void> updateDevice(@PathVariable int homeId, @PathVariable int deviceId, @PathVariable int deviceTypeId, @RequestBody Device updatedDevice){
+		if( deviceService.updateDevice(homeId, deviceId, deviceTypeId, updatedDevice))
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+	}
+	
+	@RequestMapping(method = RequestMethod.PATCH, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
+	public ResponseEntity<Void> updatePartialDevice(@PathVariable int homeId, @PathVariable int deviceId, @PathVariable int deviceTypeId, @RequestBody Device updatedDevice){
+		if( deviceService.updatePartialDevice(homeId, deviceId, deviceTypeId, updatedDevice))
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Get all device types that user have
+	 * @param homeId
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.GET, path = "/device-types")
+	public ResponseEntity<List<DeviceType>> getAllDevicesTypeUserHave(@PathVariable int homeId){
+		return new ResponseEntity<List<DeviceType>>(deviceTypeService.getAll(ConstantUtil.VALID_USER_ID, homeId), HttpStatus.OK);
 	}
 	
 	/**
-	 * Add new script given mode and device
-	 * @param deviceId
-	 * @param modeId
-	 * @param script
+	 * Get all devices given home and device type
+	 * @param homeId
+	 * @param deviceTypeId
 	 * @return
+	 * @throws NotSupportedException
 	 */
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Void> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ){
-		deviceService.addScript(script,deviceId, modeId);
-		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	@RequestMapping(method = RequestMethod.GET, path = "/device-types/{deviceTypeId}/devices")
+	public ResponseEntity<List<Device>> getAllDevicesGivenHomeAndDeviceType( @PathVariable int deviceTypeId, @PathVariable int homeId) throws NotSupportedException {
+		return new ResponseEntity<List<Device>>(deviceService.getAllGivenHomeAndDeviceType(homeId, deviceTypeId), HttpStatus.OK);
 	}
 	
-	/*@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}")
-	public ResponseEntity<Void> getDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
+	/**
+	 * Get all devices in home
+	 * @return
+	 * @throws NotSupportedException
+	 */
+	@RequestMapping(method = RequestMethod.GET, path="/devices")
+	public ResponseEntity<List<Device>> getAllDevices(@PathVariable int homeId) throws NotSupportedException {
+		return new ResponseEntity<List<Device>>(deviceService.getAllDevices(homeId),HttpStatus.OK);
 	}
-
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Void> addNewDevice(@RequestBody Device newDevice)
-			throws NotSupportedException {
-		throw new NotSupportedException();
+	
+	/**
+	 * For testing purpose
+	 * @return
+	 * @throws ParseException
+	 */
+	@RequestMapping(method = RequestMethod.GET, path ="/test1")
+	public ResponseEntity<Void> test() throws ParseException{
+		String script3 = "[['If',['4','=', 'true'],[['TurnOnLight','2']]]]";
+		Scenario scenario = scenarioService.JSONToScenario(script3);
+		scenario.setId(1);
+		scenarioService.runScenario(scenario);
+		return null;
 	}
-
-	@RequestMapping(method = RequestMethod.PUT, path = "/{deviceId}")
-	public ResponseEntity<Void> updateDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
+	
+	@RequestMapping(method = RequestMethod.GET, path ="/test2")
+	public ResponseEntity<Void> test2() throws ParseException{
+		String script1 = "[['If',['5','>=', '31.0'],[['TurnOn','2']]]]";
+		Scenario scenario = scenarioService.JSONToScenario(script1);
+		scenario.setId(2);
+		scenario.setHomeId(ConstantUtil.HOME_ID);
+		scenarioService.runScenario(scenario);
+		return null;
 	}
-
-	@RequestMapping(method = RequestMethod.DELETE, path = "/{deviceId}")
-	public ResponseEntity<Void> removeDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-	*/
-
-	/*
-	@RequestMapping(method = RequestMethod.GET, path = "/status")
-	public ResponseEntity<Void> getStatusAllDevices()
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/scenarios")
-	public ResponseEntity<Void> getAllScenariosOfDevice(
-			@PathVariable int deviceId) throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/scenarios")
-	public ResponseEntity<Void> getPresetScenariosOfDevice(
-			@PathVariable int deviceId,
-			@RequestParam(value = "preset", required = true, defaultValue = "true") boolean isPreset)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/scenarios/{scenarioId}")
-	public ResponseEntity<Void> getScenarioByIdOfDevice(
-			@PathVariable int deviceId, @PathVariable int scenarioId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.POST, path = "/{deviceId}/scenario")
-	public ResponseEntity<Void> addNewScenarioOfDevice(
-			@PathVariable int deviceId, @RequestBody Scenario newScenario)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.PUT, path = "/{deviceId}/scenario/{scenarioId}")
-	public ResponseEntity<Void> updateScenarioOfDevice(
-			@PathVariable int deviceId, @PathVariable int scenarioId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.DELETE, path = "/{deviceId}/scenarios/{scenarioId}")
-	public ResponseEntity<Void> removeScenarioOfDevice(
-			@PathVariable int deviceId, @PathVariable int scenarioId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}*/
 
 	
-
-	/*@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/toggle")
-	public ResponseEntity<Void> toggleDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/turnOn")
-	public ResponseEntity<Void> turnOnDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/turnOff")
-	public ResponseEntity<Void> turnOffDeviceById(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/{deviceId}/capture")
-	public ResponseEntity<Void> capture(@PathVariable int deviceId)
-			throws NotSupportedException {
-		throw new NotSupportedException();
-	}*/
 }

@@ -7,5 +7,5 @@ import com.hcmut.smarthome.entity.ScriptEntity;
 public interface IScriptDao extends ICommonDao<ScriptEntity>{
 	List<ScriptEntity> getAllScripts(int modeId, int deviceId);
 	void updateScript(int scriptId, ScriptEntity updatedScript);
-	void deleteScript(int scriptId);
+	boolean deleteScript(int scriptId);
 }
