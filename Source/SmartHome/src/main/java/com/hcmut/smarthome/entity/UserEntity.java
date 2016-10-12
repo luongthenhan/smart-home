@@ -85,4 +85,45 @@ public class UserEntity implements Serializable{
 	public void setHomes(List<HomeEntity> homes) {
 		this.homes = homes;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		result = prime * result
+				+ ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((usrName == null) ? 0 : usrName.hashCode());
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		
+		if (this == obj)
+			return true;
+		
+		if (obj == null)
+			return false;
+		
+		if (getClass() != obj.getClass())
+			return false;
+		
+		UserEntity other = (UserEntity) obj;
+		if (id != other.id)
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (usrName == null) {
+			if (other.usrName != null)
+				return false;
+		} else if (!usrName.equals(other.usrName))
+			return false;
+		return true;
+	}
+	
+	
 }
