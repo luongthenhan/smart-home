@@ -1,7 +1,18 @@
-app.directive("deviceScriptCustom", function() {
+app.directive("deviceScriptCustom", ['MainService', function(MainService) {
     return {
         restrict: "E",
-        scope: {},
-        templateUrl: "app/shared/device-script-custom/deviceScriptCustomView.html"
+        scope: {
+            script: "=",
+            deviceId: "="
+        },
+        templateUrl: "app/shared/device-script-custom/deviceScriptCustomView.html",
+        controllerAs: "deviceScriptCtrl",
+        controller: function($scope) {
+            var self = this;
+
+            self.init = function() {
+
+            }
+        }
     }
-})
+}])
