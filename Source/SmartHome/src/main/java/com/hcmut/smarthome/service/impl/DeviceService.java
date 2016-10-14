@@ -65,18 +65,10 @@ public class DeviceService implements IDeviceService {
 		return ADD_UNSUCCESSFULLY;
 	}
 	
+	// TODO: Now PUT use the implementation of PATCH
 	@Override
 	public boolean updateDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice) {
-		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
-	
-		initEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
-		
-		if( deviceDao.update(deviceEntity)){
-			// TODO : When we have already had the function to create home , this case will not happen anymore
-			//updateMapHomeDevices(homeId, deviceId, deviceEntity);
-			return true;
-		}
-		return false;
+		return updatePartialDevice(homeId, deviceId, deviceTypeId, updatedDevice);
 	}
 	
 	@Override
@@ -142,6 +134,12 @@ public class DeviceService implements IDeviceService {
 	// TODO: Now update a script involved so many queries -> need to improve performance
 	@Override
 	public boolean updateScript(int scriptId, Script updatedScript) {
+		return updatePartialScript(scriptId, updatedScript);
+	}
+
+
+	@Override
+	public boolean updatePartialScript(int scriptId, Script updatedScript) {
 		ScriptEntity updatedScriptEntity = scriptDao.getById(scriptId);
 		
 		if( updatedScript.getContent() != null )
@@ -165,7 +163,6 @@ public class DeviceService implements IDeviceService {
 		}
 		return false;
 	}
-
 
 	@Override
 	public int addScript(Script script, int deviceId , int modeId) {
@@ -192,17 +189,15 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public boolean updatePartialDevice(int homeId, int deviceId,
 			int deviceTypeId, Device updatedDevice) {
-//		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
-//		
-//		deviceEntity.setEnabled(updatedDevice.isEnabled());
-//		
-//		if( deviceDao.update(deviceEntity)){
-//			updateMapHomeDevices(homeId, deviceId, deviceEntity);
-//			return true;
-//		}
-//		return false;
-		if( deviceDao.updatePartialDevice(deviceId, updatedDevice) )
+		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
+		
+		initEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
+		
+		if( deviceDao.update(deviceEntity)){
+			// TODO : When we have already had the function to create home , this case will not happen anymore
+			//updateMapHomeDevices(homeId, deviceId, deviceEntity);
 			return true;
+		}
 		return false;
 	}
 
@@ -248,6 +243,7 @@ public class DeviceService implements IDeviceService {
 		deviceEntity.setHome(home);
 		deviceEntity.setDeviceType(deviceType);
 	}
+
 	
 //	private void updateMapHomeDevices(int homeId, int deviceId, DeviceEntity device){
 //		if( mapHomeDevices.containsKey(homeId) ){

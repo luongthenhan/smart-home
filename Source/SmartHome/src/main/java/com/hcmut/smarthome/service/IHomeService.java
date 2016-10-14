@@ -18,6 +18,8 @@ public interface IHomeService {
 	int addHome(int userId, Home home);
 
 	boolean updateHome(int userId, int homeId, Home home);
+	
+	boolean updatePartialHome(int userId, int homeId, Home home);
 
 	boolean deleteHome(int userId, int homeId);
 
@@ -28,5 +30,6 @@ public interface IHomeService {
 	boolean deleteMode(int homeId, int modeId);
 
 	List<Mode> getAllModes(int homeId);
+
 }
 	

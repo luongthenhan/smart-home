@@ -4,7 +4,6 @@ import static com.hcmut.smarthome.utils.ConstantUtil.ALL_GPIO;
 import static com.hcmut.smarthome.utils.ConstantUtil.VALID_USER_ID;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,26 +37,16 @@ public class HomeResource {
 		else return new ResponseEntity<Home>(HttpStatus.NOT_FOUND);
 	}
 	
-	@RequestMapping(method = RequestMethod.PATCH, path = "/{homeId}")
-	public ResponseEntity<Void> updateEnabled(@PathVariable int homeId, @RequestBody Map<String, Boolean> updateMap) {
-		
-		if(!updateMap.containsKey("enabled")) {
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
-		}
-		
-		boolean updateSuccess = homeService.updateEnabled(homeId, updateMap.get("enabled"));
-		
-		if(updateSuccess) {
-			return new ResponseEntity<Void>(HttpStatus.OK);
-		}
-		
-		return new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY);
-		
-	}
-	
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{homeId}")
 	public ResponseEntity<Void> deleteHome(@PathVariable int homeId){
 		if( homeService.deleteHome(VALID_USER_ID, homeId) )
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+	}
+	
+	@RequestMapping(method = RequestMethod.PATCH, path = "/{homeId}")
+	public ResponseEntity<Void> updatePartialHome(@PathVariable int homeId, @RequestBody Home home){
+		if( homeService.updatePartialHome(VALID_USER_ID, homeId, home) )
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		else return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 	}
