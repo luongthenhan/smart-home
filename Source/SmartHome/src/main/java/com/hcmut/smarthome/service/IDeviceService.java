@@ -20,6 +20,8 @@ public interface IDeviceService {
 	
 	boolean updateScript(int scriptId, Script updatedScript);
 	
+	boolean updatePartialScript(int scriptId, Script updatedScript);
+	
 	List<Integer> getAllAvailableGpio(int homeId);
 
 	boolean updateDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice);

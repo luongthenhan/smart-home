@@ -33,9 +33,8 @@ public class ScriptBuilder {
 	}
 	
 	public ScriptBuilder then(){
-		builder.append(",[");
-		stack.push(0);
-		return this;
+		builder.append(",");
+		return begin();
 	}
 	
 	public ScriptBuilder action(String actionName, String deviceId){

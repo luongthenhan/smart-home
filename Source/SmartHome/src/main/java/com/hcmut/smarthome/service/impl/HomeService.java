@@ -70,6 +70,11 @@ public class HomeService implements IHomeService{
 	
 	@Override
 	public boolean updateHome(int userId, int homeId, Home home){
+		return updatePartialHome(userId, homeId, home);
+	}
+
+	@Override
+	public boolean updatePartialHome(int userId, int homeId, Home home) {
 		HomeEntity homeEntity = homeDao.getById(homeId);
 		if( home.getAddress() != null )
 			homeEntity.setAddress(home.getAddress());
@@ -91,7 +96,7 @@ public class HomeService implements IHomeService{
 		
 		return homeDao.update(homeEntity);
 	}
-
+	
 	@Override
 	public boolean deleteHome(int userId, int homeId){
 		return homeDao.deleteHome(userId, homeId);
