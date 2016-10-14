@@ -34,9 +34,7 @@
                     </button>
                 </div>
                 <div ng-show="devicePanelCtrl.isShowDetails == false">
-                    <device-script-when-then></device-script-when-then>
-                    <device-script-from-to></device-script-from-to>
-                    <device-script-custom></device-script-custom>
+                    <device-script device-id="device.id" script="script" ng-repeat="script in device.scripts"></device-script>
                     <div class="row">
                         <button class="add-script-button pull-right detail-button" ng-click="devicePanelCtrl.toggleShowDetails()">
                             Details...
@@ -48,14 +46,9 @@
                     <div class="row mode-row">
                         Default
                     </div>
-                    <device-script-when-then></device-script-when-then>
-                    <device-script-from-to></device-script-from-to>
-                    <device-script-custom></device-script-custom>
                     <div class="row mode-row">
                         Vacation
                     </div>
-                    <device-script-custom></device-script-custom>
-                    <device-script-from-to></device-script-from-to>
                     <div class="row">
                         <button class="add-script-button pull-right detail-button" ng-click="devicePanelCtrl.toggleShowDetails()">
                             Details...

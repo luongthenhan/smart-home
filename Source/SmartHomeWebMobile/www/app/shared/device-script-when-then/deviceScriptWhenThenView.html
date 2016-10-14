@@ -1,15 +1,60 @@
-<div class="row device-script-when-then-row">
-    <button class="delete-script-button">
+<div class="row device-script-when-then-row"
+     ng-if="deviceScriptWhenThenCtrl.isDeleted === false"
+     ng-init="deviceScriptWhenThenCtrl.init()">
+    <button class="delete-script-button"
+            data-toggle="modal"
+            data-target="#device-script-when-then-delete-script-modal-{{deviceScriptWhenThenCtrl.scriptId}}">
         <span class="glyphicon glyphicon-minus-sign"/>
     </button>
     <span>When</span>
-    <select class="combobox">
-        <option value="PA">Light 1 off</option>
-        <option value="CT">Gas occurs</option>
+    <select class="combobox script-condition-modify-input"
+            ng-model="deviceScriptWhenThenCtrl.selectedOtherDevice"
+            ng-options="device.name for device in deviceScriptWhenThenCtrl.otherDevices"
+            ng-change="deviceScriptWhenThenCtrl.updateDeviceChange()">
     </select>
+    <select class="combobox script-condition-modify-input"
+            ng-model="deviceScriptWhenThenCtrl.selectedCondition"
+            ng-options="condition.name for condition in deviceScriptWhenThenCtrl.conditions"
+            ng-change="deviceScriptWhenThenCtrl.updateConditionChange()">
+    </select>
+    <input class="script-condition-modify-input script-condition-modify-input-number"
+           ng-if="deviceScriptWhenThenCtrl.selectedCondition.hasParameter"
+           value="{{deviceScriptWhenThenCtrl.selectedConditionParam}}"
+           type="number" step="0.1">
     <span>Then</span>
-    <select class="combobox">
-        <option value="PA">Turn on</option>
-        <option value="CT">Turn off</option>
+    <select class="combobox"
+            ng-model="deviceScriptWhenThenCtrl.selectedAction"
+            ng-options="action.name for action in deviceScriptWhenThenCtrl.actions">
     </select>
+
+</div>
+
+<!-- Delete Script Modal -->
+<div class="modal fade device-panel-edit-script-modal" id="device-script-when-then-delete-script-modal-{{deviceScriptWhenThenCtrl.scriptId}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete Script</h4>
+            </div>
+            <div class="modal-body">
+                <span>Do you want to delete "When </span>
+                <span>{{deviceScriptWhenThenCtrl.selectedOtherDevice.name}}</span>
+                <span>{{deviceScriptWhenThenCtrl.selectedCondition.name}}</span>
+                <span ng-if="deviceScriptWhenThenCtrl.selectedCondition.hasParameter === true">{{deviceScriptWhenThenCtrl.selectedConditionParam}}</span>
+                <span>Then</span>
+                <span>{{deviceScriptWhenThenCtrl.selectedAction.name}}</span>
+                <span> " script ?</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="deviceScriptWhenThenCtrl.deleteScript()"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+
+    </div>
 </div>
