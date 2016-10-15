@@ -1,6 +1,17 @@
 package com.hcmut.smarthome.controller;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_OR_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.IS_NIGHT;
+import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.TURN_OFF;
+import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.transaction.NotSupportedException;
 
@@ -9,35 +20,247 @@ import org.json.simple.parser.ParseException;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.service.impl.ScenarioService;
+import com.hcmut.smarthome.utils.ConflictConditionException;
+import com.hcmut.smarthome.utils.Pair;
+import com.hcmut.smarthome.utils.ScriptBuilder;
 
 public class Test {
-
-	public static void main(String[] args) throws ParseException, NotSupportedException {
-		String script1 = "[['If',['LightIsOn','=','true'],[['If',['BuzzerIsBeeping','=','true'],[['ToggleBuzzer','A'],['ToggleLight','A']]],[['ToggleLight','B']]]]]";
-		String script2 = "[['ToggleBuzzer'],['ToggleLight']]";
-		String script3 = "[['If',['Temperature SensorABC','>=','35.5'],[['Toggle','2']]]]";
-		String script4 = "[['If',['Light Near Door','=','true'],[['Toggle','Buzzle Near Gas']]]]";
-		//"[['ControlBlock','If',['Condition','Light Near Door','=','true'],['Action',['SimpleAction','ToggleBuzzer','Buzzle Near Gas']]]]";
-		IScenarioService scenarioService = new ScenarioService();
-		//Scenario scenario = scenarioService.JSONToScenario(script3);
-		//scenarioService.runScenario(scenario);
-		//scenarioService.runScenario(scenario);
+	private static final int LIGHT_2 = 2;
+	private static final int LIGHT_3 = 3;
+	private static final String LSENSOR_4 = LIGHT_SENSOR + 4;
+	private static final String TSENSOR_5 = TEMPERATURE_SENSOR + 5;
+	private static final String LSENSOR_7 = LIGHT_SENSOR + 7;
 	
-		// SET 1: Input is more simpler than existing one 
-		String inputScript1 = "[['If',['Temperature Sensor','>=','35.5'],[['Turn On','2']]]]";
-		String existedScript1 = "[['If',['Temperature Sensor','>=','35.5'],[['If',['Light Sensor','>=','35.5'],[['Turn Off','2']]]]]]";
-		String existedScript2 = "[['If',['Temperature Sensor','>=','35.5'],[['Turn Off','2']]]]";
-		String existedScript3 = "[['If',['Temperature Sensor','<','35.5'],[['Turn Off','3']],[['Turn Off','2']]]]";
-		String existedScript4 = "[['If',['Temperature Sensor','>=','35.5'],[['Turn Off','3']]]]";
+	IScenarioService scenarioService = new ScenarioService();
+	
+	public static void main(String[] args) throws ParseException, NotSupportedException, ConflictConditionException {
+	
+		Test test = new Test();
+		test.testCase4();
 		
-		// SET 2: Input is more complex than existing one
-		String inputScript2 = "[['If',['Temperature Sensor','>=','35.5'],[['If',['Light Sensor 1','>=','35.5'],[['Turn On','2']]]] , [['If',['Light Sensor 2','<=','35.5'],[['Turn On','2']]  ] ]]]";
-		String existedScript5 = "[['If',['Light Sensor 1','>=','35.5'], [ ['Turn Off','2'] ] ] ]";
+	}
+	
+	/**
+	 * Input is more simpler than existing one 
+	 * @throws ParseException
+	 */
+	public void testCase1() throws ParseException{
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5,GREATER_OR_EQUAL,35.5f)
+				.action(TURN_ON, LIGHT_2)
+			.endIf()
+		.end().build();
+				
+		List<String> existedScritps = new ArrayList<>();
 		
-		Scenario inputScenario = scenarioService.JSONToScenario(inputScript2);
-		Scenario existedScenario = scenarioService.JSONToScenario(existedScript5);
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(LSENSOR_4, EQUAL, IS_NIGHT)
+					.action(TURN_ON, LIGHT_2)
+				.endIf()
+			.Else()
+				.If(LSENSOR_7, EQUAL, IS_NIGHT)
+					.action(TURN_ON, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		existedScritps.add(existedScript);
 		
-		boolean isValidate = scenarioService.isScenarioValidate(inputScenario, Arrays.asList(existedScenario));
-		System.out.println("Validation result: " + isValidate);
+		String existedScript1 = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5,GREATER_OR_EQUAL,35.5f)
+				.action(TURN_ON, LIGHT_2)
+			.endIf()
+		.end().build();
+		existedScritps.add(existedScript1);
+		
+		String existedScript2 = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5,LESS_THAN,35.5f)
+				.action(TURN_OFF, LIGHT_2)
+				.action(TURN_OFF, LIGHT_3)
+			.endIf()
+		.end().build();
+		existedScritps.add(existedScript2);
+		
+		String existedScript3 = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5,GREATER_OR_EQUAL,35.5f)
+				.action(TURN_OFF, LIGHT_3)
+			.endIf()
+		.end().build();
+		existedScritps.add(existedScript3);
+		
+		runTestScriptValidation(input, existedScritps);
+	}
+	
+	/**
+	 * Input is more complex than existing one
+	 * @throws ParseException
+	 */
+	public void testCase2() throws ParseException{
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(LSENSOR_4, EQUAL, IS_NIGHT)
+					.action(TURN_ON, LIGHT_2)
+				.endIf()
+			.Else()
+				.If(LSENSOR_7, EQUAL, IS_NIGHT)
+					.action(TURN_ON, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.If(LSENSOR_7, EQUAL, IS_NIGHT)
+				.action(TURN_ON, LIGHT_2)
+			.endIf()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		runTestScriptValidation(input, existedScritps);
+	}
+	
+	// TODO 
+	/**
+	 * Input has conflicted conditions itself -> Not check yet
+	 * @throws ParseException 
+	 */
+	public void testCase3() throws ParseException{
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(TSENSOR_5, LESS_THAN, 34)
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5,GREATER_OR_EQUAL,35.5f)
+				.action(TURN_OFF, LIGHT_2)
+			.endIf()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		runTestScriptValidation(input, existedScritps);
+	}
+	
+	/**
+	 * Input conflict range and has counter action with existing one
+	 * @throws ParseException 
+	 */
+	public void testCase4() throws ParseException{
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(TSENSOR_5, LESS_THAN, 64)
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 38.5f)
+				.action(TURN_ON, LIGHT_2)
+			.endIf()
+		.end().build();
+		
+		existedScritps.add(existedScript);
+		
+		runTestScriptValidation(input, existedScritps);
+	}
+	
+	/**
+	 * Input conflict range but not has counter action 
+	 * @throws ParseException 
+	 */
+	public void testCase5() throws ParseException{
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(TSENSOR_5, LESS_THAN, 64)
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 38.5f)
+				.action(TURN_OFF, LIGHT_2)
+			.endIf()
+		.end().build();
+		
+		existedScritps.add(existedScript);
+		
+		runTestScriptValidation(input, existedScritps);
+	}
+	
+	// TODO : Recheck 
+	/**
+	 * Not Conflict range but has counter action -> not work yet
+	 * @throws ParseException 
+	 */
+	public void testCase6() throws ParseException{
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(TSENSOR_5, LESS_THAN, 64)
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, LESS_THAN, 35.5f)
+				.action(TURN_OFF, LIGHT_2)
+			.endIf()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		runTestScriptValidation(input, existedScritps);
+	}
+	
+	private void runTestScriptValidation(String inputScript, List<String> existedScripts) throws ParseException{
+		
+		Pair<Scenario,List<Scenario>> pairInputAndExistedScenarios = scriptToScenario(inputScript,existedScripts);
+		Scenario inputScenario = pairInputAndExistedScenarios.getFirst();
+		List<Scenario> existedScenarios = pairInputAndExistedScenarios.getSecond();
+		
+		try{
+			boolean isValidate = scenarioService.isScenarioValidate(inputScenario, existedScenarios);
+			System.out.println("Script is validated ? -> " + isValidate);
+		}
+		catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private Pair<Scenario,List<Scenario>> scriptToScenario(String inputScript, List<String> existedScripts) throws ParseException{
+		Scenario inputScenario = scenarioService.JSONToScenario(inputScript);
+		List<Scenario> existedScenarios = new ArrayList<>();
+		for (String existedScript : existedScripts) {
+			existedScenarios.add(scenarioService.JSONToScenario(existedScript));
+		}
+		
+		return new Pair<>(inputScenario, existedScenarios);
 	}
 }
