@@ -92,7 +92,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	}
 
 	@Override
-	public UserDetails currentUser() {
+	public UserDetails getCurrentUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null) {
 			return null;
@@ -102,7 +102,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
 	@Override
 	public boolean isAccessable(int selectedHomeId) {
-		UserDetails currentUser = currentUser();
+		UserDetails currentUser = getCurrentUser();
 		
 		if(currentUser == null) {
 			return false;
@@ -134,7 +134,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	@Override
 	public int getCurrentUserId() {
 		
-		CustomUserDetails currentUser = (CustomUserDetails) currentUser();
+		CustomUserDetails currentUser = (CustomUserDetails) getCurrentUser();
 		if(currentUser == null) {
 			return USER_CANNOT_BE_FOUND;
 		}

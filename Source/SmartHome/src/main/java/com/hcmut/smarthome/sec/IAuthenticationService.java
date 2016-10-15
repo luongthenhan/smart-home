@@ -31,7 +31,7 @@ public interface IAuthenticationService {
 	void logout(String token);
 
 	/** Returns current user or {@code null} if there is no authentication or user is anonymous. */
-	UserDetails currentUser();
+	UserDetails getCurrentUser();
 	
 	boolean isAccessable(int selectedHomeId);
 	
