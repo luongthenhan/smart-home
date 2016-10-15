@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,7 +37,7 @@ public class UserEntity implements Serializable{
 	@Column(name="is_active", nullable = false)
 	private boolean isActive;
 	
-	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="user")
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="user", fetch = FetchType.EAGER)
 	private List<HomeEntity> homes;
 	
 	public UserEntity() {
