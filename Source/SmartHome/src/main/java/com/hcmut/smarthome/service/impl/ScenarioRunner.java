@@ -33,18 +33,15 @@ public class ScenarioRunner {
 	private TimerService timerService = new TimerService();
 	
 	public void runScenario(Scenario scenario) {
-		if (scenario == null 
-				|| scenario.getId() == null
+		if (scenario == null || scenario.getId() == null
 				|| scenario.getHomeId() <= 0)
 			return;
 
 		// Mark scenario as running
 		mapScenarioController.put(scenario.getId(), RUNNING);
-		System.out.println("Run blocks");
 		runBlocks(scenario.getBlocks(), scenario.getId(), scenario.getHomeId());
-		System.out.println("Run blocks OK");
 	}
-	
+
 	public void stopForeverScenario(int id) {
 		if (mapScenarioController.containsKey(id))
 			mapScenarioController.put(id, STOPPING);
@@ -63,6 +60,7 @@ public class ScenarioRunner {
 		for (IBlock block : blocks) {
 			if (block instanceof SimpleAction) {
 				
+				// TODO: Improve performance
 				// Only do action when home is enabled
 				if (homeService.isEnabled(homeId)) {
 					SimpleAction action = (SimpleAction) block;

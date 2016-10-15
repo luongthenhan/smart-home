@@ -84,8 +84,6 @@ public class GeneralControllerImpl implements IGeneralController {
 	@Override
 	public void toggle(Device deviceBase) throws Exception {
 		
-		//String deviceType = deviceBase.getDeviceType().getName();
-		//System.out.println("toggle function: " + deviceType);
 		String deviceType = deviceBase.getDeviceType().getName();
 		
 		switch (deviceType) {

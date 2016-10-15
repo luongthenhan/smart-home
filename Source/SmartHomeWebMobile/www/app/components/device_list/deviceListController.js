@@ -1,4 +1,4 @@
-app.controller('DeviceListController', ['MainService', function (MainService) {
+app.controller('DeviceListController', ['MainService', '$routeParams', function (MainService, $routeParams) {
     var self = this;
 
     self.deviceType = null;
@@ -8,9 +8,14 @@ app.controller('DeviceListController', ['MainService', function (MainService) {
     self.selectedMode = null;
 
     self.init = function() {
+        self.modes = MainService.selectedHome.modes;
+        self.selectedMode = MainService.selectedMode;
         self.deviceType = MainService.selectedDeviceType;
         MainService.getDevices(self);
-        MainService.getModes(self);
+    }
+
+    self.updateModeChange = function() {
+        MainService.selectedMode = self.selectedMode;
     }
 
 }])

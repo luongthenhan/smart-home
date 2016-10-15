@@ -57,6 +57,12 @@ public class ScriptResource {
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
+	@RequestMapping(method = RequestMethod.PATCH, path="/{scriptId}")
+	public ResponseEntity<Void> updatePartialScript(@PathVariable int scriptId, @RequestBody Script script ){
+		deviceService.updatePartialScript(scriptId,script);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
+	
 	/**
 	 * Add new script given mode and device
 	 * @param deviceId

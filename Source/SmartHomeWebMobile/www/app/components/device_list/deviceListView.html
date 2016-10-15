@@ -1,8 +1,10 @@
 <navbar></navbar>
 <div class="wrapper-content" ng-controller="DeviceListController as deviceListCtrl" ng-init="deviceListCtrl.init()">
     <span class="mode-label">Mode: </span>
-    <select class="combobox" ng-model="deviceListCtrl.selectedMode">
-        <option ng-repeat="mode in deviceListCtrl.modes" value="{{mode.id}}">{{mode.name}}</option>
+    <select class="combobox"
+            ng-model="deviceListCtrl.selectedMode"
+            ng-options="mode.name for mode in deviceListCtrl.modes track by mode.id"
+            ng-change="deviceListCtrl.updateModeChange()">
     </select>
     <p></p>
     <div class="row form-row form-title">Devices</div>
