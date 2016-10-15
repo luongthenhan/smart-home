@@ -31,10 +31,10 @@ public class ConstantUtil {
 	public static final String GET_TEMPERATURE = "GetTemperature";
 
 	// Temperature sensor, gas sensor
-	public static final String IS_DANGER = "IsDanger";
+	public static final boolean IS_DANGER = true;
 
 	// Light sensor
-	public static final String IS_NIGHT = "IsNight";
+	public static final boolean IS_NIGHT = true;
 
 	// Motion sensor
 	public static final String HAS_HUMAN = "HasHuman";
