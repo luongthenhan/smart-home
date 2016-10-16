@@ -110,7 +110,7 @@ public class ScriptBuilder {
 	}
 	
 	public static class ScriptBuilderTemplate{
-		public static String ifHasOneAction(Object deviceIdCondition, String operator , Object value , String actionName, int deviceIdAction){
+		public static String blockIfOneAction(Object deviceIdCondition, String operator , Object value , String actionName, int deviceIdAction){
 			String script = new ScriptBuilder()
 			.begin()
 				.If(deviceIdCondition,operator,value)
@@ -121,7 +121,7 @@ public class ScriptBuilder {
 			return script;
 		}
 		
-		public static String ifElseHasOneAction(Object deviceIdCondition, String operator , Object value , String ifActionName, int deviceIdIfAction, String elseActionName, int deviceIdElseAction){
+		public static String blockIfElseOneAction(Object deviceIdCondition, String operator , Object value , String ifActionName, int deviceIdIfAction, String elseActionName, int deviceIdElseAction){
 			String script = new ScriptBuilder()
 			.begin()
 				.If(deviceIdCondition,operator,value)
@@ -156,9 +156,9 @@ public class ScriptBuilder {
 		
 		System.out.println(script);
 		
-		System.out.println(ScriptBuilderTemplate.ifHasOneAction(5, GREATER_OR_EQUAL, 30, TURN_ON, 3));
+		System.out.println(ScriptBuilderTemplate.blockIfOneAction(5, GREATER_OR_EQUAL, 30, TURN_ON, 3));
 		
-		String s = ScriptBuilder.parseFromCodeAsString("ScriptBuilderTemplate.ifHasOneAction(5, \">=\", 30, \"TurnOn\", 3)");
+		String s = ScriptBuilder.parseFromCodeAsString("ScriptBuilderTemplate.blockIfOneAction(5, \">=\", 30, \"TurnOn\", 3)");
 		System.out.println(s);
 	}
 }

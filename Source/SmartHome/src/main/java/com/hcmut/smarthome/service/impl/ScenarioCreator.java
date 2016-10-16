@@ -235,9 +235,13 @@ public class ScenarioCreator {
 		IBlock block = null;
 		// TODO : UNcomment here , ensure device not null when pass to
 		// deviceController
-		int deviceId = Integer.valueOf(object.get(0).toString());
-		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
-		String deviceTypeName = device.getDeviceType().getName();
+//		int deviceId = Integer.valueOf(object.get(0).toString());
+//		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
+//		String deviceTypeName = device.getDeviceType().getName();
+		
+		Device device = null;
+		String deviceTypeName = object.get(0).toString();
+		
 		Supplier<Object> LHSExpression = () -> null;
 
 		// Check device type
@@ -338,7 +342,7 @@ public class ScenarioCreator {
 		Condition condition = new Condition();
 		// TODO Rename variable name of condition, now it store deviceId
 		condition.setName(object.get(0).toString());
-		condition.setLogicOperator(object.get(1).toString());
+		condition.setOperator(object.get(1).toString());
 
 		if (LHSExpressionType.equals(Boolean.class)) {
 			condition.setValue(Boolean.valueOf(object.get(2).toString()));
@@ -347,7 +351,7 @@ public class ScenarioCreator {
 		} else
 			condition.setValue(object.get(2));
 
-		switch (condition.getLogicOperator()) {
+		switch (condition.getOperator()) {
 		case EQUAL:
 			condition.setPredicate(t -> LHSExpression.get() == condition
 					.getValue());
@@ -375,7 +379,7 @@ public class ScenarioCreator {
 
 		default:
 			LOGGER.debug("Not support operator "
-					+ condition.getLogicOperator());
+					+ condition.getOperator());
 			break;
 		}
 

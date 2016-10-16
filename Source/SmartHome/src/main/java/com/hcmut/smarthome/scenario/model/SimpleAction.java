@@ -57,4 +57,9 @@ public class SimpleAction implements IBlock, IAction{
 		this.deviceId = deviceId;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("[%s %s]", getName(),getDeviceId());
+	}
+
 }
