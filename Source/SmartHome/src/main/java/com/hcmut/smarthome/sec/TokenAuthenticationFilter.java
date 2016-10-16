@@ -11,6 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.filter.GenericFilterBean;
@@ -26,6 +27,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * FORM_LOGIN_FILTER position), but it doesn't really depend on it at all.
  */
 public final class TokenAuthenticationFilter extends GenericFilterBean {
+	
+	private static Logger LOGGER = Logger.getLogger(TokenAuthenticationFilter.class);
 
 	private static final String HEADER_TOKEN = "X-Auth-Token";
 	private static final String HEADER_USERNAME = "X-Username";
@@ -49,7 +52,7 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		System.out.println(" *** MyAuthenticationFilter.doFilter");
+		LOGGER.debug(" *** MyAuthenticationFilter.doFilter");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -70,10 +73,9 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 		}
 
 		if (canRequestProcessingContinue(httpRequest)) {
-			System.out.println("Hello,word");
 			chain.doFilter(request, response);
 		}
-		System.out.println(" === AUTHENTICATION: "
+		LOGGER.debug(" === AUTHENTICATION: "
 				+ SecurityContextHolder.getContext().getAuthentication());
 	}
 
@@ -106,9 +108,9 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 		String loginPassword = new String(Base64.decode(base64
 				.getBytes(StandardCharsets.UTF_8)));
 
-		System.out.println("loginPassword = " + loginPassword);
+		LOGGER.debug("loginPassword = " + loginPassword);
 		tokenizer = new StringTokenizer(loginPassword, ":");
-		System.out.println("tokenizer = " + tokenizer);
+		LOGGER.debug("tokenizer = " + tokenizer);
 		checkUsernameAndPassword(tokenizer.nextToken(), tokenizer.nextToken(),
 				httpResponse);
 	}
@@ -129,19 +131,20 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 	private boolean checkToken(HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 		String token = httpRequest.getHeader(HEADER_TOKEN);
+		LOGGER.debug("=========Token: " + token);
 		if (token == null) {
 			return false;
 		}
 
 		if (authenticationService.checkToken(token)) {
-			System.out.println(" *** "
+			LOGGER.debug(" *** "
 					+ HEADER_TOKEN
 					+ " valid for: "
 					+ SecurityContextHolder.getContext().getAuthentication()
 							.getPrincipal());
 			return true;
 		} else {
-			System.out.println(" *** Invalid " + HEADER_TOKEN + ' ' + token);
+			LOGGER.debug(" *** Invalid " + HEADER_TOKEN + ' ' + token);
 			httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			doNotContinueWithRequestProcessing(httpRequest);
 		}

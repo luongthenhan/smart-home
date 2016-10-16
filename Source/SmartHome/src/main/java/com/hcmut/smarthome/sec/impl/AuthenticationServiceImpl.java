@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +25,8 @@ import com.hcmut.smarthome.sec.TokenInfo;
  * This class does not care about HTTP protocol at all.
  */
 public class AuthenticationServiceImpl implements IAuthenticationService {
+	
+	private static Logger LOGGER = Logger.getLogger(AuthenticationServiceImpl.class);
 
 	private static final int USER_CANNOT_BE_FOUND = -1;
 
@@ -40,12 +43,12 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
 	@PostConstruct
 	public void init() {
-		System.out.println(" *** AuthenticationServiceImpl.init with: " + applicationContext);
+		LOGGER.debug(" *** AuthenticationServiceImpl.init with: " + applicationContext);
 	}
 
 	@Override
 	public TokenInfo authenticate(String login, String password) {
-		System.out.println(" *** AuthenticationServiceImpl.authenticate");
+		LOGGER.debug(" *** AuthenticationServiceImpl.authenticate");
 
 		// Here principal=username, credentials=password
 		Authentication authentication = new UsernamePasswordAuthenticationToken(login, password);
@@ -63,14 +66,14 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 				return newToken;
 			}
 		} catch (AuthenticationException e) {
-			System.out.println(" *** AuthenticationServiceImpl.authenticate - FAILED: " + e.toString());
+			LOGGER.debug(" *** AuthenticationServiceImpl.authenticate - FAILED: " + e.toString());
 		}
 		return null;
 	}
 
 	@Override
 	public boolean checkToken(String token) {
-		System.out.println(" *** AuthenticationServiceImpl.checkToken");
+		LOGGER.debug(" *** AuthenticationServiceImpl.checkToken");
 
 		UserDetails userDetails = tokenManager.getUserDetails(token);
 		if (userDetails == null) {
@@ -87,7 +90,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	@Override
 	public void logout(String token) {
 		UserDetails logoutUser = tokenManager.removeToken(token);
-		System.out.println(" *** AuthenticationServiceImpl.logout: " + logoutUser);
+		LOGGER.debug(" *** AuthenticationServiceImpl.logout: " + logoutUser);
 		SecurityContextHolder.clearContext();
 	}
 

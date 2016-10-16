@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Base64;
 
@@ -15,6 +16,8 @@ import com.hcmut.smarthome.sec.ITokenManager;
 import com.hcmut.smarthome.sec.TokenInfo;
 
 public class TokenManagerImpl implements ITokenManager {
+	
+	private static Logger LOGGER = Logger.getLogger(TokenManagerImpl.class);
 
 	private Map<String, UserDetails> validUsers = new HashMap<>();
 
@@ -36,7 +39,7 @@ public class TokenManagerImpl implements ITokenManager {
 		removeUserDetails(userDetails);
 		UserDetails previous = validUsers.put(token, userDetails);
 		if (previous != null) {
-			System.out.println(" *** SERIOUS PROBLEM HERE - we generated the same token (randomly?)!");
+			LOGGER.debug(" *** SERIOUS PROBLEM HERE - we generated the same token (randomly?)!");
 			return null;
 		}
 		tokens.put(userDetails, tokenInfo);
