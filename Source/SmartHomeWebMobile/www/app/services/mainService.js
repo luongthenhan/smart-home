@@ -6,7 +6,7 @@ app.service('MainService', function($http) {
 	self.USERNAME_HEADER_NAME = "X-Username";
 	self.PASSWORD_HEADER_NAME = "X-Password";
 
-    self.hostDomain = "http://localhost:8080/smarthome/api/";
+    self.hostDomain = "https://localhost:8443/smarthome/api/";
     self.userId = 1;
     self.selectedHome = null;
     self.selectedMode = null;
