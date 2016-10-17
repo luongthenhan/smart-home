@@ -38,8 +38,8 @@ public class ScriptBuilderTest {
 				.action(TOGGLE, LIGHT_3)
 			.endIf()
 		.end().build();
-		
-		String expected = "[['If',['Temperature Sensor5','>','35.5'],[['Toggle','2'],['Toggle','3']]]";
+		System.out.println(script);
+		String expected = "[['If',['Temperature Sensor5','>','35.5'],[['Toggle','2'],['Toggle','3']]]]";
 		assertThat(script, is(expected));
 	}
 	

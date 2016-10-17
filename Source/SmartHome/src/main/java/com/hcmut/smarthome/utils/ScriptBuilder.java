@@ -53,12 +53,27 @@ public class ScriptBuilder {
 	}
 	
 	public ScriptBuilder If(Object deviceId, String operator, Object value){
-		int nbrBlock = stack.pop() + 1;
-		stack.push(nbrBlock);
-		if( nbrBlock > 1 )
-			builder.append(",");
+		addNewControlBlockToCurrentOne();
 		builder.append(String.format("['If',['%s','%s','%s']",deviceId,operator,value));
 		return then();
+	}
+	
+	public ScriptBuilder FromTo(Object fromValue , Object toValue){
+		addNewControlBlockToCurrentOne();
+		builder.append(String.format("['FromTo','%s','%s'",fromValue,toValue));
+		return then();
+	}
+
+	private void addNewControlBlockToCurrentOne() {
+		int nbrBlock = increaseNbrBlock();
+		if( nbrBlock > 1 )
+			builder.append(",");
+	}
+
+	private int increaseNbrBlock() {
+		int nbrBlock = stack.pop() + 1;
+		stack.push(nbrBlock);
+		return nbrBlock;
 	}
 	
 	private ScriptBuilder then(){
@@ -67,19 +82,13 @@ public class ScriptBuilder {
 	}
 	
 	public ScriptBuilder action(String actionName, int deviceId){
-		int nbrBlock = stack.pop() + 1;
-		stack.push(nbrBlock);
-		if( nbrBlock > 1 )
-			builder.append(",");
+		addNewControlBlockToCurrentOne();
 		builder.append(String.format("['%s','%s']",actionName,deviceId));
 		
 		return this;
 	}
 	
 	public ScriptBuilder endIf(){
-		int nbrBlock = stack.pop() + 1;
-		stack.push(nbrBlock);
-		
 		builder.append("]");
 		return end();
 	}
