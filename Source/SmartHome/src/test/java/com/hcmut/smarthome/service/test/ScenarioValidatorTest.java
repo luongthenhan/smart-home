@@ -1,5 +1,6 @@
 package com.hcmut.smarthome.service.test;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION;
 import static com.hcmut.smarthome.utils.ConstantUtil.EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_OR_EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.IS_NIGHT;
@@ -26,6 +27,7 @@ import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.service.impl.ScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
+import com.hcmut.smarthome.utils.ConstantUtil;
 import com.hcmut.smarthome.utils.Pair;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 import com.hcmut.smarthome.utils.ScriptBuilder.ScriptBuilderTemplate;
@@ -215,6 +217,34 @@ public class ScenarioValidatorTest {
 					.If(LSENSOR_4, EQUAL, IS_NIGHT)
 						.action(TURN_OFF, LIGHT_2)
 					.endIf()
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	/**
+	 * Input has conflicted conditions itself ( conflict in Else clause)
+	 * 
+	 * -> INVALID
+	 * @throws ParseException 
+	 * @throws ConflictConditionException 
+	 * @throws NotSupportedException 
+	 */
+	@Test
+	public void testCase3_3() throws ParseException, NotSupportedException, ConflictConditionException{
+		expectedException.expect(ConflictConditionException.class);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.action(TURN_OFF, LIGHT_2)
+			.Else()
+				.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+					.action(TURN_OFF, LIGHT_2)
 				.endIf()
 			.endIf()
 		.end().build();
@@ -438,6 +468,77 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
+	//TODO
+	/**
+	 * Conflict range Yes ( use Else condition )
+	 * Counter action Yes
+	 * Different devs No ( just use Temp sensor in Condition )
+	 * 
+	 * -> VALID
+	 * @throws ParseException 
+	 * @throws ConflictConditionException 
+	 * @throws NotSupportedException 
+	 */
+	@Test
+	public void testCase6_8() throws ParseException, NotSupportedException, ConflictConditionException{
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, LESS_THAN, 35.5f)
+					.action(TURN_OFF, LIGHT_2)
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, LESS_THAN, 40.5f)
+			.If(TSENSOR_5, ConstantUtil.GREATER_THAN, 39.5f)
+				.action(TURN_ON, LIGHT_2)
+			.endIf()
+			.endIf()
+		.end().build();
+		
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	/**
+	 * Conflict range Yes ( use Else condition )
+	 * Counter action Yes
+	 * Different devs No ( just use Temp sensor in Condition )
+	 * 
+	 * -> INVALID
+	 * @throws ParseException 
+	 * @throws ConflictConditionException 
+	 * @throws NotSupportedException 
+	 */
+	@Test
+	public void testCase6_9() throws ParseException, NotSupportedException, ConflictConditionException{
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, LESS_THAN, 35.5f)
+				.action(TURN_OFF, LIGHT_2)
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, LESS_THAN, 40.5f)
+				.action(TURN_ON, LIGHT_2)
+			.endIf()
+		.end().build();
+		
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
 	/**
 	 * Conflict range Yes 
 	 * Counter action Yes
@@ -552,17 +653,20 @@ public class ScenarioValidatorTest {
 	
 	// TODO: Recheck: If in block if and else have the same action , does it mean that in every case 
 	/**
-	 * Conflict range Yes ( a little bit complex condition )
+	 * Conflict range Yes ( stupid script but we must handle this case )
 	 * Counter action Yes
 	 * Different devs No
 	 * 
-	 * -> VALID
+	 * -> INVALID
 	 * @throws ParseException 
 	 * @throws ConflictConditionException 
 	 * @throws NotSupportedException 
 	 */
 	@Test
 	public void testCase6_5() throws ParseException, NotSupportedException, ConflictConditionException{
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -583,7 +687,7 @@ public class ScenarioValidatorTest {
 		
 		existedScritps.add(existedScript);
 		
-		boolean expectedResult = true;
+		boolean expectedResult = false;
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
@@ -857,11 +961,13 @@ public class ScenarioValidatorTest {
 		assertThat(isValidate, is(expectedResult));
 	}
 	
-	private Pair<Scenario,List<Scenario>> scriptToScenario(String inputScript, List<String> existedScripts) throws ParseException{
+	private Pair<Scenario,List<Scenario>> scriptToScenario(String inputScript, List<String> existedScripts) throws ParseException, NotSupportedException, ConflictConditionException{
 		Scenario inputScenario = scenarioService.JSONToScenario(inputScript);
 		List<Scenario> existedScenarios = new ArrayList<>();
 		for (String existedScript : existedScripts) {
-			existedScenarios.add(scenarioService.JSONToScenario(existedScript));
+			Scenario existedScenario = scenarioService.JSONToScenario(existedScript);
+			if( scenarioService.isScenarioValidate(existedScenario, null) )
+				existedScenarios.add(existedScenario);
 		}
 		
 		return new Pair<>(inputScenario, existedScenarios);

@@ -42,4 +42,11 @@ public class RangeTest {
 		
 		System.out.println(rs);
 	}
+	
+	@Test
+	public void testCase3() throws Exception {
+		Range<Integer> r1 = Range.closedOpen(35, 35);
+		System.out.println(r1.isEmpty());
+		
+	}
 }
