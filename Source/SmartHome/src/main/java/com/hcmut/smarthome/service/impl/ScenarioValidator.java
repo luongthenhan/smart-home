@@ -20,7 +20,6 @@ import javax.transaction.NotSupportedException;
 
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.ImmutableRangeSet;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
@@ -43,6 +42,9 @@ import com.hcmut.smarthome.utils.Pair;
 @Service
 public class ScenarioValidator {
 	
+	private static final Boolean PASS_INNERMOST_CONDITION_RANGE = true;
+
+
 	public boolean isScriptExisted(String inputScript, List<String> existedScripts){
 		for (String existedScript : existedScripts) {
 			if( inputScript.contains(existedScript) || existedScript.contains(inputScript) )
@@ -110,7 +112,7 @@ public class ScenarioValidator {
 						existedScenario.getBlocks())) {
 					
 					// Because only TreeRangeSet support remove function for not equal case
-					Map<String,RangeSet<Float>> checkedRange = new HashMap<>();
+					Map<String,Boolean> checkedRange = new HashMap<>();
 					
 					if (conditionToCompare == null
 							|| areNestedConditionsMatching(conditionToCompare,
@@ -343,7 +345,7 @@ public class ScenarioValidator {
 	 * @throws ConflictConditionException 
 	 */
 	private boolean areNestedConditionsMatching(Condition conditionToCompare,
-			List<IBlock> existedBlocks, Map<String,RangeSet<Float>> mapRange) throws NotSupportedException, ConflictConditionException {
+			List<IBlock> existedBlocks, Map<String,Boolean> mapRange) throws NotSupportedException, ConflictConditionException {
 
 		if (existedBlocks == null)
 			return false;
@@ -366,8 +368,8 @@ public class ScenarioValidator {
 				List<IBlock> actionIfBlock = blockIfElse.getAction().getBlocks();
 				List<IBlock> actionElseBlock = blockIfElse.getElseAction().getBlocks();
 				
-				Map<String,RangeSet<Float>> mapRangeIfBlock = mapRange;
-				Map<String,RangeSet<Float>> mapRangeElseBlock = new HashMap<>(mapRange);
+				Map<String,Boolean> mapRangeIfBlock = mapRange;
+				Map<String,Boolean> mapRangeElseBlock = new HashMap<>(mapRange);
 				
 				return 
 						
@@ -422,122 +424,117 @@ public class ScenarioValidator {
 		return elseCondition;
 	}
 
-	private boolean isConditionTheSameOrOverlap(Condition conditionToCompare, Condition existedCondition, Map<String,RangeSet<Float>> mapRange) throws ConflictConditionException {
+	private boolean isConditionTheSameOrOverlap(Condition conditionToCompare, Condition existedCondition, Map<String, Boolean> mapRange)
+			throws ConflictConditionException {
 		// Basic case
-		if( conditionToCompare == null || existedCondition == null )
+		if (conditionToCompare == null || existedCondition == null)
 			return false;
-		
-		// Different class type of value 
-		if( conditionToCompare.getValue().getClass() != existedCondition.getValue().getClass()  )
+
+		// Different class type of value
+		if (conditionToCompare.getValue().getClass() != existedCondition
+				.getValue().getClass())
 			return false;
-		
+
 		// If two conditions belong to different kind of devices, don't need to check
-		if( !conditionToCompare.getName().equals(existedCondition.getName()) )
+		if (!conditionToCompare.getName().equals(existedCondition.getName()))
 			return false;
-		
+
 		// Boolean value -> check equal : name , operator , value
-		if( conditionToCompare.getValue().getClass().equals(Boolean.class) ){
-			return checkEqualBooleanConditions(conditionToCompare,existedCondition);
+		if (conditionToCompare.getValue().getClass().equals(Boolean.class)) {
+			return checkEqualBooleanConditions(conditionToCompare,
+					existedCondition);
 		}
 		// Float value -> check range
-		else if ( conditionToCompare.getValue().getClass().equals(Float.class)  ){
-//			String deviceId = conditionToCompare.getName();
-//			
-//			float anotherValue = (float) existedCondition.getValue();
-//			RangeSet<Float> oldRange = mapRange.get(deviceId); 
-//			if( oldRange == null ){
-//				oldRange = TreeRangeSet.create();
-//				oldRange.add(Range.all());
-//				mapRange.put(deviceId, oldRange);
-//			}
-//			
-//			try{
-//				switch (existedCondition.getOperator()) {
-//				case EQUAL: 
-//					oldRange = oldRange.subRangeSet(Range.singleton(anotherValue));
-//					break;
-//				case NOT_EQUAL:
-//					oldRange.remove(Range.singleton(anotherValue));
-//					break;
-//				case GREATER_OR_EQUAL:
-//					oldRange = oldRange.subRangeSet(Range.atLeast(anotherValue));
-//					break;
-//				case GREATER_THAN:
-//					oldRange = oldRange.subRangeSet(Range.greaterThan(anotherValue));
-//					break;
-//				case LESS_OR_EQUAL:
-//					oldRange = oldRange.subRangeSet(Range.atMost(anotherValue)); 
-//					break;
-//				case LESS_THAN:
-//					oldRange = oldRange.subRangeSet(Range.lessThan(anotherValue));
-//					break;
-//					
-//				}
-//				
-				RangeSet<Float> oldRange = TreeRangeSet.create();
-				Range<Float> a = existedCondition.getRange();
-				if( a == null ){
-					oldRange.add(Range.all());
-				}
-				else{
-					oldRange.add(a);
-				}
-					
-				float value = (float) conditionToCompare.getValue();
-				RangeSet<Float> checkedRange = TreeRangeSet.create(oldRange);
-				
-				Range<Float> comparedConditionRange = conditionToCompare.getRange();
-				
-				// Tricky here , if the deepest condition is range condition and it can pass 
-				// through the CHECK RANGE , don't need to check with outer condition any more
-				if( mapRange.get(conditionToCompare.getName()) != null )
-					return false;
-				
-				try{
-				switch (conditionToCompare.getOperator()) {
-				case EQUAL: 
-					comparedConditionRange = (comparedConditionRange == null ? Range.singleton(value) : comparedConditionRange);
-					checkedRange = checkedRange.subRangeSet(comparedConditionRange);
-					break;
-				case NOT_EQUAL:
-					comparedConditionRange = (comparedConditionRange == null ? Range.singleton(value) : comparedConditionRange);
-					checkedRange.remove(comparedConditionRange);
-					break;
-				case GREATER_OR_EQUAL:
-					comparedConditionRange = (comparedConditionRange == null ? Range.atLeast(value) : comparedConditionRange);
-					checkedRange = checkedRange.subRangeSet(comparedConditionRange);
-					break;
-				case GREATER_THAN:
-					comparedConditionRange = (comparedConditionRange == null ? Range.greaterThan(value) : comparedConditionRange);
-					checkedRange = checkedRange.subRangeSet(comparedConditionRange);
-					break;
-				case LESS_OR_EQUAL:
-					comparedConditionRange = (comparedConditionRange == null ? Range.atMost(value) : comparedConditionRange);
-					checkedRange = checkedRange.subRangeSet(comparedConditionRange); 
-					break;
-				case LESS_THAN:
-					comparedConditionRange = (comparedConditionRange == null ? Range.lessThan(value) : comparedConditionRange);
-					checkedRange = checkedRange.subRangeSet(comparedConditionRange);
-					break;
-					
-				}
-				
-				// If empty , it means two conditions are not overlapped 
-				if( checkedRange.isEmpty() ){
-					// TODO: Switch to map boolean
-					// Tricky here , if the deepest condition is range condition and it can pass 
-					// through the CHECK RANGE , don't need to check with outer condition any more
-					mapRange.put(conditionToCompare.getName(), checkedRange);
-					return false;
-				}
-				else return true;
-					
-			} catch (IllegalArgumentException e){
-				throw new IllegalArgumentException("Something wrong");
-			}
+		else if (conditionToCompare.getValue().getClass().equals(Float.class)) {
+			return checkOverlapRange(conditionToCompare, existedCondition,
+					mapRange);
 		}
-		
+
 		return true;
+	}
+
+	private boolean checkOverlapRange(Condition conditionToCompare, Condition existedCondition, Map<String, Boolean> mapRange) {
+		// Tricky here , if the deepest condition is range condition and it can pass 
+		// through the CHECK RANGE , don't need to check with outer condition any more
+		if (canPassInnermostConditionRange(conditionToCompare, mapRange))
+			return false;
+		
+		Range<Float> comparedRange = conditionToCompare.getRange();
+		Range<Float> existedRange = existedCondition.getRange();
+		RangeSet<Float> existedRangeSet = initExistedRangeSet(existedRange);
+
+		try {
+			RangeSet<Float> intersection = findIntersection(conditionToCompare,
+					comparedRange, existedRangeSet);
+
+			// If empty , it means two conditions are not overlapped
+			if (intersection.isEmpty()) {
+				// TODO: Switch to map boolean
+				// Tricky here , if the deepest condition is range condition
+				// and it can pass
+				// through the CHECK RANGE , don't need to check with outer
+				// condition any more
+				mapRange.put(conditionToCompare.getName(), PASS_INNERMOST_CONDITION_RANGE);
+				return false;
+			} else
+				return true;
+
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Something wrong");
+		}
+	}
+
+	private RangeSet<Float> findIntersection(Condition conditionToCompare,
+			Range<Float> comparedRange, RangeSet<Float> existedRangeSet) {
+		float value = (float) conditionToCompare.getValue();
+		RangeSet<Float> intersection = null;
+		
+		switch (conditionToCompare.getOperator()) {
+			case EQUAL:
+				comparedRange = (comparedRange == null ? Range.singleton(value) : comparedRange);
+				intersection = existedRangeSet.subRangeSet(comparedRange);
+				break;
+			case NOT_EQUAL:
+				comparedRange = (comparedRange == null ? Range.singleton(value) : comparedRange);
+				existedRangeSet.remove(comparedRange);
+				intersection = existedRangeSet;
+				break;
+			case GREATER_OR_EQUAL:
+				comparedRange = (comparedRange == null ? Range.atLeast(value) : comparedRange);
+				intersection = existedRangeSet.subRangeSet(comparedRange);
+				break;
+			case GREATER_THAN:
+				comparedRange = (comparedRange == null ? Range.greaterThan(value) : comparedRange);
+				intersection = existedRangeSet.subRangeSet(comparedRange);
+				break;
+			case LESS_OR_EQUAL:
+				comparedRange = (comparedRange == null ? Range.atMost(value) : comparedRange);
+				intersection = existedRangeSet.subRangeSet(comparedRange);
+				break;
+			case LESS_THAN:
+				comparedRange = (comparedRange == null ? Range.lessThan(value) : comparedRange);
+				intersection = existedRangeSet.subRangeSet(comparedRange);
+				break;
+		}
+		return intersection;
+	}
+
+	private RangeSet<Float> initExistedRangeSet(
+			Range<Float> existedConditionRange) {
+		RangeSet<Float> checkedRange = TreeRangeSet.create();
+		
+		if (existedConditionRange == null) {
+			checkedRange.add(Range.all());
+		} else {
+			checkedRange.add(existedConditionRange);
+		}
+		return checkedRange;
+	}
+
+	private boolean canPassInnermostConditionRange(
+			Condition conditionToCompare, Map<String, Boolean> mapRange) {
+		Boolean value = mapRange.get(conditionToCompare.getName());
+		return value != null && value.equals(PASS_INNERMOST_CONDITION_RANGE);
 	}
 	
 	
