@@ -102,6 +102,7 @@ public class ScenarioCreator {
 			
 			Range<LocalTime> r = Range.closed(t1,t2);
 			Condition<LocalTime> c = new Condition<>();
+			c.setName("TIME");
 			c.setRange(r);
 			c.setValueClassType(LocalTime.class);
 			conFromTo.setCondition(c);

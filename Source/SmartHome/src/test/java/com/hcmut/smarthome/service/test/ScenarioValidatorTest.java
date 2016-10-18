@@ -966,6 +966,28 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
+	@Test
+	public void testCase12_2() throws ParseException, NotSupportedException, ConflictConditionException{
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("04:00", "12:00")
+				.action(TURN_ON, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.FromTo("12:01", "23:00")
+				.action(TURN_OFF, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
 	/**
 	 * Conflict range No 
 	 * Counter action Yes

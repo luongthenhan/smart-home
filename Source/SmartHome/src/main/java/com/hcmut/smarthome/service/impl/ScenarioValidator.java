@@ -76,6 +76,10 @@ public class ScenarioValidator {
 		if( !listActionsAndConditionsToCompare.isEmpty() ){
 			for(int i = 0 ; i < listActionsAndConditionsToCompare.size(); ++i)
 				for(int j = i ; j < listActionsAndConditionsToCompare.size() ; ++j){
+					
+					if( i == j )
+						continue;
+					
 					SimpleAction action1 = listActionsAndConditionsToCompare.get(i).getSecond();
 					SimpleAction action2 = listActionsAndConditionsToCompare.get(j).getSecond();
 					
@@ -84,6 +88,10 @@ public class ScenarioValidator {
 						Condition condition2 = listActionsAndConditionsToCompare.get(j).getFirst();
 						
 						if( condition1 != null && condition2 != null 
+								&& condition1.getValueClassType() != null
+								&& !condition1.getValueClassType().equals(LocalTime.class)
+								&& condition2.getValueClassType() != null
+								&& !condition2.getValueClassType().equals(LocalTime.class)
 								&& condition1.equals(getElseCondition(condition2)))
 							throw new ConflictConditionException(BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION);
 					}
@@ -155,7 +163,14 @@ public class ScenarioValidator {
 						topOuterCondition, (SimpleAction) block));
 			}
 			else if ( block instanceof ControlBlockFromTo ){
+				ControlBlockFromTo blocksFromTo = (ControlBlockFromTo) block;
+				Condition innerFromToCondition = blocksFromTo.getCondition();
+				mergeInnerWithOuterConditionFromToBlock(innerFromToCondition, stackOuterConditions);
+				stackOuterConditions.push(innerFromToCondition);
 				
+				pair.addAll(findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(
+						blocksFromTo.getAction().getBlocks(),
+						stackOuterConditions));
 			}
 			// Block If, IfElse
 			else if (block instanceof ControlBlock) {
@@ -190,6 +205,32 @@ public class ScenarioValidator {
 		return pair;
 	}
 
+	private void mergeInnerWithOuterConditionFromToBlock(Condition innerCondition, Stack<Condition> stackOuterConditions)
+			throws ConflictConditionException, NotSupportedException{
+		Condition outerCondition = 
+				stackOuterConditions.stream().filter(c -> c.getName().equals(innerCondition.getName())).findAny().orElse(null);
+		
+		if( innerCondition.getValueClassType().getClass().equals(LocalTime.class) ){
+			Range<LocalTime> outerConditionRange = null;
+			if( outerCondition == null || outerCondition.getRange() == null)
+				outerConditionRange = Range.all();
+			else outerConditionRange = outerCondition.getRange();
+			Range<LocalTime> intersectionRange = null;
+			try{
+				intersectionRange = outerConditionRange.intersection(innerCondition.getRange());
+			}
+			catch(IllegalArgumentException e){
+				throw new ConflictConditionException("Script conflict itself");
+			}
+			
+			if( intersectionRange != null && intersectionRange.isEmpty() )
+				throw new ConflictConditionException("Script conflict itself");
+			
+			innerCondition.setRange(intersectionRange);
+			
+		}
+	}
+	
 	private void mergeInnerWithOuterConditions(Condition innerCondition, Stack<Condition> stackOuterConditions)
 			throws ConflictConditionException, NotSupportedException {
 		
@@ -401,7 +442,16 @@ public class ScenarioValidator {
 				&& conditionToCompare.getValueClassType() != null
 				&& conditionToCompare.getValueClassType().equals(LocalTime.class)
 				&& conditionToCompare.getValueClassType().equals(existedCondition.getValueClassType())){
-			if( conditionRange.intersection(existedConditionRange).isEmpty() )
+			Range intersection = null;
+			try{
+			 intersection = conditionRange.intersection(existedConditionRange);
+			}
+			catch(IllegalArgumentException e){
+				return true;
+			}
+			
+			
+			if( intersection != null && intersection.isEmpty() )
 				return false;
 			else return true;
 		}
@@ -415,6 +465,7 @@ public class ScenarioValidator {
 		Condition elseCondition = new Condition();
 		elseCondition.setName(ifCondition.getName());
 		elseCondition.setValue(ifCondition.getValue());
+		elseCondition.setValueClassType(ifCondition.getValueClassType());
 
 		switch (ifCondition.getOperator()) {
 		case EQUAL:
