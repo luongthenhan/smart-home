@@ -15,6 +15,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 @Entity
 @Table(name="device")
 public class DeviceEntity implements Serializable{
@@ -57,6 +60,7 @@ public class DeviceEntity implements Serializable{
 	@Column(name="gpio_type", nullable = true , length = 45)
 	private String GPIOType;
 	
+	@OnDelete(action=OnDeleteAction.CASCADE)
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="device")
 	private Set<ScriptEntity> scripts;
 	 

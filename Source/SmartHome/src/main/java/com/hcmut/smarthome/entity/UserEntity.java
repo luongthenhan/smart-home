@@ -13,6 +13,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 @Entity
 @Table(name="account_user")
 public class UserEntity implements Serializable{
@@ -37,6 +40,7 @@ public class UserEntity implements Serializable{
 	@Column(name="is_active", nullable = false)
 	private boolean isActive;
 	
+	@OnDelete(action=OnDeleteAction.CASCADE)
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="user", fetch = FetchType.EAGER)
 	private List<HomeEntity> homes;
 	

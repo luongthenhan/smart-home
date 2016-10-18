@@ -982,6 +982,7 @@ public class ScenarioValidatorTest {
 				.action(TURN_ON, LIGHT_2)
 			.endFromTo()
 		.end().build();
+		System.out.println(input);
 		
 		List<String> existedScritps = new ArrayList<>();
 		String existedScript = new ScriptBuilder()

@@ -47,6 +47,7 @@ public class ScenarioRunner {
 			public void run() {
 				// Check state is still running or not
 				boolean state = mapScenarioController.get(scenario.getId());
+				System.out.println("Goes here ");
 				if (state == RUNNING)
 					runBlocks(scenario.getBlocks(), scenario.getId(), scenario.getHomeId());
 				else if (state == STOPPING)
@@ -78,10 +79,10 @@ public class ScenarioRunner {
 				// TODO: Improve performance
 				// TODO: Improve performance
 				// Only do action when home is enabled
-				if (homeService.isEnabled(homeId)) {
+				//if (homeService.isEnabled(homeId)) {
 					SimpleAction action = (SimpleAction) block;
 					action.doAction();
-				}
+				//}
 
 			} else if (block instanceof ControlBlock) {
 				runControlBlock((ControlBlock) block, scenarioId, homeId);
@@ -97,19 +98,20 @@ public class ScenarioRunner {
 	 */
 	private void runControlBlock(ControlBlock controlBlock, int scenarioId,
 			int homeId) {
-		if (controlBlock.getCondition().check()) {
+		if ( controlBlock.getClass().equals(ControlBlockFromTo.class) ){
+			ControlBlockFromTo controlBlockFromTo = (ControlBlockFromTo) controlBlock;
+			if( controlBlockFromTo.getCondition().getRange().contains(LocalTime.now()) )
+				runBlocks(controlBlockFromTo.getAction().getBlocks(),
+						scenarioId, homeId);
+		}
+		else if (controlBlock.getCondition().check()) {
 			runBlocks(controlBlock.getAction().getBlocks(), scenarioId, homeId);
 		} else if (CONTROL_BLOCK_IF_ELSE.equals(controlBlock.getName())) {
 			ControlBlockIfElse controlBlockIfElse = (ControlBlockIfElse) controlBlock;
 			runBlocks(controlBlockIfElse.getElseAction().getBlocks(),
 					scenarioId, homeId);
 		}
-		else if ( controlBlock.getClass().equals(ControlBlockFromTo.class) ){
-			ControlBlockFromTo controlBlockFromTo = (ControlBlockFromTo) controlBlock;
-			if( controlBlockFromTo.getCondition().getRange().contains(LocalTime.now()) )
-				runBlocks(controlBlockFromTo.getAction().getBlocks(),
-						scenarioId, homeId);
-		}
+		
 	}
 	
 }

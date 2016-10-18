@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.rest;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
+
 import java.util.List;
 
 import javax.transaction.NotSupportedException;
@@ -23,6 +25,7 @@ import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IDeviceTypeService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConstantUtil;
+import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @CrossOrigin
 @RestController
@@ -216,6 +219,23 @@ public class DeviceResource {
 		Scenario scenario = scenarioService.JSONToScenario(script1);
 		scenario.setId(2);
 		scenario.setHomeId(ConstantUtil.HOME_ID);
+		scenarioService.runScenario(scenario);
+		return null;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/test3")
+	public ResponseEntity<Void> test3(@PathVariable int homeId) throws ParseException {
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("00:00", "00:20")
+				.action(TURN_ON, 2)
+			.endFromTo()
+		.end().build();
+		
+		Scenario scenario = scenarioService.JSONToScenario(input);
+		scenario.setId(1);
+		scenario.setHomeId(1);
 		scenarioService.runScenario(scenario);
 		return null;
 	}

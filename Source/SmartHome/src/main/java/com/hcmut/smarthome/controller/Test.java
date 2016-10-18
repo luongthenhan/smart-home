@@ -38,8 +38,22 @@ public class Test {
 	public static void main(String[] args) throws ParseException, NotSupportedException, ConflictConditionException {
 	
 		Test test = new Test();
-		test.testCase4();
+		test.testCase8();
 		
+	}
+	
+	public void testCase8() throws ParseException{
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("00:00", "01:00")
+				.action(TURN_ON, 2)
+			.endFromTo()
+		.end().build();
+		
+		Scenario scenario = scenarioService.JSONToScenario(input);
+		scenario.setId(1);
+		scenario.setHomeId(1);
+		scenarioService.runScenario(scenario);
 	}
 	
 	/**

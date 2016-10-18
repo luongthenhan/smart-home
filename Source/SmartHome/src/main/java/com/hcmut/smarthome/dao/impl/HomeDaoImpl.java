@@ -60,15 +60,15 @@ public class HomeDaoImpl extends CommonDaoImpl<HomeEntity> implements IHomeDao {
 	@Override
 	@Transactional
 	public boolean deleteHome(int userId, int homeId) {
-		// String query =
-		// "DELETE FROM public.home WHERE home.id = :homeId AND home.user_id = :userId ; ";
-		// SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
-		// sqlStatement.setParameter("userId", userId);
-		// sqlStatement.setParameter("homeId", homeId);
-		//
-		// return sqlStatement.executeUpdate() != 0;
+		 String query =
+		 "DELETE FROM public.home WHERE home.id = :homeId AND home.user_id = :userId ; ";
+		 SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
+		 sqlStatement.setParameter("userId", userId);
+		 sqlStatement.setParameter("homeId", homeId);
+		
+		 return sqlStatement.executeUpdate() != 0;
 
-		return delete(homeId);
+		// return delete(homeId);
 	}
 
 	@Override
