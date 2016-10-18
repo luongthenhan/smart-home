@@ -23,4 +23,5 @@ public class Action implements IBlock{
 	public void setBlocks(List<IBlock> blocks) {
 		this.blocks = blocks;
 	}
+
 }

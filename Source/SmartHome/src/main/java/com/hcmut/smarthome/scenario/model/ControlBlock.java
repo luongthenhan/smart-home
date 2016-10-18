@@ -1,8 +1,8 @@
 package com.hcmut.smarthome.scenario.model;
 
-public abstract class ControlBlock implements IBlock{
+public abstract class ControlBlock<C extends Comparable<? extends Object>> implements IBlock{
 	protected String name;
-	protected Condition condition;
+	protected Condition<C> condition;
 	protected Action action;
 	
 	@Override
@@ -15,11 +15,11 @@ public abstract class ControlBlock implements IBlock{
 		this.name = name;
 	}
 
-	public Condition getCondition() {
+	public Condition<C> getCondition() {
 		return condition;
 	}
 
-	public void setCondition(Condition condition) {
+	public void setCondition(Condition<C> condition) {
 		this.condition = condition;
 	}
 

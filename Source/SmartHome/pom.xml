@@ -9,35 +9,28 @@
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 	<properties>
 		<org.springframework-version>4.3.1.RELEASE</org.springframework-version>
-		<!-- Version of JSF -->
-		<jsf.version>2.2.12</jsf.version>
 		<org.slf4j-version>1.6.6</org.slf4j-version>
 		<!-- Version of PostGresql -->
 		<postgresql.version>9.1-901.jdbc4</postgresql.version>
 		<jackson-version>2.7.3</jackson-version>
+		<guava>19.0</guava>
 	</properties>
 	<dependencies>
-
+		<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jaxrs -->
+		<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-client -->
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm</artifactId>
 			<version>3.3.1</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-bundle</artifactId>
-			<version>1.19</version>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>1.19</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-core</artifactId>
-			<version>1.19</version>
-		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -80,11 +73,11 @@
 		</dependency>
 
 		<!-- servlet-api -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- Pi4J -->
 		<dependency>
@@ -177,14 +170,14 @@
 		</dependency>
 
 		<!-- Inject -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 			<version>1</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- Servlet -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
@@ -200,7 +193,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- Test -->
 		<dependency>

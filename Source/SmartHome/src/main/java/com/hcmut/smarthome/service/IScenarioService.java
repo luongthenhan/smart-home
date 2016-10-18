@@ -7,6 +7,7 @@ import javax.transaction.NotSupportedException;
 import org.json.simple.parser.ParseException;
 
 import com.hcmut.smarthome.scenario.model.Scenario;
+import com.hcmut.smarthome.utils.ConflictConditionException;
 
 public interface IScenarioService {
 	/**
@@ -34,8 +35,9 @@ public interface IScenarioService {
 	 * @param inputScenario
 	 * @param existedScenarios
 	 * @return
+	 * @throws ConflictConditionException 
 	 */
-	boolean isScenarioValidate(Scenario inputScenario, List<Scenario> existedScenarios) throws NotSupportedException;
+	boolean isScenarioValidate(Scenario inputScenario, List<Scenario> existedScenarios) throws NotSupportedException, ConflictConditionException;
 	
 	/**
 	 * Stop ( remove ) forever a scenario

@@ -1,5 +1,6 @@
 package com.hcmut.smarthome.service.impl;
 
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,22 @@ public class ScenarioRunner {
 		// Mark scenario as running
 		mapScenarioController.put(scenario.getId(), RUNNING);
 		runBlocks(scenario.getBlocks(), scenario.getId(), scenario.getHomeId());
+		
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				// Check state is still running or not
+				boolean state = mapScenarioController.get(scenario.getId());
+				if (state == RUNNING)
+					runBlocks(scenario.getBlocks(), scenario.getId(), scenario.getHomeId());
+				else if (state == STOPPING)
+					this.cancel();
+
+			}
+		}, 0, TIMEOUT_CHECK_CONDITION);
+		
 	}
 
 	public void stopForeverScenario(int id) {
@@ -59,39 +76,19 @@ public class ScenarioRunner {
 	private void runBlocks(List<IBlock> blocks, int scenarioId, int homeId) {
 		for (IBlock block : blocks) {
 			if (block instanceof SimpleAction) {
-				
+
+				// TODO: Improve performance
 				// TODO: Improve performance
 				// Only do action when home is enabled
 				if (homeService.isEnabled(homeId)) {
 					SimpleAction action = (SimpleAction) block;
 					action.doAction();
 				}
-				
+
 			} else if (block instanceof ControlBlock) {
-				Timer timer = new Timer();
-				timer.schedule(new TimerTask() {
-
-					@Override
-					public void run() {
-						// Check state is still running or not
-						boolean state = mapScenarioController.get(scenarioId);
-						if (state == RUNNING)
-							runControlBlock((ControlBlock) block, scenarioId,
-									homeId);
-						else if (state == STOPPING)
-							this.cancel();
-
-					}
-				}, 0, TIMEOUT_CHECK_CONDITION);
+				runControlBlock((ControlBlock) block, scenarioId, homeId);
 				// TODO: Move timeout to each model
-
-			} else if (block instanceof ControlBlockFromTo) {
-				timerService.schedule(
-						new Date(),
-						new Date(),
-						t -> runBlocks(((ControlBlockFromTo) block).getAction()
-								.getBlocks(), scenarioId, homeId));
-			}
+			} 
 		}
 	}
 
@@ -108,6 +105,12 @@ public class ScenarioRunner {
 			ControlBlockIfElse controlBlockIfElse = (ControlBlockIfElse) controlBlock;
 			runBlocks(controlBlockIfElse.getElseAction().getBlocks(),
 					scenarioId, homeId);
+		}
+		else if ( controlBlock.getClass().equals(ControlBlockFromTo.class) ){
+			ControlBlockFromTo controlBlockFromTo = (ControlBlockFromTo) controlBlock;
+			if( controlBlockFromTo.getCondition().getRange().contains(LocalTime.now()) )
+				runBlocks(controlBlockFromTo.getAction().getBlocks(),
+						scenarioId, homeId);
 		}
 	}
 

@@ -53,12 +53,27 @@ public class ScriptBuilder {
 	}
 	
 	public ScriptBuilder If(Object deviceId, String operator, Object value){
-		int nbrBlock = stack.pop() + 1;
-		stack.push(nbrBlock);
-		if( nbrBlock > 1 )
-			builder.append(",");
+		addNewControlBlockToCurrentOne();
 		builder.append(String.format("['If',['%s','%s','%s']",deviceId,operator,value));
 		return then();
+	}
+	
+	public ScriptBuilder FromTo(Object fromValue , Object toValue){
+		addNewControlBlockToCurrentOne();
+		builder.append(String.format("['FromTo','%s','%s'",fromValue,toValue));
+		return then();
+	}
+
+	private void addNewControlBlockToCurrentOne() {
+		int nbrBlock = increaseNbrBlock();
+		if( nbrBlock > 1 )
+			builder.append(",");
+	}
+
+	private int increaseNbrBlock() {
+		int nbrBlock = stack.pop() + 1;
+		stack.push(nbrBlock);
+		return nbrBlock;
 	}
 	
 	private ScriptBuilder then(){
@@ -67,21 +82,19 @@ public class ScriptBuilder {
 	}
 	
 	public ScriptBuilder action(String actionName, int deviceId){
-		int nbrBlock = stack.pop() + 1;
-		stack.push(nbrBlock);
-		if( nbrBlock > 1 )
-			builder.append(",");
+		addNewControlBlockToCurrentOne();
 		builder.append(String.format("['%s','%s']",actionName,deviceId));
 		
 		return this;
 	}
 	
 	public ScriptBuilder endIf(){
-		int nbrBlock = stack.pop() + 1;
-		stack.push(nbrBlock);
-		
 		builder.append("]");
 		return end();
+	}
+	
+	public ScriptBuilder endFromTo(){
+		return endIf();
 	}
 	
 	public ScriptBuilder Else(){
@@ -110,7 +123,7 @@ public class ScriptBuilder {
 	}
 	
 	public static class ScriptBuilderTemplate{
-		public static String ifHasOneAction(Object deviceIdCondition, String operator , Object value , String actionName, int deviceIdAction){
+		public static String blockIfOneAction(Object deviceIdCondition, String operator , Object value , String actionName, int deviceIdAction){
 			String script = new ScriptBuilder()
 			.begin()
 				.If(deviceIdCondition,operator,value)
@@ -121,7 +134,7 @@ public class ScriptBuilder {
 			return script;
 		}
 		
-		public static String ifElseHasOneAction(Object deviceIdCondition, String operator , Object value , String ifActionName, int deviceIdIfAction, String elseActionName, int deviceIdElseAction){
+		public static String blockIfElseOneAction(Object deviceIdCondition, String operator , Object value , String ifActionName, int deviceIdIfAction, String elseActionName, int deviceIdElseAction){
 			String script = new ScriptBuilder()
 			.begin()
 				.If(deviceIdCondition,operator,value)
@@ -138,7 +151,9 @@ public class ScriptBuilder {
 	public static void main(String[] args) throws ScriptException, FileNotFoundException {
 		ScriptBuilder scriptBuilder = new ScriptBuilder()
 		.begin()
-			.action("Toggle", 2)
+			.FromTo(4, 10)
+				.action("Toggle", 2)
+			.endFromTo()
 			.If("Temperature Sensor",">",35.5f)
 				.action("Toggle", 2)
 				.action("Toggle", 3)
@@ -156,9 +171,9 @@ public class ScriptBuilder {
 		
 		System.out.println(script);
 		
-		System.out.println(ScriptBuilderTemplate.ifHasOneAction(5, GREATER_OR_EQUAL, 30, TURN_ON, 3));
+		System.out.println(ScriptBuilderTemplate.blockIfOneAction(5, GREATER_OR_EQUAL, 30, TURN_ON, 3));
 		
-		String s = ScriptBuilder.parseFromCodeAsString("ScriptBuilderTemplate.ifHasOneAction(5, \">=\", 30, \"TurnOn\", 3)");
+		String s = ScriptBuilder.parseFromCodeAsString("ScriptBuilderTemplate.blockIfOneAction(5, \">=\", 30, \"TurnOn\", 3)");
 		System.out.println(s);
 	}
 }

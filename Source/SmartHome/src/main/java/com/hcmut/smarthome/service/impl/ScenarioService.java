@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IScenarioService;
+import com.hcmut.smarthome.utils.ConflictConditionException;
 
 @Service
 public class ScenarioService implements IScenarioService {
@@ -19,13 +20,13 @@ public class ScenarioService implements IScenarioService {
 			.getLogger(ScenarioService.class);
 
 	@Autowired
-	private ScenarioCreator scenarioCreator;
+	private ScenarioCreator scenarioCreator = new ScenarioCreator();
 	
 	@Autowired
-	private ScenarioRunner scenarioRunner;
+	private ScenarioRunner scenarioRunner = new ScenarioRunner();
 	
 	@Autowired
-	private ScenarioValidator scenarioValidator;
+	private ScenarioValidator scenarioValidator = new ScenarioValidator();
 	
 	// TODO: Maybe auto wire later
 	TimerService timerService = new TimerService();
@@ -36,7 +37,7 @@ public class ScenarioService implements IScenarioService {
 
 	@Override
 	public boolean isScenarioValidate(Scenario inputScenario,
-			List<Scenario> existedScenarios) throws NotSupportedException {
+			List<Scenario> existedScenarios) throws NotSupportedException, ConflictConditionException {
 		return scenarioValidator.isScenarioValidate(inputScenario, existedScenarios);
 	}
 	

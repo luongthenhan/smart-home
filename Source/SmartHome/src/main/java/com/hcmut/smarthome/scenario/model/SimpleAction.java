@@ -1,5 +1,6 @@
 package com.hcmut.smarthome.scenario.model;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class SimpleAction implements IBlock, IAction{
@@ -55,6 +56,31 @@ public class SimpleAction implements IBlock, IAction{
 
 	public void setDeviceId(int deviceId) {
 		this.deviceId = deviceId;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("[%s %s]", getName(),getDeviceId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.name,this.deviceId);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		
+		if( o == this )
+			return true;
+		
+		if( o == null || !(o instanceof SimpleAction) )
+			return false;
+		
+		SimpleAction that = (SimpleAction) o;
+		
+		return Objects.equals(this.name, that.name)
+				&& Objects.equals(this.deviceId, that.deviceId);
 	}
 
 }
