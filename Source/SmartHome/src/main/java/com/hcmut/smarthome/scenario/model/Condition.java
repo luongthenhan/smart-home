@@ -5,12 +5,13 @@ import java.util.function.Predicate;
 
 import com.google.common.collect.Range;
 
-public class Condition implements IBlock, ICondition {
+public class Condition<C extends Comparable<? extends Object>> implements IBlock, ICondition {
 	protected String name;
 	protected String operator;
 	protected Object value;
 	protected Predicate<Object> predicate;
-	protected Range<Float> range;
+	protected Range<C> range;
+	protected Class<C> valueClassType;
 	
 	public Condition() {
 		super();
@@ -61,11 +62,11 @@ public class Condition implements IBlock, ICondition {
 		this.value = value;
 	}
 
-	public Range<Float> getRange() {
+	public Range<C> getRange() {
 		return range;
 	}
 
-	public void setRange(Range<Float> range) {
+	public void setRange(Range<C> range) {
 		this.range = range;
 	}
 	
@@ -94,6 +95,14 @@ public class Condition implements IBlock, ICondition {
 		return Objects.equals(name, condition.name)
 				&& Objects.equals(operator, condition.operator)
 				&& Objects.equals(value, condition.value);
+	}
+
+	public Class<C> getValueClassType() {
+		return valueClassType;
+	}
+
+	public void setValueClassType(Class<C> valueClassType) {
+		this.valueClassType = valueClassType;
 	}
 	
 }

@@ -1,12 +1,15 @@
 package com.hcmut.smarthome.utils.test;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.time.LocalTime;
 
 import org.junit.Test;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
+import com.hcmut.smarthome.scenario.model.Condition;
 
 public class RangeTest {
 	@Test
@@ -48,5 +51,26 @@ public class RangeTest {
 		Range<Integer> r1 = Range.closedOpen(35, 35);
 		System.out.println(r1.isEmpty());
 		
+	}
+	
+	@Test
+	public void testCase4() throws Exception {
+		LocalTime t1 = LocalTime.of(15,45);
+		LocalTime t2 = LocalTime.of(23,45);
+		LocalTime now = LocalTime.now();
+		if( now.isBefore(t2) && now.isAfter(t1))			
+		System.out.println(t1.plusHours(9));
+		System.out.println(t1);
+		
+		Range<LocalTime> range = Range.closed(t1, t2);
+		System.out.println(range.contains(now));
+	}
+	
+	@Test
+	public void testCase5() throws Exception {
+		Condition<LocalTime> c = new Condition<>();
+		c.setRange(Range.closed(LocalTime.of(5, 40), LocalTime.of(6, 40)));
+		
+		Condition cc = c;
 	}
 }

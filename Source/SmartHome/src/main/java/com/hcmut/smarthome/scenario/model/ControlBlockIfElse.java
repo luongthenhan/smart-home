@@ -2,7 +2,7 @@ package com.hcmut.smarthome.scenario.model;
 
 import com.hcmut.smarthome.utils.ConstantUtil;
 
-public class ControlBlockIfElse extends ControlBlock {
+public class ControlBlockIfElse extends ControlBlock<Float> {
 	protected Action elseAction;
 
 	public ControlBlockIfElse(){

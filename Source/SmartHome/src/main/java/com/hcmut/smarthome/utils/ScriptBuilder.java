@@ -93,6 +93,10 @@ public class ScriptBuilder {
 		return end();
 	}
 	
+	public ScriptBuilder endFromTo(){
+		return endIf();
+	}
+	
 	public ScriptBuilder Else(){
 		return end().then();
 	}
@@ -147,7 +151,9 @@ public class ScriptBuilder {
 	public static void main(String[] args) throws ScriptException, FileNotFoundException {
 		ScriptBuilder scriptBuilder = new ScriptBuilder()
 		.begin()
-			.action("Toggle", 2)
+			.FromTo(4, 10)
+				.action("Toggle", 2)
+			.endFromTo()
 			.If("Temperature Sensor",">",35.5f)
 				.action("Toggle", 2)
 				.action("Toggle", 3)

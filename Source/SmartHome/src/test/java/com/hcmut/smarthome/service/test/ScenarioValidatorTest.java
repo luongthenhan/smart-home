@@ -927,6 +927,45 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
+	@Test
+	public void testCase12() throws ParseException, NotSupportedException, ConflictConditionException{
+		String input = ScriptBuilderTemplate.blockIfOneAction(TSENSOR_5, LESS_THAN, 30, TURN_ON, LIGHT_2);
+		
+		List<String> existedScritps = new ArrayList<>();
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.FromTo("05:00", "23:00")
+				.action(TURN_OFF, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testCase12_1() throws ParseException, NotSupportedException, ConflictConditionException{
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("04:00", "12:00")
+				.action(TURN_ON, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.FromTo("05:00", "23:00")
+				.action(TURN_OFF, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
 	/**
 	 * Conflict range No 
 	 * Counter action Yes

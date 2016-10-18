@@ -9,6 +9,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
 import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.SCRIPT_CONFLICT_ITSELF;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,7 +154,10 @@ public class ScenarioValidator {
 				pair.add(new Pair<Condition, SimpleAction>(
 						topOuterCondition, (SimpleAction) block));
 			}
-			// Block If, IfElse or FromTo
+			else if ( block instanceof ControlBlockFromTo ){
+				
+			}
+			// Block If, IfElse
 			else if (block instanceof ControlBlock) {
 				// Push If condition to stack and continue finding out in block
 				// If actions
@@ -161,8 +165,7 @@ public class ScenarioValidator {
 				mergeInnerWithOuterConditions(innerIfCondition, stackOuterConditions);
 				stackOuterConditions.push(innerIfCondition);
 				
-				pair
-						.addAll(findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(
+				pair.addAll(findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(
 								((ControlBlock) block).getAction().getBlocks(),
 								stackOuterConditions));
 
@@ -175,8 +178,7 @@ public class ScenarioValidator {
 							.getCondition());
 					mergeInnerWithOuterConditions(innerElseCondition, stackOuterConditions);
 					stackOuterConditions.push(innerElseCondition);
-					pair
-							.addAll(findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(
+					pair.addAll(findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(
 									blockIfElse.getElseAction().getBlocks(),
 									stackOuterConditions));
 				}
@@ -371,9 +373,7 @@ public class ScenarioValidator {
 				Map<String,Boolean> mapRangeIfBlock = mapRange;
 				Map<String,Boolean> mapRangeElseBlock = new HashMap<>(mapRange);
 				
-				return 
-						
-						 areNestedConditionsMatching(conditionToCompare,actionIfBlock,mapRangeIfBlock) // check the condition inside current if condition
+				return areNestedConditionsMatching(conditionToCompare,actionIfBlock,mapRangeIfBlock) // check the condition inside current if condition
 						|| areNestedConditionsMatching(conditionToCompare,actionElseBlock,mapRangeElseBlock)// check the condition inside current else condition
 						|| isConditionTheSameOrOverlap(conditionToCompare, ifCondition,mapRangeIfBlock)
 						|| isConditionTheSameOrOverlap(conditionToCompare, elseCondition,mapRangeElseBlock);
@@ -381,7 +381,8 @@ public class ScenarioValidator {
 				ControlBlockFromTo blockFromTo = (ControlBlockFromTo) block;
 				// TODO : check here
 				return areNestedConditionsMatching(conditionToCompare,
-						blockFromTo.getAction().getBlocks(),mapRange);
+						blockFromTo.getAction().getBlocks(),mapRange)
+						|| checkConditionRange(conditionToCompare, blockFromTo.getCondition()) ;
 			}
 
 		}
@@ -389,6 +390,25 @@ public class ScenarioValidator {
 		return false;
 	}
 
+	private boolean checkConditionRange(Condition conditionToCompare, Condition existedCondition){
+		// Basic case
+		if (conditionToCompare == null || existedCondition == null)
+			return false;
+		
+		Range conditionRange = conditionToCompare.getRange();
+		Range existedConditionRange = existedCondition.getRange();
+		if( conditionRange != null  && existedConditionRange != null
+				&& conditionToCompare.getValueClassType() != null
+				&& conditionToCompare.getValueClassType().equals(LocalTime.class)
+				&& conditionToCompare.getValueClassType().equals(existedCondition.getValueClassType())){
+			if( conditionRange.intersection(existedConditionRange).isEmpty() )
+				return false;
+			else return true;
+		}
+		
+		return false;
+	}
+	
 	private Condition getElseCondition(Condition ifCondition)
 			throws NotSupportedException {
 
@@ -469,11 +489,9 @@ public class ScenarioValidator {
 
 			// If empty , it means two conditions are not overlapped
 			if (intersection.isEmpty()) {
-				// TODO: Switch to map boolean
-				// Tricky here , if the deepest condition is range condition
-				// and it can pass
-				// through the CHECK RANGE , don't need to check with outer
-				// condition any more
+				// Tricky here , if the innermost condition is range condition
+				// and it can pass through the CHECK RANGE , don't need to check
+				// with outer condition any more
 				mapRange.put(conditionToCompare.getName(), PASS_INNERMOST_CONDITION_RANGE);
 				return false;
 			} else

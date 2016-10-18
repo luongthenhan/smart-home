@@ -1,9 +1,28 @@
 package com.hcmut.smarthome.service.impl;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.*;
+import static com.hcmut.smarthome.utils.ConstantUtil.BUZZER;
+import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_FROM_TO;
+import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF;
+import static com.hcmut.smarthome.utils.ConstantUtil.EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.GAS_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_OR_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_THAN;
+import static com.hcmut.smarthome.utils.ConstantUtil.LESS_OR_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT;
+import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.MOTION_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
+import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF;
+import static com.hcmut.smarthome.utils.ConstantUtil.SIZE_CONTROL_BLOCK_IF_ELSE;
+import static com.hcmut.smarthome.utils.ConstantUtil.TAKE_PICTURE;
+import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE;
+import static com.hcmut.smarthome.utils.ConstantUtil.TURN_OFF;
+import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.function.Supplier;
 
 import org.apache.log4j.Logger;
@@ -14,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Range;
 import com.hcmut.smarthome.device.controller.IGeneralController;
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.scenario.model.Action;
@@ -77,10 +97,17 @@ public class ScenarioCreator {
 		// Maybe we consider a range as condition
 		case CONTROL_BLOCK_FROM_TO:
 			ControlBlockFromTo conFromTo = new ControlBlockFromTo();
-			block = conFromTo;
-			conFromTo.setFromValue(new Date()); // obj(1)
-			conFromTo.setToValue(new Date()); // obj(2)
+			LocalTime t1 = LocalTime.parse(object.get(1).toString());
+			LocalTime t2 = LocalTime.parse(object.get(2).toString());
+			
+			Range<LocalTime> r = Range.closed(t1,t2);
+			Condition<LocalTime> c = new Condition<>();
+			c.setRange(r);
+			c.setValueClassType(LocalTime.class);
+			conFromTo.setCondition(c);
+			
 			conFromTo.setAction((Action) createBlock((JSONArray) object.get(3)));
+			block = conFromTo;
 			break;
 
 		case CONTROL_BLOCK_IF:
@@ -346,8 +373,10 @@ public class ScenarioCreator {
 
 		if (LHSExpressionType.equals(Boolean.class)) {
 			condition.setValue(Boolean.valueOf(object.get(2).toString()));
+			condition.setValueClassType(Boolean.class);
 		} else if (LHSExpressionType.equals(Float.class)) {
 			condition.setValue(Float.valueOf(object.get(2).toString()));
+			condition.setValueClassType(Float.class);
 		} else
 			condition.setValue(object.get(2));
 
