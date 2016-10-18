@@ -22,6 +22,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.TURN_OFF;
 import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
@@ -97,17 +98,25 @@ public class ScenarioCreator {
 		// Maybe we consider a range as condition
 		case CONTROL_BLOCK_FROM_TO:
 			ControlBlockFromTo conFromTo = new ControlBlockFromTo();
-			LocalTime t1 = LocalTime.parse(object.get(1).toString());
-			LocalTime t2 = LocalTime.parse(object.get(2).toString());
-			
-			Range<LocalTime> r = Range.closed(t1,t2);
+			LocalTime t1,t2;
+
+			try {
+				t1 = LocalTime.parse(object.get(1).toString());
+				t2 = LocalTime.parse(object.get(2).toString());
+			} catch (DateTimeParseException e) {
+				throw new DateTimeParseException("Cannot parse the time",
+						object.toString(), 0);
+			}
+
+			Range<LocalTime> r = Range.closed(t1, t2);
 			Condition<LocalTime> c = new Condition<>();
 			c.setName("TIME");
 			c.setRange(r);
 			c.setValueClassType(LocalTime.class);
 			conFromTo.setCondition(c);
-			
-			conFromTo.setAction((Action) createBlock((JSONArray) object.get(3)));
+
+			conFromTo
+					.setAction((Action) createBlock((JSONArray) object.get(3)));
 			block = conFromTo;
 			break;
 

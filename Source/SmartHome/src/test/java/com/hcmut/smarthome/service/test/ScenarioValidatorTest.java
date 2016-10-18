@@ -944,6 +944,36 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
+	/**
+	 * VALID
+	 * @throws ParseException
+	 * @throws NotSupportedException
+	 * @throws ConflictConditionException
+	 */
+	@Test
+	public void testCase12_3() throws ParseException, NotSupportedException, ConflictConditionException{
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("04:00", "12:00")
+				.If(TSENSOR_5, LESS_THAN, 35.5f)
+					.action(TURN_ON, LIGHT_2)
+				.endIf()
+			.endFromTo()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.FromTo("05:00", "23:00")
+				.action(TURN_OFF, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
 	@Test
 	public void testCase12_1() throws ParseException, NotSupportedException, ConflictConditionException{
 		String input = new ScriptBuilder()

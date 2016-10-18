@@ -1,5 +1,6 @@
 package com.hcmut.smarthome.service.impl;
 
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +105,10 @@ public class ScenarioRunner {
 					scenarioId, homeId);
 		}
 		else if ( controlBlock.getClass().equals(ControlBlockFromTo.class) ){
-			
+			ControlBlockFromTo controlBlockFromTo = (ControlBlockFromTo) controlBlock;
+			if( controlBlockFromTo.getCondition().getRange().contains(LocalTime.now()) )
+				runBlocks(controlBlockFromTo.getAction().getBlocks(),
+						scenarioId, homeId);
 		}
 	}
 

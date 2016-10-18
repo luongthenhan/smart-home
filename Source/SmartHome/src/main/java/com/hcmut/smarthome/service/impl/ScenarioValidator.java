@@ -220,11 +220,11 @@ public class ScenarioValidator {
 				intersectionRange = outerConditionRange.intersection(innerCondition.getRange());
 			}
 			catch(IllegalArgumentException e){
-				throw new ConflictConditionException("Script conflict itself");
+				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
 			}
 			
 			if( intersectionRange != null && intersectionRange.isEmpty() )
-				throw new ConflictConditionException("Script conflict itself");
+				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
 			
 			innerCondition.setRange(intersectionRange);
 			
@@ -272,12 +272,12 @@ public class ScenarioValidator {
 				}
 			} // Exception when intersect mean that script is conflicted
 			catch(IllegalArgumentException e){
-				throw new ConflictConditionException("Script conflict itself");
+				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
 			}
 			
 			// Special case : (30-35) ^ [35-40) = [35,35) so called empty range , also mean script is conflicted 
 			if( intersectionRange != null && intersectionRange.isEmpty() )
-				throw new ConflictConditionException("Script conflict itself");
+				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
 			
 			innerCondition.setRange(intersectionRange);
 		}
