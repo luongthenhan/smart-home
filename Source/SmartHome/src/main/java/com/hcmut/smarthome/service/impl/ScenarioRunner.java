@@ -1,7 +1,9 @@
 package com.hcmut.smarthome.service.impl;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF_ELSE;
+import static com.hcmut.smarthome.utils.ConstantUtil.TIMEOUT_CHECK_CONDITION;
+
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +21,6 @@ import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IHomeService;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.*;
-
 @Service
 public class ScenarioRunner {
 	private static final boolean RUNNING = true;
@@ -30,8 +30,6 @@ public class ScenarioRunner {
 	
 	@Autowired
 	private IHomeService homeService;
-	
-	private TimerService timerService = new TimerService();
 	
 	public void runScenario(Scenario scenario) {
 		if (scenario == null || scenario.getId() == null
@@ -113,22 +111,5 @@ public class ScenarioRunner {
 						scenarioId, homeId);
 		}
 	}
-
-	public IHomeService getHomeService() {
-		return homeService;
-	}
-
-	public void setHomeService(IHomeService homeService) {
-		this.homeService = homeService;
-	}
-
-	public TimerService getTimerService() {
-		return timerService;
-	}
-
-	public void setTimerService(TimerService timerService) {
-		this.timerService = timerService;
-	}
-	
 	
 }

@@ -28,9 +28,6 @@ public class ScenarioService implements IScenarioService {
 	@Autowired
 	private ScenarioValidator scenarioValidator = new ScenarioValidator();
 	
-	// TODO: Maybe auto wire later
-	TimerService timerService = new TimerService();
-
 	public String JSONToString() {
 		throw new UnsupportedOperationException("Not supported");
 	}
