@@ -1,18 +1,24 @@
 app.service('MainService', function($http) {
 
     var self = this;
+	
+	self.TOKEN_HEADER_NAME = "X-Auth-Token";
+	self.USERNAME_HEADER_NAME = "X-Username";
+	self.PASSWORD_HEADER_NAME = "X-Password";
 
-    self.hostDomain = "http://localhost:8080/smarthome/api/";
+    self.hostDomain = "https://localhost:8443/smarthome/api/";
     self.userId = 1;
     self.selectedHome = null;
     self.selectedMode = null;
     self.selectedDeviceType = null;
-
     self.devices = [];
+	self.authToken = null;
 
     self.getHomes = function(controller) {
         console.log("URL: " + self.hostDomain + "users/" + self.userId + "/homes");
-        $http.get(self.hostDomain + "users/" + self.userId + "/homes").then(function(response){
+        $http.get(self.hostDomain + "users/" + self.userId + "/homes", {
+					headers: {self.TOKEN_HEADER_NAME : self.authToken}
+			}).then(function(response){
             //TODO: Handle home lists
 
             //STUB: select first home and first mode in home lists and its device types
@@ -38,7 +44,9 @@ app.service('MainService', function($http) {
 
             // Fetch conditions and actions
             $.each(controller.deviceTypes, function(dtIndex, dtVal){
-                $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + dtVal.id + "/devices").then(function(response){
+                $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + dtVal.id + "/devices", {
+					headers: {self.TOKEN_HEADER_NAME : self.authToken}
+			}).then(function(response){
                     $.each(response.data, function(dIndex, dVal) {
                         dVal.conditions = [];
                         dVal.actions = [];
@@ -70,7 +78,9 @@ app.service('MainService', function($http) {
     }
 
     self.getDevices = function(controller) {
-        $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices").then(function(response){
+        $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices", {
+					headers: {self.TOKEN_HEADER_NAME : self.authToken}
+			}).then(function(response){
             controller.devices = response.data;
             $.each(controller.devices, function(index, dVal) {
                 dVal.modes = [];
@@ -101,7 +111,9 @@ app.service('MainService', function($http) {
     }
 
     self.getSelectedModeScripts = function(device) {
-        $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts").then(function(response){
+        $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts", {
+					headers: {self.TOKEN_HEADER_NAME : self.authToken}
+			}).then(function(response){
             device.scripts = response.data;
             console.log(device.scripts);
         })
@@ -109,7 +121,9 @@ app.service('MainService', function($http) {
 
     self.getAllScripts = function(device) {
         $.each(self.selectedHome.modes, function(index, val) {
-            $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + val.id + "/scripts").then(function(response){
+            $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + val.id + "/scripts", {
+					headers: {self.TOKEN_HEADER_NAME : self.authToken}
+			}).then(function(response){
                 device.modes.push({
                     id: val.id,
                     name: val.name,
@@ -126,7 +140,9 @@ app.service('MainService', function($http) {
 
     self.deleteScript = function(deviceId, scriptId) {
         $http.delete(self.hostDomain + "/" + "devices/" + deviceId + "/modes/" + self.selectedMode.id
-            + "/scripts/" + scriptId).then(function(response) {
+            + "/scripts/" + scriptId, {
+					headers: {self.TOKEN_HEADER_NAME : self.authToken}
+			}).then(function(response) {
                 console.log("Delete Script");
                 console.log(response.headers);
         })
@@ -137,4 +153,32 @@ app.service('MainService', function($http) {
         // TODO: Call web services /script/add
         return true;
     }
+	
+	self.login = function(username, password) {
+		$http.get(self.hostDomain + "/" + "login", {
+					headers: {self.USERNAME_HEADER_NAME : username, self.PASSWORD_HEADER_NAME : password }
+			}).then(function(response) {
+				
+				if(response.status == 200) {
+					self.authToken = response.headers(self.TOKEN_HEADER_NAME);
+					return true;
+				}
+				
+				return false;
+		})
+	}
+	
+	self.logout = function() {
+		$http.get(self.hostDomain + "/" + "logout", {
+					headers: {self.TOKEN_HEADER_NAME : self.authToken}
+		}).then(function(response) {
+				
+			if(response.status == 200) {
+				return true;
+			}
+				
+			return false;
+		})
+	}
+	
 })
