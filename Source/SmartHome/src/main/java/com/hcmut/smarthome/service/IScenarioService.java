@@ -37,7 +37,7 @@ public interface IScenarioService {
 	 * @return
 	 * @throws ConflictConditionException 
 	 */
-	boolean isScenarioValidate(Scenario inputScenario, List<Scenario> existedScenarios) throws NotSupportedException, ConflictConditionException;
+	boolean isValid(int modeId, int deviceId, Scenario inputScenario) throws ParseException, NotSupportedException, ConflictConditionException;
 	
 	/**
 	 * Stop ( remove ) forever a scenario
@@ -50,4 +50,7 @@ public interface IScenarioService {
 	 * @param id
 	 */
 	void stopScenario( int id );
+
+	boolean isValid(Scenario inputScenario, List<Scenario> existedScenarios)
+			throws NotSupportedException, ConflictConditionException;
 }

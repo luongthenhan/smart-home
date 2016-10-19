@@ -66,15 +66,13 @@ public class ScenarioCreator {
 	@SuppressWarnings("unchecked")
 	public Scenario from(String script) throws ParseException{
 		// Must do that because library can't parse the string with single quote
-				JSONArray listControlBlocksOrActions = (JSONArray) parser.parse(script
-						.replace("'", "\""));
+		JSONArray listControlBlocksOrActions = (JSONArray) parser.parse(script.replace("'", "\""));
 
-				Scenario scenario = new Scenario();
-				scenario.setBlocks(new ArrayList<IBlock>());
-				listControlBlocksOrActions.forEach(block -> scenario.getBlocks().add(
-						createBlock((JSONArray) block)));
-				
-				return scenario;
+		Scenario scenario = new Scenario();
+		scenario.setBlocks(new ArrayList<IBlock>());
+		listControlBlocksOrActions.forEach(block -> scenario.getBlocks().add(createBlock((JSONArray) block)));
+
+		return scenario;
 	}
 	
 	/**
@@ -94,8 +92,6 @@ public class ScenarioCreator {
 		switch (blockName) {
 
 		// CONTROL BLOCK
-		// TODO: Now Hard-code fromValue and toValue . Also support range value.
-		// Maybe we consider a range as condition
 		case CONTROL_BLOCK_FROM_TO:
 			ControlBlockFromTo conFromTo = new ControlBlockFromTo();
 			LocalTime t1,t2;
@@ -132,9 +128,7 @@ public class ScenarioCreator {
 		case TURN_ON:
 			Supplier<Void> turnOn = () -> {
 				try {
-					deviceController.turnOn(deviceService.getDevice(
-							ConstantUtil.HOME_ID,
-							Integer.valueOf(object.get(1).toString())));
+					deviceController.turnOn(deviceService.getDevice(ConstantUtil.HOME_ID,Integer.valueOf(object.get(1).toString())));
 				} catch (Exception e) {
 					LOGGER.debug("Error: " + e.getMessage());
 				}

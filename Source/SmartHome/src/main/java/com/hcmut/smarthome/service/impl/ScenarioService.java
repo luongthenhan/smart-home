@@ -1,5 +1,6 @@
 package com.hcmut.smarthome.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.NotSupportedException;
@@ -9,7 +10,9 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.scenario.model.Scenario;
+import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 
@@ -19,6 +22,7 @@ public class ScenarioService implements IScenarioService {
 	private static final Logger LOGGER = Logger
 			.getLogger(ScenarioService.class);
 
+	// TODO: Remove new object here after testing
 	@Autowired
 	private ScenarioCreator scenarioCreator = new ScenarioCreator();
 	
@@ -28,14 +32,29 @@ public class ScenarioService implements IScenarioService {
 	@Autowired
 	private ScenarioValidator scenarioValidator = new ScenarioValidator();
 	
+	@Autowired
+	private IDeviceService deviceService = new DeviceService();
+	
 	public String JSONToString() {
 		throw new UnsupportedOperationException("Not supported");
 	}
 
 	@Override
-	public boolean isScenarioValidate(Scenario inputScenario,
+	public boolean isValid(int modeId, int deviceId, Scenario scenario) throws ParseException, NotSupportedException, ConflictConditionException{
+		List<Script> existedScripts = deviceService.getScripts(modeId,deviceId);
+		List<Scenario> existedScenarios = new ArrayList<Scenario>();
+		for (Script existedScript : existedScripts) {
+			Scenario existedScenario = JSONToScenario(existedScript.getContent());
+			existedScenarios.add(existedScenario);
+		}
+		return isValid(scenario, existedScenarios);
+	}
+	
+	
+	@Override
+	public boolean isValid(Scenario inputScenario,
 			List<Scenario> existedScenarios) throws NotSupportedException, ConflictConditionException {
-		return scenarioValidator.isScenarioValidate(inputScenario, existedScenarios);
+		return scenarioValidator.isValid(inputScenario, existedScenarios);
 	}
 	
 	// TODO : When one script is removed , how to know and get rid of it and

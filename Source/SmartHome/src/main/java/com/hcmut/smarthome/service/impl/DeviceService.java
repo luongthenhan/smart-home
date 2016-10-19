@@ -202,6 +202,11 @@ public class DeviceService implements IDeviceService {
 	}
 
 	@Override
+	public Script getScript(int scriptId){
+		return ScriptConverter.toModel(scriptDao.getById(scriptId));
+	}
+	
+	@Override
 	public List<Integer> getAllAvailableGpio(int homeId) {
 		// TODO Auto-generated method stub
 		return null;

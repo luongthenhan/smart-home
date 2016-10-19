@@ -38,7 +38,6 @@ public class ScenarioRunner {
 
 		// Mark scenario as running
 		mapScenarioController.put(scenario.getId(), RUNNING);
-		runBlocks(scenario.getBlocks(), scenario.getId(), scenario.getHomeId());
 		
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -112,6 +111,14 @@ public class ScenarioRunner {
 					scenarioId, homeId);
 		}
 		
+	}
+
+	public Map<Integer, Boolean> getMapScenarioController() {
+		return mapScenarioController;
+	}
+
+	public void setMapScenarioController(Map<Integer, Boolean> mapScenarioController) {
+		this.mapScenarioController = mapScenarioController;
 	}
 	
 }

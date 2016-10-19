@@ -279,7 +279,7 @@ public class Test {
 		List<Scenario> existedScenarios = pairInputAndExistedScenarios.getSecond();
 		
 		try{
-			boolean isValidate = scenarioService.isScenarioValidate(inputScenario, existedScenarios);
+			boolean isValidate = scenarioService.isValid(inputScenario, existedScenarios);
 			System.out.println("Script is validated ? -> " + isValidate);
 			if( isValidate )
 				scenarioService.runScenario(inputScenario);

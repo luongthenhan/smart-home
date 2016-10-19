@@ -1048,7 +1048,7 @@ public class ScenarioValidatorTest {
 		List<Scenario> existedScenarios = pairInputAndExistedScenarios.getSecond();
 		
 		
-		boolean isValidate = scenarioService.isScenarioValidate(inputScenario, existedScenarios);
+		boolean isValidate = scenarioService.isValid(inputScenario, existedScenarios);
 		System.out.println("Script is validated ? -> " + isValidate);
 		assertThat(isValidate, is(expectedResult));
 	}
@@ -1058,7 +1058,7 @@ public class ScenarioValidatorTest {
 		List<Scenario> existedScenarios = new ArrayList<>();
 		for (String existedScript : existedScripts) {
 			Scenario existedScenario = scenarioService.JSONToScenario(existedScript);
-			if( scenarioService.isScenarioValidate(existedScenario, null) )
+			if( scenarioService.isValid(existedScenario, null) )
 				existedScenarios.add(existedScenario);
 		}
 		
