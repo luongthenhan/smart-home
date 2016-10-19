@@ -63,7 +63,7 @@ public class ScenarioValidator {
 	 * New
 	 * 4. If else with same action
 	 */	
-	public boolean isScenarioValidate(Scenario inputScenario,
+	public boolean isValid(Scenario inputScenario,
 			List<Scenario> existedScenarios) throws NotSupportedException, ConflictConditionException {
 
 		Stack<Condition> stackConditions = new Stack<>();

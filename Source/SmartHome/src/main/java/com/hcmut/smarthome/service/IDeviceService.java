@@ -14,6 +14,8 @@ public interface IDeviceService {
 	
 	List<Script> getScripts(int modeId, int deviceId);
 	
+	Script getScript(int scriptId);
+	
 	int addScript(Script script, int deviceId , int modeId);
 	
 	boolean deleteScript( int deviceId, int scriptId);
