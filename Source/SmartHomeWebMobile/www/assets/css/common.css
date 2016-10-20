@@ -82,3 +82,11 @@ form {
     background-color: #FF7F00;
     color: #FFFFFF;
 }
+
+.script-condition-modify-input {
+    height: 20px;
+}
+
+.script-condition-modify-input-number {
+    width: 45px;
+}

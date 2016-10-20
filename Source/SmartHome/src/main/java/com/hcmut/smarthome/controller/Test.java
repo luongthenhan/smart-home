@@ -23,14 +23,20 @@ import com.hcmut.smarthome.service.impl.ScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.Pair;
 import com.hcmut.smarthome.utils.ScriptBuilder;
+<<<<<<< HEAD
 import com.hcmut.smarthome.utils.ScriptBuilder.ScriptBuilderTemplate;
+=======
+>>>>>>> master
 
 public class Test {
 	private static final int LIGHT_2 = 2;
 	private static final int LIGHT_3 = 3;
 	private static final String LSENSOR_4 = LIGHT_SENSOR + 4;
 	private static final String TSENSOR_5 = TEMPERATURE_SENSOR + 5;
+<<<<<<< HEAD
 	private static final String TSENSOR_6 = TEMPERATURE_SENSOR + 6;
+=======
+>>>>>>> master
 	private static final String LSENSOR_7 = LIGHT_SENSOR + 7;
 	
 	IScenarioService scenarioService = new ScenarioService();
@@ -241,6 +247,7 @@ public class Test {
 		runTestScriptValidation(input, existedScritps);
 	}
 	
+<<<<<<< HEAD
 	/**
 	 * Conflict range Y
 	 * Counter action N
@@ -258,6 +265,8 @@ public class Test {
 		runTestScriptValidation(input, existedScritps);
 	}
 	
+=======
+>>>>>>> master
 	private void runTestScriptValidation(String inputScript, List<String> existedScripts) throws ParseException{
 		
 		Pair<Scenario,List<Scenario>> pairInputAndExistedScenarios = scriptToScenario(inputScript,existedScripts);
@@ -267,8 +276,11 @@ public class Test {
 		try{
 			boolean isValidate = scenarioService.isScenarioValidate(inputScenario, existedScenarios);
 			System.out.println("Script is validated ? -> " + isValidate);
+<<<<<<< HEAD
 			if( isValidate )
 				scenarioService.runScenario(inputScenario);
+=======
+>>>>>>> master
 		}
 		catch(Exception e){
 			System.out.println(e.getMessage());

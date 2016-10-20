@@ -1,8 +1,8 @@
-<div class="row device-script-custom-row">
+<div class="row device-script-custom-row" ng-init="deviceScriptCtrl.init()">
     <button class="delete-script-button">
         <span class="glyphicon glyphicon-minus-sign"/>
     </button>
-    <span>Custom script 1</span>
+    <span>{{script.name}}</span>
     <button class="delete-script-button" data-toggle="modal" data-target="#device-panel-edit-script-modal">
         <span class="glyphicon glyphicon-edit"/>
     </button>
@@ -19,10 +19,10 @@
                 <div class="modal-body">
 
                     <form>
-                        <input type="text" class="form-control input-field" placeholder="Edit Script Name">
+                        <input type="text" class="form-control input-field" value="{{script.name}}" placeholder="Edit Script Name">
                         <textarea class="form-control input-field device-panel-custom-script-input"
                                   rows="3"
-                                  placeholder="Edit Script Input"></textarea>
+                                  placeholder="Edit Script Input">{{script.content}}</textarea>
                     </form>
                 </div>
                 <div class="modal-footer">
