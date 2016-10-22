@@ -39,14 +39,13 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 	 * the chain. Handy after login/logout, etc.
 	 */
 	private static final String REQUEST_ATTR_DO_NOT_CONTINUE = "MyAuthenticationFilter-doNotContinue";
-
-	private final String logoutLink;
+	private static final String LOGOUT = "logout";
+	
 	private final IAuthenticationService authenticationService;
 
 	public TokenAuthenticationFilter(
-			IAuthenticationService authenticationService, String logoutLink) {
+			IAuthenticationService authenticationService) {
 		this.authenticationService = authenticationService;
-		this.logoutLink = logoutLink;
 	}
 
 	@Override
@@ -87,11 +86,10 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 
 		if (authorization != null) {
 			checkBasicAuthorization(authorization, httpResponse);
-			doNotContinueWithRequestProcessing(httpRequest);
 		} else if (username != null && password != null) {
 			checkUsernameAndPassword(username, password, httpResponse);
-			doNotContinueWithRequestProcessing(httpRequest);
 		}
+		doNotContinueWithRequestProcessing(httpRequest);
 	}
 
 	private void checkBasicAuthorization(String authorization,
@@ -152,7 +150,7 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 	}
 
 	private void checkLogout(HttpServletRequest httpRequest) {
-		if (currentLink(httpRequest).equals(logoutLink)) {
+		if (currentLink(httpRequest).contains(LOGOUT)) {
 			String token = httpRequest.getHeader(HEADER_TOKEN);
 			// we go here only authenticated, token must not be null
 			authenticationService.logout(token);

@@ -40,7 +40,6 @@
 		<custom-filter ref="restAuthenticationFilter" position="FORM_LOGIN_FILTER"/>
 
 		<intercept-url pattern="/*" access="permitAll" requires-channel="https" />
-		<intercept-url pattern="/login" access="isFullyAuthenticated()" requires-channel="https" />
 		<intercept-url pattern="/api/**" access="isFullyAuthenticated()" requires-channel="https" />
 	</http>
 
@@ -59,5 +58,5 @@
 		c:authenticationManager-ref="restAuthenticationManager" c:tokenManager-ref="tokenManager"/>
 
 	<bean:bean id="restAuthenticationFilter" class="com.hcmut.smarthome.sec.TokenAuthenticationFilter"
-		c:authenticationService-ref="authenticationService" c:logoutLink="/logout" />
+		c:authenticationService-ref="authenticationService" />
 </bean:beans>
