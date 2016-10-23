@@ -1,9 +1,4 @@
-package com.hcmut.smarthome.dao;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import javax.transaction.Transactional;
+package com.hcmut.smarthome.service.test;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,18 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.hcmut.smarthome.service.IMailService;
+
+@RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:ApplicationContext.xml", "classpath:spring-security.xml" } )
-@RunWith(SpringJUnit4ClassRunner.class)
-public class HomeDaoTest {
+public class MailServiceTest {
 	
 	@Autowired
-	private IHomeDao homeDao;
+	private IMailService mailService;
 
 	@Test
-	@Transactional
-	public void should_return_home_is_enabled() throws Exception {
+	public void should_send_email_successfully() throws Exception {
+		mailService.sendMail("51204401@hcmut.edu.vn", "Test 4", "<b>Test 4</b>");
 		
-		assertThat(homeDao.isEnabled(1), is(true));
 	}
-	
+
 }

@@ -1,5 +1,11 @@
 package com.hcmut.smarthome.service;
 
-public class IUserService {
+import com.hcmut.smarthome.model.User;
+
+public interface IUserService {
+	
+	public int addUser(User user);
+	
+	public boolean activateUser(int userId);
 
 }

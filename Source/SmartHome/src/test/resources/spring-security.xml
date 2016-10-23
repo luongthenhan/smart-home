@@ -40,7 +40,7 @@
 		<custom-filter ref="restAuthenticationFilter" position="FORM_LOGIN_FILTER"/>
 
 		<intercept-url pattern="/*" access="permitAll" requires-channel="https" />
-		<intercept-url pattern="/api/**" access="permitAll" requires-channel="https" />
+		<intercept-url pattern="/api/**" access="isFullyAuthenticated()" requires-channel="https" />
 	</http>
 
 	<bean:bean id="unauthorizedEntryPoint" class="com.hcmut.smarthome.sec.UnauthorizedEntryPoint"/>

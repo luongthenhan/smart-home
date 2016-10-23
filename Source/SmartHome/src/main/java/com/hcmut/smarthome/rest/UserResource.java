@@ -1,8 +1,9 @@
 package com.hcmut.smarthome.rest;
 
-import javax.transaction.NotSupportedException;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,30 +13,41 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hcmut.smarthome.model.User;
-import com.hcmut.smarthome.service.IHomeService;
+import com.hcmut.smarthome.service.IMailService;
+import com.hcmut.smarthome.service.IUserService;
 
 @CrossOrigin
 @RequestMapping("/users")
+@PropertySource("classpath:smarthome.properties")
 @RestController
 public class UserResource {
-
+	
 	@Autowired
-	private IHomeService homeService;
+	private IUserService userService;
 	
-//	@RequestMapping(method = RequestMethod.GET, path = "/{userId}/homes")
-//	public ResponseEntity<List<Home>> getAllHomes(@PathVariable int userId){
-//		return new ResponseEntity<List<Home>>(homeService.getAllHomes(userId), HttpStatus.OK); 
-//	}
+	@Autowired
+	private IMailService mailService;
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/login")
-	public ResponseEntity<Void> login(@RequestBody User newUser) throws NotSupportedException {
-		throw new NotSupportedException();
-	}
-
-	@RequestMapping(method=RequestMethod.PUT, path = "/signup/{username}")
-	public ResponseEntity<Void> signUp(@PathVariable String username) throws NotSupportedException{
+	@Value("${activation.webpage}")
+	private String activationWebpage;
+	
+	@RequestMapping( path = "/signup", method = RequestMethod.POST)
+	public ResponseEntity<Integer> signUp(@RequestBody User user) {
 		
-		throw new NotSupportedException();
+		int id = userService.addUser(user);
+		
+		if(id > 0) {
+			mailService.sendActivationMail(user.getEmail(), id);
+			return new ResponseEntity<Integer>(id, HttpStatus.CREATED);
+		}
+		
+		return new ResponseEntity<Integer>(id, HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(path = "/activation/{userId}", method = RequestMethod.GET)
+	public ResponseEntity<String> activateUser(@PathVariable("userId") int userId) {
+		
+		return new ResponseEntity<String>(activationWebpage, HttpStatus.OK);
 	}
 	
 

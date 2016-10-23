@@ -24,7 +24,17 @@
 	<listener>
 		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
 	</listener>
-	
+
+	<!-- CORS filter -->
+	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>com.hcmut.smarthome.sec.CORSFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
+
 	<!-- Apply Spring Security Filter to all Requests -->
 	<filter>
 		<filter-name>springSecurityFilterChain</filter-name>
@@ -38,14 +48,14 @@
 	</filter-mapping>
 
 	<servlet>
-        <servlet-name>rest</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>rest</servlet-name>
-        <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
+		<servlet-name>rest</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>rest</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
 
 	<!-- Welcome Page -->
 	<welcome-file-list>

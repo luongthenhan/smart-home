@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		LOGGER.debug(" *** CustomUseDetailService.loadUserByUsername");
 		UserEntity user = userDao.getByUsername(username);
-		if (user == null) {
+		if (user == null || !user.isActivated()) {
 			throw new UsernameNotFoundException("User " + username + " not found");
 		}
 		return new CustomUserDetails(user);

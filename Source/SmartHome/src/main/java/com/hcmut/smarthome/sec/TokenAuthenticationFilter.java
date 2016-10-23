@@ -16,19 +16,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.filter.GenericFilterBean;
 
-/**
- * Takes care of HTTP request/response pre-processing for login/logout and token
- * check. Login can be performed on any URL, logout only on specified
- * {@link #logoutLink}. All the interaction with Spring Security should be
- * performed via {@link AuthenticationService}.
- * <p>
- * {@link SecurityContextHolder} is used here only for debug outputs. While this
- * class is configured to be used by Spring Security (configured filter on
- * FORM_LOGIN_FILTER position), but it doesn't really depend on it at all.
- */
+import static com.hcmut.smarthome.utils.ConstantUtil.*;
+
 public final class TokenAuthenticationFilter extends GenericFilterBean {
-	
-	private static Logger LOGGER = Logger.getLogger(TokenAuthenticationFilter.class);
+
+	private static Logger LOGGER = Logger
+			.getLogger(TokenAuthenticationFilter.class);
 
 	private static final String HEADER_TOKEN = "X-Auth-Token";
 	private static final String HEADER_USERNAME = "X-Username";
@@ -40,7 +33,7 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 	 */
 	private static final String REQUEST_ATTR_DO_NOT_CONTINUE = "MyAuthenticationFilter-doNotContinue";
 	private static final String LOGOUT = "logout";
-	
+
 	private final IAuthenticationService authenticationService;
 
 	public TokenAuthenticationFilter(
@@ -55,24 +48,21 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-		boolean authenticated = checkToken(httpRequest, httpResponse);
-
-		// If we're not authenticated, we don't bother with logout at all.
-		// Logout does not work in the same request with login - this does
-		// not make sense,
-		// because logout works with token and login returns it.
-		if (authenticated) {
-			checkLogout(httpRequest);
-		} else {
-			// Login works just fine even when we provide token that is
-			// valid up
-			// to this request,
-			// because then we get a new one.
-			checkLogin(httpRequest, httpResponse);
-		}
-
-		if (canRequestProcessingContinue(httpRequest)) {
+		// if this is no login request, don't check login or token
+		if (isNoLoginRequest(httpRequest)) {
 			chain.doFilter(request, response);
+			
+		} else {
+			boolean authenticated = checkToken(httpRequest, httpResponse);
+			if (authenticated) {
+				checkLogout(httpRequest);
+			} else {
+				checkLogin(httpRequest, httpResponse);
+			}
+
+			if (canRequestProcessingContinue(httpRequest)) {
+				chain.doFilter(request, response);
+			}
 		}
 		LOGGER.debug(" === AUTHENTICATION: "
 				+ SecurityContextHolder.getContext().getAuthentication());
@@ -86,10 +76,12 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 
 		if (authorization != null) {
 			checkBasicAuthorization(authorization, httpResponse);
+			doNotContinueWithRequestProcessing(httpRequest);
 		} else if (username != null && password != null) {
 			checkUsernameAndPassword(username, password, httpResponse);
+			doNotContinueWithRequestProcessing(httpRequest);
 		}
-		doNotContinueWithRequestProcessing(httpRequest);
+
 	}
 
 	private void checkBasicAuthorization(String authorization,
@@ -119,7 +111,6 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 				password);
 		if (tokenInfo != null) {
 			httpResponse.setHeader(HEADER_TOKEN, tokenInfo.getToken());
-			// TODO set other token information possible: IP, ...
 		} else {
 			httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 		}
@@ -150,7 +141,7 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 	}
 
 	private void checkLogout(HttpServletRequest httpRequest) {
-		if (currentLink(httpRequest).contains(LOGOUT)) {
+		if (getCurrentLink(httpRequest).contains(LOGOUT)) {
 			String token = httpRequest.getHeader(HEADER_TOKEN);
 			// we go here only authenticated, token must not be null
 			authenticationService.logout(token);
@@ -161,7 +152,7 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 	// or use Springs util instead: new
 	// UrlPathHelper().getPathWithinApplication(httpRequest)
 	// shame on Servlet API for not providing this without any hassle :-(
-	private String currentLink(HttpServletRequest httpRequest) {
+	private String getCurrentLink(HttpServletRequest httpRequest) {
 		if (httpRequest.getPathInfo() == null) {
 			return httpRequest.getServletPath();
 		}
@@ -180,5 +171,17 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 
 	private boolean canRequestProcessingContinue(HttpServletRequest httpRequest) {
 		return httpRequest.getAttribute(REQUEST_ATTR_DO_NOT_CONTINUE) == null;
+	}
+
+	private boolean isNoLoginRequest(HttpServletRequest httpRequest) {
+
+		String currentLink = getCurrentLink(httpRequest);
+		for (String noLoginRequest : NO_LOGIN_REQUESTS) {
+			if (currentLink.contains(noLoginRequest)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

@@ -82,4 +82,12 @@ public class ConstantUtil {
 			35, 36, 37, 38, 40);
 	
 	public static List<Integer> ALWAYS_AVAILABLE_GPIO = Arrays.asList(7);
+	
+	// sign up
+	public static int ERROR_WHEN_ADD_USER = -1;
+	public static int USERNAME_ALREADY_EXISTED = -2;
+	public static int EMAIL_ALREADY_EXISTED = -3;
+	
+	// not login request
+	public static List<String> NO_LOGIN_REQUESTS = Arrays.asList("signup", "activation");
 }

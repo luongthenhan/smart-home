@@ -2,35 +2,21 @@ package com.hcmut.smarthome.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-//@Entity
-//@Table(name="account_user")
 public class User implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
-	@Column(name="usr_name", nullable = false , length = 45)
 	private String usrName;
 	
-	@Column(name="name", nullable = false , length = 45)
 	private String name;
 	
-	@Column(name="password", nullable = false , length = 45)
 	private String password;
 	
-	@Column(name="about", nullable = true , length = 1024)
+	private String email;
+	
 	private String about;
 	
-	@Column(name="is_active", nullable = false)
 	private boolean isActive;
 	
 	public User() {
@@ -72,4 +58,11 @@ public class User implements Serializable{
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
 }
