@@ -1,5 +1,6 @@
 package com.hcmut.smarthome.rest;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -38,17 +39,19 @@ public class UserResource {
 	@Value("${activation.fail.webpage}")
 	private String failActivationWebpage;
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping( path = "/signup", method = RequestMethod.POST)
-	public ResponseEntity<Integer> signUp(@RequestBody User user) {
+	public ResponseEntity<JSONObject> signUp(@RequestBody User user) {
 		
 		int id = userService.addUser(user);
-		
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("returnCode", new Integer(id));
 		if(id > 0) {
 			mailService.sendActivationMail(user.getEmail(), id);
-			return new ResponseEntity<Integer>(id, HttpStatus.CREATED);
+			return new ResponseEntity<JSONObject>(jsonObject, HttpStatus.CREATED);
 		}
 		
-		return new ResponseEntity<Integer>(id, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<JSONObject>(jsonObject, HttpStatus.BAD_REQUEST);
 	}
 	
 	@RequestMapping(path = "/activation/{userId}", method = RequestMethod.GET)
