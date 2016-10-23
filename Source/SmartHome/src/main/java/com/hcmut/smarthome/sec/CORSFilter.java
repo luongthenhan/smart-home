@@ -21,6 +21,7 @@ public class CORSFilter implements Filter {
 		resp.addHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
 		resp.addHeader("Access-Control-Allow-Headers",
 				"Origin, X-Requested-With, Content-Type, Accept, X-Username, X-Password, X-Auth-Token");
+		resp.addHeader("Access-Control-Expose-Headers", "X-Auth-Token");
 
 		// Just ACCEPT and REPLY OK if OPTIONS
 		if (request.getMethod().equals("OPTIONS")) {
