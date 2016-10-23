@@ -2,7 +2,7 @@
     <div class="panel panel-default device-panel">
         <div class="panel-heading device-panel-heading">
             <h4 class="panel-title device-panel-title">
-                <button type="button" class="device-button">
+                <button data-toggle="collapse" data-target="#deviceCollapse{{device.id}}" type="button" class="device-button">
                     <div class="row device-type-button-row">
                         <div class="device-type-indicator"></div>
                         <div class="col-xs-offset-2 col-xs-3">
@@ -12,11 +12,11 @@
                             <div class="row device-name">
                                 {{ device.name }}
                             </div>
-                            <div class="row device-status">
-                                <span class="device-status-value">{{device.status == null ? mainactionname : device.status}}</span>
+                            <div class="row device-gpio">
+                                <span class="device-gpio-value">{{device.gpio == null || device.gpio == 0 ? '' : 'GPIO ' + device.gpio}}</span>
                             </div>
                         </div>
-                        <button data-toggle="collapse" data-target="#deviceCollapse{{device.id}}" class="device-panel-toggle-button">
+                        <button class="device-panel-toggle-button">
                             <span id="devicePanelToggleIcon{{device.id}}" class="glyphicon glyphicon-menu-right device-panel-toggle-icon"/>
                         </button>
                     </div>
@@ -34,7 +34,7 @@
                     </button>
                 </div>
                 <div ng-show="devicePanelCtrl.isShowDetails == false">
-                    <device-script device-id="device.id" script="script" ng-repeat="script in device.scripts"></device-script>
+                    <device-script device="device" script="script" ng-repeat="script in device.scripts"></device-script>
                     <div class="row">
                         <button class="add-script-button pull-right detail-button" ng-click="devicePanelCtrl.toggleShowDetails()">
                             Details...
@@ -65,44 +65,81 @@
             </div>
         </div>
 
-        <!-- Add Script Modal -->
-        <div class="modal fade device-panel-add-script-modal" id="device-panel-add-script-modal{{device.id}}" role="dialog">
-            <div class="modal-dialog">
+    </div>
+</div>
 
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Add Script For {{device.name}}</h4>
-                    </div>
-                    <div class="modal-body">
-                        <span style="font-weight: bold">Mode: </span>
-                        <select class="combobox" ng-model="devicePanelCtrl.selectedMode">
-                            <option ng-repeat="mode in devicePanelCtrl.modes" value="{{mode.id}}">{{mode.name}}</option>
-                        </select>
-                        <p></p>
-                        <div style="font-weight: bold">Choose Script Type: </div>
-                        <form>
-                            <div class="radio">
-                                <label><input type="radio" name="optradio">When/Then</label>
-                            </div>
-                            <div class="radio">
-                                <label><input type="radio" name="optradio">From/To</label>
-                            </div>
-                            <div class="radio disabled">
-                                <label><input type="radio" name="optradio">Custom</label>
-                            </div>
-                            <input type="text" class="form-control input-field" placeholder="Custom Script Name">
-                            <textarea class="form-control input-field device-panel-custom-script-input"
-                                      rows="3"
-                                      placeholder="Custom Script Input"></textarea>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn modal-confirm-btn add-script-btn" data-dismiss="modal">Save</button>
-                        <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
+<!-- Add Script Modal -->
+<div class="modal device-panel-add-script-modal" id="device-panel-add-script-modal{{device.id}}" role="dialog">
+    <div class="modal-dialog">
 
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Script For {{device.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <div style="font-weight: bold">Choose Script Type: </div>
+                <form>
+                    <div class="radio">
+                        <label><input type="radio"
+                                      ng-model="devicePanelCtrl.selectedScriptTypeToAdd"
+                                      value="When/Then">When/Then</label>
+                    </div>
+                    <span>When</span>
+                    <select class="combobox script-condition-modify-input"
+                            ng-model="devicePanelCtrl.selectedOtherDevice"
+                            ng-options="device.name for device in devicePanelCtrl.otherDevices"
+                            ng-change="devicePanelCtrl.updateDeviceChange()" />
+                    <select class="combobox script-condition-modify-input"
+                            ng-model="devicePanelCtrl.selectedCondition"
+                            ng-options="condition.name for condition in devicePanelCtrl.conditions" />
+                    <input class="script-condition-modify-input script-condition-modify-input-number"
+                           ng-if="devicePanelCtrl.selectedCondition.hasParameter"
+                           ng-model="devicePanelCtrl.selectedConditionParam"
+                           type="number" step="0.1">
+                    <span>Then</span>
+                    <select class="script-condition-modify-input combobox"
+                            ng-model="devicePanelCtrl.selectedAction"
+                            ng-options="action.name for action in devicePanelCtrl.actions" />
+
+                    <div class="radio">
+                        <label><input type="radio"
+                                      ng-model="devicePanelCtrl.selectedScriptTypeToAdd"
+                                      value="From/To">From/To</label>
+                    </div>
+                    <span>From</span>
+                    <span class="clockpicker">
+                        <input type="text">
+                    </span>
+                    <span>To</span>
+                    <span class="clockpicker">
+                        <input type="text">
+                    </span>
+                    <span>,</span>
+                    <select class="script-condition-modify-input combobox">
+                    </select>
+
+                    <div class="radio disabled">
+                        <label><input type="radio"
+                                      ng-model="devicePanelCtrl.selectedScriptTypeToAdd"
+                                      value="Custom">Custom</label>
+                    </div>
+                    <input type="text"
+                           ng-model="devicePanelCtrl.customScriptNameForAdd"
+                           class="form-control input-field"
+                           placeholder="Custom Script Name">
+                    <textarea class="form-control input-field device-panel-custom-script-input"
+                              ng-model="devicePanelCtrl.customScriptContentForAdd"
+                              rows="3"
+                              placeholder="Custom Script Input"></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="devicePanelCtrl.addScript()"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
             </div>
         </div>
 

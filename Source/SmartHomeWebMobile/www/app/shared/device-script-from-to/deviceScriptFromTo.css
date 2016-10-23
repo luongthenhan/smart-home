@@ -4,7 +4,8 @@
 }
 
 .clockpicker input {
-    width: 45px;
+    width: 55px;
+    height: 29px;
     text-align: center;
 }
 

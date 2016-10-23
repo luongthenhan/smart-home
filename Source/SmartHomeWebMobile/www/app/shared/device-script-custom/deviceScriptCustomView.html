@@ -1,36 +1,65 @@
-<div class="row device-script-custom-row" ng-init="deviceScriptCtrl.init()">
-    <button class="delete-script-button">
+<div class="row device-script-custom-row" ng-init="deviceScriptCustomCtrl.init()">
+    <button class="delete-script-button" data-toggle="modal" data-target="#device-script-custom-delete-script-modal-{{script.id}}">
         <span class="glyphicon glyphicon-minus-sign"/>
     </button>
     <span>{{script.name}}</span>
     <button class="delete-script-button" data-toggle="modal" data-target="#device-panel-edit-script-modal">
         <span class="glyphicon glyphicon-edit"/>
     </button>
+</div>
 
-    <!-- Edit Script Modal -->
-    <div class="modal fade device-panel-edit-script-modal" id="device-panel-edit-script-modal" role="dialog">
-        <div class="modal-dialog">
+<!-- Edit Script Modal -->
+<div class="modal device-panel-edit-script-modal" id="device-panel-edit-script-modal" role="dialog">
+    <div class="modal-dialog">
 
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Edit Script</h4>
-                </div>
-                <div class="modal-body">
-
-                    <form>
-                        <input type="text" class="form-control input-field" value="{{script.name}}" placeholder="Edit Script Name">
-                        <textarea class="form-control input-field device-panel-custom-script-input"
-                                  rows="3"
-                                  placeholder="Edit Script Input">{{script.content}}</textarea>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn modal-confirm-btn add-script-btn" data-dismiss="modal">Save</button>
-                    <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
-                </div>
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Script</h4>
             </div>
+            <div class="modal-body">
 
+                <form>
+                    <input type="text" class="form-control input-field" ng-model="deviceScriptCustomCtrl.scriptName" placeholder="Edit Script Name">
+                    <textarea class="form-control input-field device-panel-custom-script-input"
+                              rows="3"
+                              placeholder="Edit Script Input" ng-model="deviceScriptCustomCtrl.scriptContent"></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="deviceScriptCustomCtrl.updateScript()"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+            </div>
         </div>
+
+    </div>
+</div>
+
+<!-- Delete Script Modal -->
+<div class="modal device-panel-edit-script-modal" id="device-script-custom-delete-script-modal-{{script.id}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete Script</h4>
+            </div>
+            <div class="modal-body">
+                <span>Do you want to delete "</span>
+                <span>{{script.name}}</span>
+                <span> " script ?</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="deviceScriptCustomCtrl.deleteScript()"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+
     </div>
 </div>
