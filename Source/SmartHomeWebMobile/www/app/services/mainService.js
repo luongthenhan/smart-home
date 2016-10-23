@@ -1,28 +1,33 @@
 app.service('MainService', function($http) {
 
     var self = this;
-	
-	self.TOKEN_HEADER_NAME = "X-Auth-Token";
-	self.USERNAME_HEADER_NAME = "X-Username";
-	self.PASSWORD_HEADER_NAME = "X-Password";
 
-    self.hostDomain = "https://localhost:8443/smarthome/api/";
-    self.userId = 1;
+    self.hostDomain = "http://localhost:8080/smarthome/api/";
+    self.userId = 2;
+
     self.selectedHome = null;
     self.selectedMode = null;
     self.selectedDeviceType = null;
+
+    // Current available gpios of selected mode
+    self.selectedModeAvailableGpios = [];
+
+    // All devices of selected home
     self.devices = [];
-	self.authToken = null;
+
+    // All devices of selected type
+    self.selectedTypeDevices = [];
+
+    // Current device list controller
+    self.deviceListCtrl = null;
 
     self.getHomes = function(controller) {
         console.log("URL: " + self.hostDomain + "users/" + self.userId + "/homes");
-        $http.get(self.hostDomain + "users/" + self.userId + "/homes", {
-					headers: {self.TOKEN_HEADER_NAME : self.authToken}
-			}).then(function(response){
+        $http.get(self.hostDomain + "users/" + self.userId + "/homes").then(function(response){
             //TODO: Handle home lists
 
             //STUB: select first home and first mode in home lists and its device types
-            self.selectedHome = response.data[0];
+            self.selectedHome = response.data[1];
             self.selectedMode = self.selectedHome.currentMode;
 
             controller.modes = self.selectedHome.modes;
@@ -31,7 +36,12 @@ app.service('MainService', function($http) {
                     controller.selectedMode = val;
                 }
             })
-            self.getDeviceTypes(controller);
+
+            $http.get(self.hostDomain + "homes/all-gpios").then(function(response) {
+                self.selectedModeAvailableGpios = response.data;
+                self.getDeviceTypes(controller);
+            })
+
         })
     }
 
@@ -44,9 +54,7 @@ app.service('MainService', function($http) {
 
             // Fetch conditions and actions
             $.each(controller.deviceTypes, function(dtIndex, dtVal){
-                $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + dtVal.id + "/devices", {
-					headers: {self.TOKEN_HEADER_NAME : self.authToken}
-			}).then(function(response){
+                $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + dtVal.id + "/devices").then(function(response){
                     $.each(response.data, function(dIndex, dVal) {
                         dVal.conditions = [];
                         dVal.actions = [];
@@ -78,13 +86,17 @@ app.service('MainService', function($http) {
     }
 
     self.getDevices = function(controller) {
-        $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices", {
-					headers: {self.TOKEN_HEADER_NAME : self.authToken}
-			}).then(function(response){
-            controller.devices = response.data;
-            $.each(controller.devices, function(index, dVal) {
+        self.deviceListCtrl = controller;
+        $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices").then(function(response){
+            self.selectedTypeDevices = response.data;
+            controller.devices = [];
+            $.each(self.selectedTypeDevices, function(index, dVal) {
                 dVal.modes = [];
-                self.getSelectedModeScripts(dVal);
+
+                // Get device's scripts that belongs to selected mode and add it to device
+                self.getSelectedModeScripts(dVal, controller);
+
+                // Get all device's scripts and add it device's modes
                 self.getAllScripts(dVal);
             })
         })
@@ -110,20 +122,35 @@ app.service('MainService', function($http) {
         return true;
     }
 
-    self.getSelectedModeScripts = function(device) {
-        $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts", {
-					headers: {self.TOKEN_HEADER_NAME : self.authToken}
-			}).then(function(response){
+    self.getSelectedModeScripts = function(device, controller) {
+        $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts").then(function(response){
+
             device.scripts = response.data;
-            console.log(device.scripts);
+
+            // check if device gpio is available or device is not gpio-need type or device is in-type (sensor)
+            if (device.gpio == null || device.gpio == 0 || device.gpiotype == 'in' ||
+                $.inArray(device.gpio, self.selectedModeAvailableGpios) != -1) {
+
+                // check whether there are any scripts of this device that belong to the selectedMode or device is in-type
+                if (device.scripts.length != 0 || device.gpiotype == 'in') {
+                    //if it does have, remove its gpio from available gpios
+                    self.selectedModeAvailableGpios = $.grep(self.selectedModeAvailableGpios, function (gpioId) {
+                        return gpioId != device.gpio;
+                    })
+
+                    // and filter: remove any devices that have same gpio with this device
+                    controller.devices = $.grep(controller.devices, function(dev) {
+                        return dev.id == device.id || dev.gpio != device.gpio;
+                    })
+                }
+                controller.devices.push(device);
+            }
         })
     }
 
     self.getAllScripts = function(device) {
         $.each(self.selectedHome.modes, function(index, val) {
-            $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + val.id + "/scripts", {
-					headers: {self.TOKEN_HEADER_NAME : self.authToken}
-			}).then(function(response){
+            $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + val.id + "/scripts").then(function(response){
                 device.modes.push({
                     id: val.id,
                     name: val.name,
@@ -133,52 +160,63 @@ app.service('MainService', function($http) {
         })
     }
 
-    self.updateScript = function(controller) {
-        // TODO: Call web services /script/update
-        return true;
-    }
+    self.updateScript = function(device, script) {
+        $http.put(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id
+            + "/scripts/" + script.id, script).then(function(response){
 
-    self.deleteScript = function(deviceId, scriptId) {
-        $http.delete(self.hostDomain + "/" + "devices/" + deviceId + "/modes/" + self.selectedMode.id
-            + "/scripts/" + scriptId, {
-					headers: {self.TOKEN_HEADER_NAME : self.authToken}
-			}).then(function(response) {
-                console.log("Delete Script");
-                console.log(response.headers);
         })
         return true;
     }
 
-    self.addScript = function (controller) {
-        // TODO: Call web services /script/add
+    self.deleteScript = function(device, scriptId) {
+        $http.delete(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id
+            + "/scripts/" + scriptId).then(function(response) {
+
+            if (response.status == 204) {
+                // Remove deleted script from device's scripts
+                device.scripts = $.grep(device.scripts, function (scp) {
+                    return scp.id != scriptId;
+                })
+
+                // After script removed, check if device doesn't have any scripts left
+                if (device.scripts.length == 0) {
+
+                    // Then re-available that device gpio
+                    self.selectedModeAvailableGpios.push(device.gpio);
+
+                    // and re-available other devices with same gpio with this device
+                    $.grep(self.selectedTypeDevices, function(dev) {
+                        if (dev.id != device.id && dev.gpio == device.gpio) {
+                            self.deviceListCtrl.devices.push(dev);
+                        }
+                    })
+                }
+            }
+        })
         return true;
     }
-	
-	self.login = function(username, password) {
-		$http.get(self.hostDomain + "/" + "login", {
-					headers: {self.USERNAME_HEADER_NAME : username, self.PASSWORD_HEADER_NAME : password }
-			}).then(function(response) {
-				
-				if(response.status == 200) {
-					self.authToken = response.headers(self.TOKEN_HEADER_NAME);
-					return true;
-				}
-				
-				return false;
-		})
-	}
-	
-	self.logout = function() {
-		$http.get(self.hostDomain + "/" + "logout", {
-					headers: {self.TOKEN_HEADER_NAME : self.authToken}
-		}).then(function(response) {
-				
-			if(response.status == 200) {
-				return true;
-			}
-				
-			return false;
-		})
-	}
-	
+
+    self.addScript = function (device, script) {
+        var isDoesNotHaveAnyScriptBefore = (device.scripts.length == 0);
+        $http.post(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id
+            + "/scripts", script).then(function(response) {
+            if (response.status == 201) {
+                script.id = response.data.id;
+                device.scripts.push(script);
+                if (isDoesNotHaveAnyScriptBefore) {
+
+                    //if it does not have any script before adding, remove its gpio from available gpios
+                    self.selectedModeAvailableGpios = $.grep(self.selectedModeAvailableGpios, function (gpioId) {
+                        return gpioId != device.gpio;
+                    })
+
+                    // and filter: remove any devices that have same gpio with this device
+                    self.deviceListCtrl.devices = $.grep(self.deviceListCtrl.devices, function (dev) {
+                        return dev.id == device.id || dev.gpio != device.gpio;
+                    })
+                }
+            }
+        })
+        return true;
+    }
 })

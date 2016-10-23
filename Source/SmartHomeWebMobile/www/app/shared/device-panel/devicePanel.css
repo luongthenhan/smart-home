@@ -27,6 +27,7 @@
     border-top:0;
     border-right:0;
     border-bottom: 0;
+    color: #FF7F00;
 }
 
 .device-button {
@@ -42,22 +43,18 @@
     padding-bottom: 10px;
 }
 
-.device-name, .device-status {
+.device-name, .device-gpio {
     font-size: 22px;
     text-align:left;
     margin-left: 5px;
 }
 
-.device-status {
+.device-gpio {
     margin-top: 10px;
 }
 
-.device-status-value {
+.device-gpio-value {
     color: #3CB371;
-}
-
-.device-panel-toggle-button {
-    color: #FF7F00;
 }
 
 .script-panel-collapse {

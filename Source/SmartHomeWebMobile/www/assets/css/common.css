@@ -1,5 +1,7 @@
 html, body {
     height: 100%;
+    font-size: 18px;
+    overflow-x: hidden;
 }
 
 .wrapper {
@@ -84,7 +86,7 @@ form {
 }
 
 .script-condition-modify-input {
-    height: 20px;
+    height: 25px;
 }
 
 .script-condition-modify-input-number {

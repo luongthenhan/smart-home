@@ -3,19 +3,20 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
         restrict: "E",
         scope: {
             script: "=",
-            deviceId: "="
+            device: "="
         },
         templateUrl: "app/shared/device-script-when-then/deviceScriptWhenThenView.html",
         controllerAs: "deviceScriptWhenThenCtrl",
         controller: function($scope) {
             var self = this;
-            self.isDeleted = false;
 
             self.currentDevice = null;
             self.scriptId = $scope.script.id;
-            self.scriptContent = $scope.script.content.replace(" ", "");
+            self.scriptContent = $scope.script.content.replace(/ /g, "");
             self.scriptCondInfo = self.scriptContent.substring(self.scriptContent.split('[', 3).join('[').length + 1,
                 self.scriptContent.indexOf(']')).split(",");
+            self.scriptActionContent = self.scriptContent.substring(self.scriptContent.split('[', 5).join('[').length + 1,
+                self.scriptContent.indexOf(']', self.scriptContent.indexOf(']') + 1));
 
             self.otherDevices = [];
             self.conditions = [];
@@ -27,15 +28,14 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
             self.selectedAction = null;
 
             self.init = function() {
-
                 // Get current device
                 self.currentDevice = $.grep(MainService.devices, function(device) {
-                    return device.id == $scope.deviceId;
+                    return device.id == $scope.device.id;
                 })[0];
 
                 // Filter keep only devices that not the current device
                 self.otherDevices = $.grep(MainService.devices, function(device) {
-                    return device.id != $scope.deviceId;
+                    return device.id != $scope.device.id && device.gpio != $scope.device.gpio;
                 })
 
                 // Parse selected device from script
@@ -69,21 +69,76 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
                 // Get conditions from selected other device
                 self.conditions = self.selectedOtherDevice.conditions;
                 self.selectedCondition = self.conditions[0];
+
+                var newScriptContent = "";
+                newScriptContent = "[['If'," + self.selectedCondition.script
+                        .replace(/ /g, "")
+                        .replace("$DID$", "'" + self.selectedOtherDevice.id + "'") + ",[";
+                newScriptContent = newScriptContent + self.selectedAction.script
+                        .replace(/ /g, "")
+                        .replace("$DID$", "'" + $scope.device.id + "'") + "]]]";
+                if (self.selectedCondition.hasParameter) {
+                    newScriptContent = newScriptContent.replace("$V$", "'" + self.selectedConditionParam + "'");
+                }
+                $scope.script.content = newScriptContent;
+                self.parseInfoFromScript();
+                MainService.updateScript($scope.device.id, $scope.script);
             }
 
             self.updateConditionChange = function () {
-                var newScriptCondInfo = "'" + self.selectedOtherDevice.id + "','" + self.selectedCondition.name + "','";
+                var newCondInfo = self.selectedCondition.script
+                    .replace(/ /g, "")
+                    .replace("$DID$", "'" + self.selectedOtherDevice.id + "'")
+                    .replace("[","")
+                    .replace("]","");
                 if (self.selectedCondition.hasParameter) {
-                    newScriptCondInfo = newScriptCondInfo + self.selectedConditionParam + "'";
-                } else {
-                    newScriptCondInfo = newScriptCondInfo + "'";
+                    newCondInfo = newCondInfo.replace("$V$", "'" + self.selectedConditionParam + "'");
                 }
-                console.log("new script: " + newScriptCondInfo.replace(/ /g,""));
+                $scope.script.content = $scope.script.content
+                    .replace(/ /g, "")
+                    .replace(self.scriptCondInfo, newCondInfo)
+                    .replace(/ /g, "");
+                self.parseInfoFromScript();
+                MainService.updateScript($scope.device.id, $scope.script);
+
+            }
+
+            self.updateConditionParamChange = function () {
+                var newCondInfo = self.scriptCondInfo.slice();
+                console.log(newCondInfo);
+                newCondInfo[2] = "'" + self.selectedConditionParam + "'";
+                $scope.script.content = $scope.script.content
+                    .replace(/ /g, "")
+                    .replace(self.scriptCondInfo, newCondInfo)
+                    .replace(/ /g, "");
+                self.parseInfoFromScript();
+                MainService.updateScript($scope.device.id, $scope.script);
+            }
+
+            self.updateActionChange = function () {
+                var newActionContent = self.selectedAction.script
+                    .replace(/ /g, "")
+                    .replace("$DID$", "'" + $scope.device.id + "'")
+                    .replace("[","")
+                    .replace("]","");
+                $scope.script.content = $scope.script.content
+                    .replace(/ /g, "")
+                    .replace(self.scriptActionContent, newActionContent)
+                    .replace(/ /g, "");
+                self.parseInfoFromScript();
+                MainService.updateScript($scope.device, $scope.script);
             }
 
             self.deleteScript = function() {
-                MainService.deleteScript($scope.deviceId, $scope.script.id);
-                self.isDeleted = true;
+                MainService.deleteScript($scope.device, $scope.script.id);
+            }
+
+            self.parseInfoFromScript = function() {
+                self.scriptContent = $scope.script.content.replace(/ /g, "");
+                self.scriptCondInfo = self.scriptContent.substring(self.scriptContent.split('[', 3).join('[').length + 1,
+                    self.scriptContent.indexOf(']')).split(",");
+                self.scriptActionContent = self.scriptContent.substring(self.scriptContent.split('[', 5).join('[').length + 1,
+                    self.scriptContent.indexOf(']', self.scriptContent.indexOf(']') + 1));
             }
         }
     }

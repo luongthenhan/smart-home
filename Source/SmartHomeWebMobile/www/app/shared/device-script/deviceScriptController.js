@@ -3,7 +3,7 @@ app.directive("deviceScript", ['MainService', function(MainService){
         restrict: 'E',
         scope: {
             script: '=',
-            deviceId: '='
+            device: '='
         },
         templateUrl: "app/shared/device-script/deviceScriptView.html",
         controllerAs: "deviceScriptCtrl",

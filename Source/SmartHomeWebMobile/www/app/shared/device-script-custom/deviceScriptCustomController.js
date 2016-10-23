@@ -3,15 +3,28 @@ app.directive("deviceScriptCustom", ['MainService', function(MainService) {
         restrict: "E",
         scope: {
             script: "=",
-            deviceId: "="
+            device: "="
         },
         templateUrl: "app/shared/device-script-custom/deviceScriptCustomView.html",
-        controllerAs: "deviceScriptCtrl",
+        controllerAs: "deviceScriptCustomCtrl",
         controller: function($scope) {
             var self = this;
 
+            self.scriptName = $scope.script.name;
+            self.scriptContent = $scope.script.content;
+
             self.init = function() {
 
+            }
+
+            self.deleteScript = function() {
+                MainService.deleteScript($scope.device, $scope.script.id);
+            }
+
+            self.updateScript = function() {
+                $scope.script.name = self.scriptName;
+                $scope.script.content = self.scriptContent;
+                MainService.updateScript($scope.device, $scope.script);
             }
         }
     }
