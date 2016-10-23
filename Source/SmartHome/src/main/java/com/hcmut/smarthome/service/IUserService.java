@@ -7,5 +7,7 @@ public interface IUserService {
 	public int addUser(User user);
 	
 	public boolean activateUser(int userId);
+	
+	public User getById(int id);
 
 }

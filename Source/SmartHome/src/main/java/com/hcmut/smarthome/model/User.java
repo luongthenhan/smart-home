@@ -17,7 +17,7 @@ public class User implements Serializable{
 	
 	private String about;
 	
-	private boolean isActive;
+	private boolean activated;
 	
 	public User() {
 		super();
@@ -52,11 +52,11 @@ public class User implements Serializable{
 	public void setAbout(String about) {
 		this.about = about;
 	}
-	public boolean isActive() {
-		return isActive;
+	public boolean isActivated() {
+		return activated;
 	}
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
+	public void setActivated(boolean activated) {
+		this.activated = activated;
 	}
 	public String getEmail() {
 		return email;

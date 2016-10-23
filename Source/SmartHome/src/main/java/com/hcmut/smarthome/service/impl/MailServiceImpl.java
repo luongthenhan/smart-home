@@ -42,10 +42,10 @@ public class MailServiceImpl implements IMailService {
 	@Value("${activation.link}")
 	private String activationLink;
 
-	@Value("{activation.mail.subject}")
+	@Value("${activation.mail.subject}")
 	private String activationMailSubject;
 
-	@Value("{activation.mail.content}")
+	@Value("${activation.mail.content}")
 	private String activationMailContent;
 
 	private Properties props;
@@ -103,16 +103,16 @@ public class MailServiceImpl implements IMailService {
 
 	@Override
 	public boolean sendActivationMail(String to, int userId) {
-
+		
 		String userActivationMailContent = MessageFormat.format(
-				activationMailContent, getActivateLink(userId));
+				activationMailContent, getActivationLink(userId));
 		
 		return sendMail(to, activationMailSubject, userActivationMailContent);
 	}
 
-	private String getActivateLink(int userId) {
+	private String getActivationLink(int userId) {
 		String userActivationLink = MessageFormat
-				.format(activationLink, userId);
+				.format(activationLink, String.valueOf(userId));
 		return domainName + userActivationLink;
 	}
 
