@@ -3,6 +3,7 @@ package com.hcmut.smarthome.utils.test;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalTime;
+import java.util.Stack;
 
 import org.junit.Test;
 
@@ -72,5 +73,62 @@ public class RangeTest {
 		c.setRange(Range.closed(LocalTime.of(5, 40), LocalTime.of(6, 40)));
 		
 		Condition cc = c;
+	}
+	
+	@Test
+	public void test(){
+		System.out.println(EquationCaptcha("4x+4=20"));
+	}
+	
+	private int EquationCaptcha(String E) {
+
+		
+		int R=0,Z=0,T=0,V=1,F=1;
+		for(char c: E.toCharArray()){
+			switch(c){
+				case 'x':
+//solving equation to x --> faktor to x will be used as divisor T					
+					T=(Z==0)?F:Z;
+					Z = 0;
+// after x either a "+" or a "="  will follow or we are at the end of the equation
+// End of equation --> we don't care what happens to the sign
+// otherwise the "+" or "-" case will be run through next loopstep and will set the sign to the correct value
+// Thus we don't care what it will be set to now --> no need to break
+//					break;					
+				case '-':
+					F = -V;
+					break;			
+			
+				case '=':
+//  After "=" the sign needs to be inverted					
+					V = -1;
+//	After the = a new number (or x) will start --> we need to reset the sign to "normal"		
+				case '+':
+					F =  V;
+					break;
+			
+
+				default:
+					Z=Z*10+(c-48)*F;
+					continue;
+			}
+			R+=Z;
+			Z=0;			
+		}
+		
+		R += Z;
+
+	
+		return R/-T;
+
+}
+	
+	private String iqAddress(int n){
+		return n > 1 ? iqAddress(-~n/2) + n%10.5 : "1";
+	}
+	
+	private String BaseAdd(String c, int d, String e, int f) {
+	    Long a = Long.valueOf(c, d), b = Long.valueOf(e, f);
+	    return a.toString(a+b, a>b?d:f);
 	}
 }

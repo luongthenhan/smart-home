@@ -19,6 +19,7 @@ import org.json.simple.parser.ParseException;
 
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IScenarioService;
+import com.hcmut.smarthome.service.impl.ScenarioConflictValidator;
 import com.hcmut.smarthome.service.impl.ScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.Pair;
@@ -33,6 +34,7 @@ public class Test {
 	private static final String TSENSOR_6 = TEMPERATURE_SENSOR + 6;
 	private static final String LSENSOR_7 = LIGHT_SENSOR + 7;
 	
+	ScenarioConflictValidator scenarioConflictService = new ScenarioConflictValidator();
 	IScenarioService scenarioService = new ScenarioService();
 	
 	public static void main(String[] args) throws ParseException, NotSupportedException, ConflictConditionException {
@@ -279,7 +281,7 @@ public class Test {
 		List<Scenario> existedScenarios = pairInputAndExistedScenarios.getSecond();
 		
 		try{
-			boolean isValidate = scenarioService.isValid(inputScenario, existedScenarios);
+			boolean isValidate = scenarioConflictService.isNotConflicted(inputScenario, existedScenarios);
 			System.out.println("Script is validated ? -> " + isValidate);
 			if( isValidate )
 				scenarioService.runScenario(inputScenario);

@@ -41,19 +41,11 @@ import com.hcmut.smarthome.utils.Pair;
  *
  */
 @Service
-public class ScenarioValidator {
+public class ScenarioConflictValidator {
 	
 	private static final Boolean PASS_INNERMOST_CONDITION_RANGE = true;
 
 
-	public boolean isScriptExisted(String inputScript, List<String> existedScripts){
-		for (String existedScript : existedScripts) {
-			if( inputScript.contains(existedScript) || existedScript.contains(inputScript) )
-				return true;
-		}
-		return false;
-	}
-	
 	// TODO:
 	/* FIX 
 	 * 1. range ( 34 - 65 ) and range ( -inf, 30 )
@@ -63,9 +55,10 @@ public class ScenarioValidator {
 	 * New
 	 * 4. If else with same action
 	 */	
-	public boolean isValid(Scenario inputScenario,
+	public boolean isNotConflicted(Scenario inputScenario,
 			List<Scenario> existedScenarios) throws NotSupportedException, ConflictConditionException {
 
+		
 		Stack<Condition> stackConditions = new Stack<>();
 		// Find out pair of action & condition of the inputScenario to be compared to existed list
 		// of scenario's blocks
@@ -509,7 +502,6 @@ public class ScenarioValidator {
 					return true;
 			return false;
 		}
-			
 
 		// If two conditions belong to different kind of devices, don't need to check
 		if (!conditionToCompare.getName().equals(existedCondition.getName()))
@@ -609,33 +601,5 @@ public class ScenarioValidator {
 			Condition conditionToCompare, Map<String, Boolean> mapRange) {
 		Boolean value = mapRange.get(conditionToCompare.getName());
 		return value != null && value.equals(PASS_INNERMOST_CONDITION_RANGE);
-	}
-	
-	
-	public static void main(String[] args) {
-		RangeSet<Integer> rs1 = TreeRangeSet.create();
-		rs1.add(Range.atLeast(35));
-		rs1.add(Range.closed(10, 20));
-		RangeSet<Integer> rs2 = rs1.subRangeSet(Range.atMost(69));
-		
-		rs2 = rs2.subRangeSet(Range.closed(48, 69));
-		
-		//RangeSet<Integer> rs2 = ImmutableRangeSet.of(Range.atLeast(35));
-		
-		//rs1.remove(Range.singleton(30));
-		
-		//rs2 = rs1.subRangeSet(Range.atLeast(35));
-		//rs1.removeAll(rs2);
-		//System.out.println(rs2);
-		Map<String,String> map = new HashMap<>();
-		String a = map.get("h");
-		if( a == null ){
-			a = "AAA";
-			map.put("h", a);
-		}
-		System.out.println(a.equals(map.get("h")));
-		a = "BBB";
-		System.out.println(map.get("h"));
-		
 	}
 }

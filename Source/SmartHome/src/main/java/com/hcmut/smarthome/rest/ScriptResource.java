@@ -2,6 +2,7 @@ package com.hcmut.smarthome.rest;
 
 import java.util.List;
 
+import javax.script.ScriptException;
 import javax.transaction.NotSupportedException;
 
 import org.json.simple.parser.ParseException;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.scenario.model.Scenario;
+import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IDeviceService;
+import com.hcmut.smarthome.service.IHomeService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 // TODO: If user has successfully login and get the token ( also authorize ) , the next time user call WS
@@ -33,13 +36,25 @@ public class ScriptResource {
 	@Autowired
 	private IScenarioService scenarioService;
 	
+	@Autowired
+	private IHomeService homeService;
+	
+	@Autowired
+	private IAuthenticationService authService;
+	
 	/**
 	 * Delete one script given scriptId
 	 * @param scriptId
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.DELETE, path="/{scriptId}")
-	public ResponseEntity<Void> deleteScript(@PathVariable int deviceId, @PathVariable int scriptId){
+	public ResponseEntity<Void> deleteScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId){
+		int homeId = homeService.getHomeIdGivenMode(modeId);
+		
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+		}
+		
 		deviceService.deleteScript(deviceId, scriptId);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
@@ -52,6 +67,12 @@ public class ScriptResource {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Script>> getScripts(@PathVariable int deviceId,@PathVariable int modeId){
+		int homeId = homeService.getHomeIdGivenMode(modeId);
+		
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<List<Script>>(HttpStatus.UNAUTHORIZED);
+		}
+		
 		return new ResponseEntity<List<Script>>(deviceService.getScripts( modeId, deviceId),HttpStatus.OK);
 	}
 	
@@ -60,16 +81,32 @@ public class ScriptResource {
 	 * @param scriptId
 	 * @param script
 	 * @return
+	 * @throws ScriptException 
+	 * @throws ConflictConditionException 
+	 * @throws NotSupportedException 
+	 * @throws ParseException 
 	 */
 	@RequestMapping(method = RequestMethod.PUT, path="/{scriptId}")
-	public ResponseEntity<Void> updateScript(@PathVariable int scriptId, @RequestBody Script script ){
-		deviceService.updateScript(scriptId,script);
+	public ResponseEntity<Void> updateScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId, @RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException{
+		int homeId = homeService.getHomeIdGivenMode(modeId);
+		
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+		}
+		
+		deviceService.updateScript(homeId, modeId, deviceId, scriptId,script);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
 	@RequestMapping(method = RequestMethod.PATCH, path="/{scriptId}")
-	public ResponseEntity<Void> updatePartialScript(@PathVariable int scriptId, @RequestBody Script script ){
-		deviceService.updatePartialScript(scriptId,script);
+	public ResponseEntity<Void> updatePartialScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId, @RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException{
+		int homeId = homeService.getHomeIdGivenMode(modeId);
+		
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+		}
+		
+		deviceService.updatePartialScript(homeId, modeId, deviceId, scriptId, script);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
@@ -82,33 +119,23 @@ public class ScriptResource {
 	 * @throws ParseException 
 	 * @throws ConflictConditionException 
 	 * @throws NotSupportedException 
+	 * @throws ScriptException 
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<String> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException{
+	public ResponseEntity<String> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException{
 		
-		boolean goToSaveAndRunStep = false;
-		Scenario scenario = null;
-		if( script.getContent() != null ){
-			scenario = scenarioService.JSONToScenario(script.getContent());
-			if( scenarioService.isValid(modeId, deviceId, scenario) )
-				goToSaveAndRunStep = true;
+		int homeId = homeService.getHomeIdGivenMode(modeId);
+		
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		if( goToSaveAndRunStep ){
-			int addedScriptId = deviceService.addScript(script,deviceId, modeId);
-			if( addedScriptId > 0 ){
-				String URINewAddedObject = String.format("devices/%s/modes/%s/scripts/%s", deviceId, modeId, addedScriptId);
-				
-				// TODO: HomeiD ?? timeout ??
-				scenario.setId(addedScriptId);
-				scenario.setHomeId(1);
-				scenarioService.runScenario(scenario);
-				return new ResponseEntity<String>(URINewAddedObject,HttpStatus.CREATED);
-			}
+		int addedScriptId = deviceService.addScript(script, deviceId, modeId , homeId);
+		if (addedScriptId > 0) {
+			String URINewAddedObject = String.format( "devices/%s/modes/%s/scripts/%s", deviceId, modeId, addedScriptId);
+			return new ResponseEntity<String>(URINewAddedObject, HttpStatus.CREATED);
 		}
-		
-		
-		
+
 		return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 	}
 

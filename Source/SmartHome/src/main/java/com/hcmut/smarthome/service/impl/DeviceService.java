@@ -4,6 +4,10 @@ import static com.hcmut.smarthome.utils.ConstantUtil.ADD_UNSUCCESSFULLY;
 
 import java.util.List;
 
+import javax.script.ScriptException;
+import javax.transaction.NotSupportedException;
+
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +25,15 @@ import com.hcmut.smarthome.entity.ScriptEntity;
 import com.hcmut.smarthome.entity.ScriptTypeEntity;
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
+import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IDeviceService;
+import com.hcmut.smarthome.utils.ConflictConditionException;
+import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @Service
 public class DeviceService implements IDeviceService {
+	private static final String CUSTOM_SCRIPT_TYPE = "Custom";
+
 	// TODO : Update map after add new / update / delete something. Also in this time
 	// call stopOrRemoveScenario. 
 	// * Handle add new home ?
@@ -54,7 +63,7 @@ public class DeviceService implements IDeviceService {
 	public int addDevice(int homeId, int deviceTypeId, Device device) {
 		
 		DeviceEntity deviceEntity = new DeviceEntity();
-		initEntityBeforeSaveOrUpdate(homeId, deviceTypeId, device, deviceEntity);
+		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, device, deviceEntity);
 
 		int deviceId = deviceDao.save(deviceEntity).intValue();
 		if( deviceId > 0 ){
@@ -74,6 +83,7 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public boolean deleteDevice(int homeId, int deviceId) {
 		if( deviceDao.delete(deviceId) ){
+			
 			//updateMapHomeDevices(homeId, deviceId, null);
 			return true;
 		}
@@ -118,7 +128,7 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public boolean deleteScript( int deviceId, int scriptId) {
 		if (scriptDao.deleteScript(scriptId)) {
-			// scenarioService.stopForeverScenario(scriptId);
+			scenarioService.stopForeverScenario(scriptId);
 			
 //			int homeId = homeDao.getHomeIdGivenDevice(deviceId);
 //			
@@ -131,26 +141,59 @@ public class DeviceService implements IDeviceService {
 		return false;
 	}
 
+	// TODO : save/update script custom . check name 
+	@Override
+	public int addScript(Script script, int deviceId , int modeId, int homeId) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException {
+		
+		Scenario scenario = scriptToScenario(script);
+		boolean isValid = scenarioService.isValid(modeId, deviceId, script, scenario);
+		
+		if( isValid ){
+			int scenarioId = saveScriptToDB(modeId, deviceId, script); 
+			runScenario(scenarioId, homeId, deviceId, scenario);
+			return (scenarioId > 0 ? scenarioId : ADD_UNSUCCESSFULLY);
+		}
+		
+		return ADD_UNSUCCESSFULLY;
+	}
+	
 	// TODO: Now update a script involved so many queries -> need to improve performance
 	@Override
-	public boolean updateScript(int scriptId, Script updatedScript) {
-		return updatePartialScript(scriptId, updatedScript);
+	public boolean updateScript(int homeId, int modeId, int deviceId, int scriptId, Script updatedScript) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException {
+		return updatePartialScript(homeId, modeId, deviceId, scriptId, updatedScript);
 	}
 
 
 	@Override
-	public boolean updatePartialScript(int scriptId, Script updatedScript) {
+	public boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script scriptToUpdate) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException {
 		ScriptEntity updatedScriptEntity = scriptDao.getById(scriptId);
 		
-		if( updatedScript.getContent() != null )
-			updatedScriptEntity.setContent(updatedScript.getContent());
+		// Found in DB
+		if( updatedScriptEntity != null ){
+			Scenario updatedScenario = scriptToScenario(scriptToUpdate);
+			boolean isValid = scenarioService.isValid(modeId, deviceId, scriptToUpdate, updatedScenario);
+			if( isValid ){
+				boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,updatedScriptEntity);
+				if( isUpdateSuccessfully ){
+					runScenario(scriptId, homeId, deviceId, updatedScenario);
+				}
+			}
+		}
 		
-		if( updatedScript.getName() != null )
-			updatedScriptEntity.setName(updatedScript.getName());
+		// Not found or not valid
+		return false;
+	}
+
+	private boolean updateScriptToDB(Script scriptToUpdate, ScriptEntity updatedScriptEntity){
+		if( scriptToUpdate.getContent() != null )
+			updatedScriptEntity.setContent(scriptToUpdate.getContent());
 		
-		if( updatedScript.getType() != null && updatedScript.getType().getId() > 0 ){
+		if( scriptToUpdate.getName() != null )
+			updatedScriptEntity.setName(scriptToUpdate.getName());
+		
+		if( scriptToUpdate.getType() != null && scriptToUpdate.getType().getId() > 0 ){
 			ScriptTypeEntity scriptTypeEntity = new ScriptTypeEntity();
-			scriptTypeEntity.setId(updatedScript.getType().getId());
+			scriptTypeEntity.setId(scriptToUpdate.getType().getId());
 			updatedScriptEntity.setScriptType(scriptTypeEntity);
 		}
 		
@@ -163,19 +206,48 @@ public class DeviceService implements IDeviceService {
 		}
 		return false;
 	}
-
-	@Override
-	public int addScript(Script script, int deviceId , int modeId) {
+	
+	/**
+	 * Convert script to scenario <br/>
+	 * If script is custom type , need to use ScriptBuilder.parse first
+	 * @param script
+	 * @return
+	 * @throws ParseException
+	 * @throws ScriptException
+	 */
+	private Scenario scriptToScenario(Script script) throws ParseException, ScriptException{
+		Scenario scenario = null;
+		if( script.getContent() != null ){
+			String jsonScript = script.getContent();
+			if( script.getType() != null && CUSTOM_SCRIPT_TYPE.equals(script.getType().getName()) ){
+				jsonScript = ScriptBuilder.parseFromCodeAsString(script.getContent());
+			}
+			scenario = scenarioService.JSONToScenario(jsonScript);
+		}
+		return scenario;
+	}
+	
+	// TODO HomeId now is hard-coded
+	private void runScenario(int scenarioId, int homeId, int deviceId, Scenario scenario){
+		if( scenarioId > 0 ){
+			scenario.setId(scenarioId);
+			scenario.setHomeId(homeId);
+			scenario.setDeviceId(deviceId);
+			scenarioService.runScenario(scenario);
+		}
+	}
+	
+	private int saveScriptToDB(int modeId, int deviceId, Script scriptToSave){
 		ScriptEntity scriptEntity = new ScriptEntity();
-		scriptEntity.setName(script.getName());
-		scriptEntity.setContent(script.getContent());
+		scriptEntity.setName(scriptToSave.getName());
+		scriptEntity.setContent(scriptToSave.getContent());
 		
 		ModeEntity mode = new ModeEntity();
 		mode.setId(modeId);
 		scriptEntity.setMode(mode);
 		
 		ScriptTypeEntity scriptType = new ScriptTypeEntity();
-		scriptType.setId(script.getType().getId());
+		scriptType.setId(scriptToSave.getType().getId());
 		scriptEntity.setScriptType(scriptType);
 		
 		DeviceEntity device = new DeviceEntity();
@@ -183,7 +255,7 @@ public class DeviceService implements IDeviceService {
 		scriptEntity.setDevice(device);
 		
 		int scriptId = scriptDao.save(scriptEntity);
-		return (scriptId > 0 ? scriptId : ADD_UNSUCCESSFULLY);
+		return scriptId;
 	}
 	
 	@Override
@@ -191,7 +263,7 @@ public class DeviceService implements IDeviceService {
 			int deviceTypeId, Device updatedDevice) {
 		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
 		
-		initEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
+		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
 		
 		if( deviceDao.update(deviceEntity)){
 			// TODO : When we have already had the function to create home , this case will not happen anymore
@@ -212,7 +284,7 @@ public class DeviceService implements IDeviceService {
 		return null;
 	}
 	
-	private void initEntityBeforeSaveOrUpdate(int homeId, int deviceTypeId, Device updatedDevice,
+	private void initDeviceEntityBeforeSaveOrUpdate(int homeId, int deviceTypeId, Device updatedDevice,
 			DeviceEntity deviceEntity) {
 		if( updatedDevice.getCode() != null )
 			deviceEntity.setCode(updatedDevice.getCode());
@@ -249,6 +321,10 @@ public class DeviceService implements IDeviceService {
 		deviceEntity.setDeviceType(deviceType);
 	}
 
+	@Override
+	public boolean isDeviceEnabled(int deviceId){
+		return deviceDao.isEnabled(deviceId);
+	}
 	
 //	private void updateMapHomeDevices(int homeId, int deviceId, DeviceEntity device){
 //		if( mapHomeDevices.containsKey(homeId) ){

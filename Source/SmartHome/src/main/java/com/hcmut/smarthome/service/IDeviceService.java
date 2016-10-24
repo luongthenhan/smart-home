@@ -2,8 +2,14 @@ package com.hcmut.smarthome.service;
 
 import java.util.List;
 
+import javax.script.ScriptException;
+import javax.transaction.NotSupportedException;
+
+import org.json.simple.parser.ParseException;
+
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
+import com.hcmut.smarthome.utils.ConflictConditionException;
 
 public interface IDeviceService {
 	List<Device> getAllGivenHomeAndDeviceType(int homeId, int deviceTypeId);
@@ -16,13 +22,13 @@ public interface IDeviceService {
 	
 	Script getScript(int scriptId);
 	
-	int addScript(Script script, int deviceId , int modeId);
+	int addScript(Script script, int deviceId , int modeId, int homeId) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException;
 	
 	boolean deleteScript( int deviceId, int scriptId);
 	
-	boolean updateScript(int scriptId, Script updatedScript);
+	boolean updateScript(int homeId, int modeId, int deviceId, int scriptId, Script updatedScript) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException;
 	
-	boolean updatePartialScript(int scriptId, Script updatedScript);
+	boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script updatedScript) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException;
 	
 	List<Integer> getAllAvailableGpio(int homeId);
 
@@ -33,4 +39,6 @@ public interface IDeviceService {
 	boolean deleteDevice(int homeId, int deviceId);
 
 	boolean updatePartialDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice);
+
+	boolean isDeviceEnabled(int deviceId);
 }

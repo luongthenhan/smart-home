@@ -19,25 +19,33 @@ import com.hcmut.smarthome.scenario.model.ControlBlockIfElse;
 import com.hcmut.smarthome.scenario.model.IBlock;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
+import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
 
 @Service
 public class ScenarioRunner {
-	private static final boolean RUNNING = true;
-	private static final boolean STOPPING = false;
+	private enum ScenarioStatus{
+		RUNNING,
+		STOPPING,
+		STOP_FOREVER
+	}
 	
-	private Map<Integer, Boolean> mapScenarioController = new HashMap<>();
+	private Map<Integer, ScenarioStatus> mapScenarioController = new HashMap<>();
 	
 	@Autowired
 	private IHomeService homeService;
+
+	@Autowired
+	private IDeviceService deviceService;
 	
-	public void runScenario(Scenario scenario) {
-		if (scenario == null || scenario.getId() == null
-				|| scenario.getHomeId() <= 0)
+	public void runScenario( Scenario scenario) {
+		if (scenario == null || scenario.getId() == null 
+				|| scenario.getHomeId() <= 0
+				|| scenario.getDeviceId() <= 0)
 			return;
 
 		// Mark scenario as running
-		mapScenarioController.put(scenario.getId(), RUNNING);
+		mapScenarioController.put(scenario.getId(), ScenarioStatus.RUNNING);
 		
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -45,12 +53,23 @@ public class ScenarioRunner {
 			@Override
 			public void run() {
 				// Check state is still running or not
-				boolean state = mapScenarioController.get(scenario.getId());
-				System.out.println("Goes here ");
-				if (state == RUNNING)
-					runBlocks(scenario.getBlocks(), scenario.getId(), scenario.getHomeId());
-				else if (state == STOPPING)
-					this.cancel();
+				ScenarioStatus status = mapScenarioController.get(scenario.getId());
+				
+				System.out.println("Goes here - timertask in runScenario ");
+				
+				switch (status) {
+				case RUNNING:
+					runBlocks(scenario.getBlocks(), scenario.getDeviceId(), scenario.getDeviceId());
+					break;
+				case STOPPING:
+					// Just skip
+					break;
+				case STOP_FOREVER:
+					this.cancel(); 
+					break;
+				default:
+					break;
+				}
 
 			}
 		}, 0, TIMEOUT_CHECK_CONDITION);
@@ -59,11 +78,12 @@ public class ScenarioRunner {
 
 	public void stopForeverScenario(int id) {
 		if (mapScenarioController.containsKey(id))
-			mapScenarioController.put(id, STOPPING);
+			mapScenarioController.put(id, ScenarioStatus.STOP_FOREVER);
 	}
 	
 	public void stopScenario(int id) {
-		return;
+		if (mapScenarioController.containsKey(id))
+			mapScenarioController.put(id, ScenarioStatus.STOPPING);
 	}
 	
 	/**
@@ -71,20 +91,19 @@ public class ScenarioRunner {
 	 * 
 	 * @param blocks
 	 */
-	private void runBlocks(List<IBlock> blocks, int scenarioId, int homeId) {
+	private void runBlocks(List<IBlock> blocks, int deviceId, int homeId) {
 		for (IBlock block : blocks) {
 			if (block instanceof SimpleAction) {
 
 				// TODO: Improve performance
-				// TODO: Improve performance
-				// Only do action when home is enabled
-				//if (homeService.isEnabled(homeId)) {
+				// Only do action when home is enabled || device is enabled
+				if ( homeService.isEnabled(homeId) && deviceService.isDeviceEnabled(deviceId)) {
 					SimpleAction action = (SimpleAction) block;
 					action.doAction();
-				//}
+				}
 
 			} else if (block instanceof ControlBlock) {
-				runControlBlock((ControlBlock) block, scenarioId, homeId);
+				runControlBlock((ControlBlock) block, deviceId, homeId);
 				// TODO: Move timeout to each model
 			} 
 		}
@@ -95,30 +114,20 @@ public class ScenarioRunner {
 	 * 
 	 * @param controlBlock
 	 */
-	private void runControlBlock(ControlBlock controlBlock, int scenarioId,
-			int homeId) {
+	private void runControlBlock(ControlBlock controlBlock, int deviceId, int homeId) {
 		if ( controlBlock.getClass().equals(ControlBlockFromTo.class) ){
 			ControlBlockFromTo controlBlockFromTo = (ControlBlockFromTo) controlBlock;
 			if( controlBlockFromTo.getCondition().getRange().contains(LocalTime.now()) )
 				runBlocks(controlBlockFromTo.getAction().getBlocks(),
-						scenarioId, homeId);
+						deviceId, homeId);
 		}
 		else if (controlBlock.getCondition().check()) {
-			runBlocks(controlBlock.getAction().getBlocks(), scenarioId, homeId);
+			runBlocks(controlBlock.getAction().getBlocks(), deviceId, homeId);
 		} else if (CONTROL_BLOCK_IF_ELSE.equals(controlBlock.getName())) {
 			ControlBlockIfElse controlBlockIfElse = (ControlBlockIfElse) controlBlock;
 			runBlocks(controlBlockIfElse.getElseAction().getBlocks(),
-					scenarioId, homeId);
+					deviceId, homeId);
 		}
 		
 	}
-
-	public Map<Integer, Boolean> getMapScenarioController() {
-		return mapScenarioController;
-	}
-
-	public void setMapScenarioController(Map<Integer, Boolean> mapScenarioController) {
-		this.mapScenarioController = mapScenarioController;
-	}
-	
 }
