@@ -8,6 +8,8 @@ public class Scenario {
 	
 	private int homeId;
 	
+	private int deviceId;
+	
 	private int timeout;
 	
 	List<IBlock> blocks;
@@ -43,5 +45,12 @@ public class Scenario {
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
-	
+
+	public int getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(int deviceId) {
+		this.deviceId = deviceId;
+	}
 }

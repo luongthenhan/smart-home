@@ -30,6 +30,11 @@ public class HomeService implements IHomeService{
 	private IModeDao modeDao;
 	
 	@Override
+	public int getHomeIdGivenMode(int modeId){
+		return homeDao.getHomeIdGivenMode(modeId);
+	}
+	
+	@Override
 	public List<Home> getAllHomes(int userId) {
 		return HomeConverter.toListModel(homeDao.getAllHomes(userId));
 	}

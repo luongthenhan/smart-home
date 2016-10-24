@@ -30,7 +30,7 @@ public class ScenarioService implements IScenarioService {
 	private ScenarioRunner scenarioRunner = new ScenarioRunner();
 	
 	@Autowired
-	private ScenarioValidator scenarioValidator = new ScenarioValidator();
+	private ScenarioConflictValidator scenarioConflictValidator = new ScenarioConflictValidator();
 	
 	@Autowired
 	private IDeviceService deviceService = new DeviceService();
@@ -39,22 +39,49 @@ public class ScenarioService implements IScenarioService {
 		throw new UnsupportedOperationException("Not supported");
 	}
 
+	// TODO: when update , don't forget that input scenario may exist in one of them
 	@Override
-	public boolean isValid(int modeId, int deviceId, Scenario scenario) throws ParseException, NotSupportedException, ConflictConditionException{
+	public boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws ParseException, NotSupportedException, ConflictConditionException{
 		List<Script> existedScripts = deviceService.getScripts(modeId,deviceId);
+		
 		List<Scenario> existedScenarios = new ArrayList<Scenario>();
 		for (Script existedScript : existedScripts) {
+			
+			if( isScriptExisted(script.getContent(), existedScript.getContent()) )
+				return false;
+			
+			if( checkExistingName(script.getName(), existedScript.getName()) )
+				return false;
+			
 			Scenario existedScenario = JSONToScenario(existedScript.getContent());
 			existedScenarios.add(existedScenario);
 		}
-		return isValid(scenario, existedScenarios);
+		
+		if( scenario != null )
+			return isNotConflicted(scenario, existedScenarios);
+		return true;
+	}
+	
+	private boolean isScriptExisted(String inputScriptContent, String existedScriptContent){
+		if( inputScriptContent.contains(existedScriptContent) || existedScriptContent.contains(inputScriptContent) )
+			return true;
+		return false;
 	}
 	
 	
-	@Override
-	public boolean isValid(Scenario inputScenario,
+	private boolean checkExistingName(String inputScriptName, String existedScriptName) {
+		if( inputScriptName != null && existedScriptName != null){
+			if( "".equals(inputScriptName) )
+				return false;
+			else if ( existedScriptName.equals(inputScriptName) )
+				return true;
+		}
+		return false;
+	}
+	
+	private boolean isNotConflicted(Scenario inputScenario,
 			List<Scenario> existedScenarios) throws NotSupportedException, ConflictConditionException {
-		return scenarioValidator.isValid(inputScenario, existedScenarios);
+		return scenarioConflictValidator.isNotConflicted(inputScenario, existedScenarios);
 	}
 	
 	// TODO : When one script is removed , how to know and get rid of it and
@@ -69,11 +96,27 @@ public class ScenarioService implements IScenarioService {
 		scenarioRunner.stopScenario(id);
 	}
 
+	public void stopScenarioInHome(int homeId){
+		
+	}
+	
+	public void stopScenarioInDevice(int deviceId){
+		
+	}
+	
 	@Override
 	public void stopForeverScenario(int id) {
 		scenarioRunner.stopForeverScenario(id);
 	}
 
+	public void stopForeverScenarioInHome(int homeId){
+		
+	}
+	
+	public void stopForeverScenarioInDevice(int deviceId){
+		
+	}
+	
 	// TODO: Change parameter from String to Script ( for assigning id to
 	// scenario after return)
 	public Scenario JSONToScenario(String script) throws ParseException {

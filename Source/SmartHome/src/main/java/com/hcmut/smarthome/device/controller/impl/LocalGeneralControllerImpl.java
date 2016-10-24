@@ -317,7 +317,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			LOGGER.error(e.getMessage());
 			throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 		}
-
+		System.out.println("Turn on Light bulb ");
 		//ILightBulb lightBulbController = new LightBulbImpl(lightBulb);
 		//lightBulbController.turnOn();
 		LOGGER.debug("Turn on light bulb");

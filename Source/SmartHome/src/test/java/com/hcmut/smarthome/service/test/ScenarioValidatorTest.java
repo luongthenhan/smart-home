@@ -1,3 +1,4 @@
+
 package com.hcmut.smarthome.service.test;
 
 import static com.hcmut.smarthome.utils.ConstantUtil.BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION;
@@ -25,6 +26,7 @@ import org.junit.rules.ExpectedException;
 
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IScenarioService;
+import com.hcmut.smarthome.service.impl.ScenarioConflictValidator;
 import com.hcmut.smarthome.service.impl.ScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.ConstantUtil;
@@ -42,6 +44,7 @@ public class ScenarioValidatorTest {
 	private static final String LSENSOR_7 = LIGHT_SENSOR + 7;
 	
 	IScenarioService scenarioService = new ScenarioService();
+	ScenarioConflictValidator scenarioConflictService = new ScenarioConflictValidator();
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -1072,7 +1075,7 @@ public class ScenarioValidatorTest {
 		List<Scenario> existedScenarios = pairInputAndExistedScenarios.getSecond();
 		
 		
-		boolean isValidate = scenarioService.isValid(inputScenario, existedScenarios);
+		boolean isValidate = scenarioConflictService.isNotConflicted(inputScenario, existedScenarios);
 		System.out.println("Script is validated ? -> " + isValidate);
 		assertThat(isValidate, is(expectedResult));
 	}
@@ -1082,7 +1085,7 @@ public class ScenarioValidatorTest {
 		List<Scenario> existedScenarios = new ArrayList<>();
 		for (String existedScript : existedScripts) {
 			Scenario existedScenario = scenarioService.JSONToScenario(existedScript);
-			if( scenarioService.isValid(existedScenario, null) )
+			if( scenarioConflictService.isNotConflicted(existedScenario, null) )
 				existedScenarios.add(existedScenario);
 		}
 		

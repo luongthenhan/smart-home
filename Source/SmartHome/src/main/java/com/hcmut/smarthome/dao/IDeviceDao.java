@@ -13,4 +13,6 @@ public interface IDeviceDao extends ICommonDao<DeviceEntity> {
 	boolean deleteDevice(int deviceId);
 
 	boolean updatePartialDevice(int deviceId, Device device);
+
+	boolean isEnabled(int deviceId);
 }

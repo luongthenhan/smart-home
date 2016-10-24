@@ -6,6 +6,7 @@ import javax.transaction.NotSupportedException;
 
 import org.json.simple.parser.ParseException;
 
+import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 
@@ -31,13 +32,20 @@ public interface IScenarioService {
 	Scenario JSONToScenario(String script) throws ParseException;
 	
 	/**
-	 * Check scenario validation
-	 * @param inputScenario
-	 * @param existedScenarios
+	 * Check scenario whether it is validate or not <br/>
+	 * Validate: name <br/>
+	 * Check conflict: scenario
+	 * 
+	 * @param modeId
+	 * @param deviceId
+	 * @param script script used to check name valid or not
+	 * @param scenario if it is null , just check valid name or not. Otherwise, also check scenario conflict
 	 * @return
-	 * @throws ConflictConditionException 
+	 * @throws ParseException
+	 * @throws NotSupportedException
+	 * @throws ConflictConditionException
 	 */
-	boolean isValid(int modeId, int deviceId, Scenario inputScenario) throws ParseException, NotSupportedException, ConflictConditionException;
+	boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws ParseException, NotSupportedException, ConflictConditionException;
 	
 	/**
 	 * Stop ( remove ) forever a scenario
@@ -50,7 +58,4 @@ public interface IScenarioService {
 	 * @param id
 	 */
 	void stopScenario( int id );
-
-	boolean isValid(Scenario inputScenario, List<Scenario> existedScenarios)
-			throws NotSupportedException, ConflictConditionException;
 }
