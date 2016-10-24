@@ -502,9 +502,14 @@ public class ScenarioValidator {
 			return false;
 
 		// Different class type of value
-		if (conditionToCompare.getValue().getClass() != existedCondition
-				.getValue().getClass())
+		if (conditionToCompare.getValueClassType() != existedCondition
+				.getValueClassType()){
+			if( LocalTime.class.equals(conditionToCompare.getValueClassType()) 
+					|| LocalTime.class.equals(existedCondition.getValueClassType()) )
+					return true;
 			return false;
+		}
+			
 
 		// If two conditions belong to different kind of devices, don't need to check
 		if (!conditionToCompare.getName().equals(existedCondition.getName()))

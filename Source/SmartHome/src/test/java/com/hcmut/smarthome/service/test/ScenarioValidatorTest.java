@@ -1020,6 +1020,30 @@ public class ScenarioValidatorTest {
 	}
 	
 	/**
+	 * From To always converse with other conditions type , such as : If
+	 * -> INVALID
+	 * @throws ParseException
+	 * @throws NotSupportedException
+	 * @throws ConflictConditionException
+	 */
+	@Test
+	public void testCase13() throws ParseException, NotSupportedException, ConflictConditionException{
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("04:00", "12:00")
+				.action(TURN_ON, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		String existedScript = ScriptBuilderTemplate.blockIfOneAction(TSENSOR_5, GREATER_OR_EQUAL, 35, TURN_OFF, LIGHT_2);
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	/**
 	 * Conflict range No 
 	 * Counter action Yes
 	 * Different devs Yes ( in Condition )
