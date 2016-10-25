@@ -4,13 +4,23 @@ import java.util.List;
 
 public class Scenario {
 	
+	public enum ScenarioStatus{
+		RUNNING,
+		STOPPING,
+		STOP_FOREVER
+	}
+	
 	private Integer id;
 	
 	private int homeId;
 	
 	private int deviceId;
 	
+	private int modeId;
+	
 	private int timeout;
+	
+	private ScenarioStatus status;	
 	
 	List<IBlock> blocks;
 
@@ -52,5 +62,21 @@ public class Scenario {
 
 	public void setDeviceId(int deviceId) {
 		this.deviceId = deviceId;
+	}
+
+	public ScenarioStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ScenarioStatus status) {
+		this.status = status;
+	}
+
+	public int getModeId() {
+		return modeId;
+	}
+
+	public void setModeId(int modeId) {
+		this.modeId = modeId;
 	}
 }

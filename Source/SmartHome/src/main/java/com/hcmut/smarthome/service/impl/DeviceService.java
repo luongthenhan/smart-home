@@ -27,6 +27,7 @@ import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IDeviceService;
+import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 
@@ -40,7 +41,7 @@ public class DeviceService implements IDeviceService {
 	//private HashMap<Integer,List<Device>> mapHomeDevices = new HashMap<>();
 	
 	@Autowired
-	private ScenarioService scenarioService;
+	private IScenarioService scenarioService;
 	
 	@Autowired
 	private IDeviceDao deviceDao;
@@ -83,7 +84,7 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public boolean deleteDevice(int homeId, int deviceId) {
 		if( deviceDao.delete(deviceId) ){
-			
+			scenarioService.stopForeverScenarioInDevice(deviceId);
 			//updateMapHomeDevices(homeId, deviceId, null);
 			return true;
 		}
@@ -109,6 +110,7 @@ public class DeviceService implements IDeviceService {
 //		}
 //		return mapHomeDevices.get(homeId);
 	}
+	
 	
 	@Override
 	public Device getDevice(int homeId, int deviceId) {
@@ -150,7 +152,7 @@ public class DeviceService implements IDeviceService {
 		
 		if( isValid ){
 			int scenarioId = saveScriptToDB(modeId, deviceId, script); 
-			runScenario(scenarioId, homeId, deviceId, scenario);
+			runScenario(scenarioId, homeId, deviceId, modeId, scenario);
 			return (scenarioId > 0 ? scenarioId : ADD_UNSUCCESSFULLY);
 		}
 		
@@ -175,7 +177,7 @@ public class DeviceService implements IDeviceService {
 			if( isValid ){
 				boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,updatedScriptEntity);
 				if( isUpdateSuccessfully ){
-					runScenario(scriptId, homeId, deviceId, updatedScenario);
+					runScenario(scriptId, homeId, deviceId, modeId, updatedScenario);
 				}
 			}
 		}
@@ -228,11 +230,12 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	// TODO HomeId now is hard-coded
-	private void runScenario(int scenarioId, int homeId, int deviceId, Scenario scenario){
+	private void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario){
 		if( scenarioId > 0 ){
 			scenario.setId(scenarioId);
 			scenario.setHomeId(homeId);
 			scenario.setDeviceId(deviceId);
+			scenario.setModeId(modeId);
 			scenarioService.runScenario(scenario);
 		}
 	}

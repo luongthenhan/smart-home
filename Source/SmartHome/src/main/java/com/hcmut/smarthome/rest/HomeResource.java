@@ -109,7 +109,7 @@ public class HomeResource {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Home>> getHomes() {
 		return new ResponseEntity<List<Home>>(
-				homeService.getAllHomes(authService.getCurrentUserId()),
+				homeService.getAllHomes(/*authService.getCurrentUserId()*/ConstantUtil.VALID_USER_ID),
 				HttpStatus.OK);
 	}
 

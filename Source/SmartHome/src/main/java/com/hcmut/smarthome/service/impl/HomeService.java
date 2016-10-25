@@ -17,6 +17,7 @@ import com.hcmut.smarthome.entity.UserEntity;
 import com.hcmut.smarthome.model.Home;
 import com.hcmut.smarthome.model.Mode;
 import com.hcmut.smarthome.service.IHomeService;
+import com.hcmut.smarthome.service.IScenarioService;
 
 @Service
 public class HomeService implements IHomeService{
@@ -28,6 +29,9 @@ public class HomeService implements IHomeService{
 	
 	@Autowired
 	private IModeDao modeDao;
+	
+	@Autowired
+	private IScenarioService scenarioService;
 	
 	@Override
 	public int getHomeIdGivenMode(int modeId){
@@ -104,7 +108,12 @@ public class HomeService implements IHomeService{
 	
 	@Override
 	public boolean deleteHome(int userId, int homeId){
-		return homeDao.deleteHome(userId, homeId);
+		boolean isDeletedSuccessfully = homeDao.deleteHome(userId, homeId);
+		if( isDeletedSuccessfully ){
+			scenarioService.stopForeverScenarioInHome(homeId);
+			return true;
+		}
+		return false;
 	}
 	
 	@Override

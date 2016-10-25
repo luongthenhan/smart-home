@@ -74,7 +74,7 @@ public class ConstantUtil {
 	// Hard code
 	public static int HOME_ID = 1;
 	public static int VALID_USER_ID = 2;
-	public static final int TIMEOUT_CHECK_CONDITION = 2000;
+	public static final int TIMEOUT_CHECK_CONDITION = 5000;
 
 	// List gpio
 	public static List<Integer> ALL_GPIO = Arrays.asList(3, 5, 7, 8, 10, 11,

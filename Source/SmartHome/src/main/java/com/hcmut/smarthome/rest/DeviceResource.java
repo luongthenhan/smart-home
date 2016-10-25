@@ -228,7 +228,7 @@ public class DeviceResource {
 		
 		String input = new ScriptBuilder()
 		.begin()
-			.FromTo("00:00", "00:20")
+			.FromTo("00:00", "01:40")
 				.action(TURN_ON, 2)
 			.endFromTo()
 		.end().build();
@@ -236,7 +236,22 @@ public class DeviceResource {
 		Scenario scenario = scenarioService.JSONToScenario(input);
 		scenario.setId(1);
 		scenario.setHomeId(1);
+		scenario.setDeviceId(2);System.out.println("Create " + scenario);
 		scenarioService.runScenario(scenario);
+		
+		String input1 = new ScriptBuilder()
+		.begin()
+			.FromTo("00:00", "01:40")
+				.action(TURN_ON, 4)
+			.endFromTo()
+		.end().build();
+		
+		Scenario scenario1 = scenarioService.JSONToScenario(input1);
+		scenario1.setId(2);
+		scenario1.setHomeId(1);
+		scenario1.setDeviceId(4);System.out.println("Create " + scenario1);
+		scenarioService.runScenario(scenario1);
+		
 		return null;
 	}
 

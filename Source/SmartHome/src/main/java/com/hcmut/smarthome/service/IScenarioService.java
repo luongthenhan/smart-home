@@ -1,7 +1,5 @@
 package com.hcmut.smarthome.service;
 
-import java.util.List;
-
 import javax.transaction.NotSupportedException;
 
 import org.json.simple.parser.ParseException;
@@ -58,4 +56,8 @@ public interface IScenarioService {
 	 * @param id
 	 */
 	void stopScenario( int id );
+	void stopForeverScenarioInDevice(int deviceId);
+	void stopForeverScenarioInHome(int homeId);
+	void stopScenarioInDevice(int deviceId);
+	void stopScenarioInHome(int homeId);
 }

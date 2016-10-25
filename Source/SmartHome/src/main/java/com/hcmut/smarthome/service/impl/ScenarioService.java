@@ -24,16 +24,16 @@ public class ScenarioService implements IScenarioService {
 
 	// TODO: Remove new object here after testing
 	@Autowired
-	private ScenarioCreator scenarioCreator = new ScenarioCreator();
+	private ScenarioCreator scenarioCreator;
 	
 	@Autowired
-	private ScenarioRunner scenarioRunner = new ScenarioRunner();
+	private ScenarioRunner scenarioRunner;
 	
 	@Autowired
-	private ScenarioConflictValidator scenarioConflictValidator = new ScenarioConflictValidator();
+	private ScenarioConflictValidator scenarioConflictValidator;
 	
 	@Autowired
-	private IDeviceService deviceService = new DeviceService();
+	private IDeviceService deviceService;
 	
 	public String JSONToString() {
 		throw new UnsupportedOperationException("Not supported");
@@ -96,12 +96,14 @@ public class ScenarioService implements IScenarioService {
 		scenarioRunner.stopScenario(id);
 	}
 
+	@Override
 	public void stopScenarioInHome(int homeId){
-		
+		scenarioRunner.stopScenarioInHome(homeId);
 	}
 	
+	@Override
 	public void stopScenarioInDevice(int deviceId){
-		
+		scenarioRunner.stopScenarioInDevice(deviceId);
 	}
 	
 	@Override
@@ -109,20 +111,20 @@ public class ScenarioService implements IScenarioService {
 		scenarioRunner.stopForeverScenario(id);
 	}
 
+	@Override
 	public void stopForeverScenarioInHome(int homeId){
-		
+		scenarioRunner.stopForeverScenarioInHome(homeId);
 	}
 	
+	@Override
 	public void stopForeverScenarioInDevice(int deviceId){
-		
+		scenarioRunner.stopForeverScenarioInDevice(deviceId);
 	}
 	
 	// TODO: Change parameter from String to Script ( for assigning id to
 	// scenario after return)
+	@Override
 	public Scenario JSONToScenario(String script) throws ParseException {
 		return scenarioCreator.from(script);
 	}
-
-	
-
 }

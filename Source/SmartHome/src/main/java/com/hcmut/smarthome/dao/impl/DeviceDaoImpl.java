@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import com.hcmut.smarthome.dao.IDeviceDao;
 import com.hcmut.smarthome.entity.DeviceEntity;
-import com.hcmut.smarthome.entity.HomeEntity;
 import com.hcmut.smarthome.model.Device;
 
 @Repository
@@ -73,7 +72,7 @@ public class DeviceDaoImpl extends CommonDaoImpl<DeviceEntity> implements IDevic
 		Criteria crit = getCurrentSession().createCriteria(DeviceEntity.class);
 		crit.add(Restrictions.eq("id", deviceId));
 		crit.setProjection(Projections.property("enabled"));
-
+		
 		return (boolean) crit.uniqueResult();
 	}
 }

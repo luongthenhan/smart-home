@@ -19,24 +19,49 @@ import com.hcmut.smarthome.scenario.model.ControlBlockIfElse;
 import com.hcmut.smarthome.scenario.model.IBlock;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
+import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
 
 @Service
 public class ScenarioRunner {
-	private enum ScenarioStatus{
-		RUNNING,
-		STOPPING,
-		STOP_FOREVER
-	}
 	
-	private Map<Integer, ScenarioStatus> mapScenarioController = new HashMap<>();
+	private Map<Integer, Scenario> mapScenarioController = new HashMap<>();
 	
 	@Autowired
 	private IHomeService homeService;
 
 	@Autowired
 	private IDeviceService deviceService;
+	
+	public void run(Integer t){
+		Timer timer = new Timer();
+		System.out.println(timer.toString());
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				// Check state is still running or not
+				System.out.println("Goes here - timertask in runScenario " + t );
+//				ScenarioStatus status = mapScenarioController.get(scenario.getId()).getStatus();
+//				
+//				switch (status) {
+//					case RUNNING:
+//						runBlocks(scenario.getBlocks(), scenario.getDeviceId(), scenario.getDeviceId());
+//						break;
+//					case STOPPING:
+//						// Just skip
+//						break;
+//					case STOP_FOREVER:
+//						this.cancel(); 
+//						break;
+//					default:
+//						break;
+//				}
+
+			}
+		}, 0, TIMEOUT_CHECK_CONDITION);
+	}
 	
 	public void runScenario( Scenario scenario) {
 		if (scenario == null || scenario.getId() == null 
@@ -45,7 +70,8 @@ public class ScenarioRunner {
 			return;
 
 		// Mark scenario as running
-		mapScenarioController.put(scenario.getId(), ScenarioStatus.RUNNING);
+		scenario.setStatus(ScenarioStatus.RUNNING);
+		mapScenarioController.put(scenario.getId(), scenario);
 		
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -53,22 +79,21 @@ public class ScenarioRunner {
 			@Override
 			public void run() {
 				// Check state is still running or not
-				ScenarioStatus status = mapScenarioController.get(scenario.getId());
-				
-				System.out.println("Goes here - timertask in runScenario ");
+				System.out.println("Goes here - timertask in runScenario " + scenario.getId());
+				ScenarioStatus status = mapScenarioController.get(scenario.getId()).getStatus();
 				
 				switch (status) {
-				case RUNNING:
-					runBlocks(scenario.getBlocks(), scenario.getDeviceId(), scenario.getDeviceId());
-					break;
-				case STOPPING:
-					// Just skip
-					break;
-				case STOP_FOREVER:
-					this.cancel(); 
-					break;
-				default:
-					break;
+					case RUNNING:
+						runBlocks(scenario.getBlocks(), scenario.getDeviceId(), scenario.getHomeId());
+						break;
+					case STOPPING:
+						// Just skip
+						break;
+					case STOP_FOREVER:
+						this.cancel(); 
+						break;
+					default:
+						break;
 				}
 
 			}
@@ -76,16 +101,6 @@ public class ScenarioRunner {
 		
 	}
 
-	public void stopForeverScenario(int id) {
-		if (mapScenarioController.containsKey(id))
-			mapScenarioController.put(id, ScenarioStatus.STOP_FOREVER);
-	}
-	
-	public void stopScenario(int id) {
-		if (mapScenarioController.containsKey(id))
-			mapScenarioController.put(id, ScenarioStatus.STOPPING);
-	}
-	
 	/**
 	 * Run a list of blocks
 	 * 
@@ -129,5 +144,58 @@ public class ScenarioRunner {
 					deviceId, homeId);
 		}
 		
+	}
+
+	public void stopForeverScenario(int scenarioId) {
+		if (mapScenarioController.containsKey(scenarioId)){
+			mapScenarioController.get(scenarioId).setStatus(ScenarioStatus.STOP_FOREVER);
+		}
+	}
+	
+	public void stopScenario(int scenarioId) {
+		if (mapScenarioController.containsKey(scenarioId))
+			mapScenarioController.get(scenarioId).setStatus(ScenarioStatus.STOPPING);
+	}
+	
+	public void stopForeverScenarioInHome(int homeId) {
+		mapScenarioController.forEach((key,scenario) -> {
+			if( scenario.getHomeId() == homeId ) 
+				scenario.setStatus(ScenarioStatus.STOP_FOREVER);
+		});
+	}
+
+	public void stopForeverScenarioInDevice(int deviceId) {
+		mapScenarioController.forEach((key,scenario) -> {
+			if( scenario.getDeviceId() == deviceId ) 
+				scenario.setStatus(ScenarioStatus.STOP_FOREVER);
+		});
+	}
+
+	public void stopScenarioInDevice(int deviceId) {
+		mapScenarioController.forEach((key,scenario) -> {
+			if( scenario.getDeviceId() == deviceId ) 
+				scenario.setStatus(ScenarioStatus.STOPPING);
+		});
+	}
+
+	public void stopScenarioInHome(int homeId) {
+		mapScenarioController.forEach((key,scenario) -> {
+			if( scenario.getHomeId() == homeId ) 
+				scenario.setStatus(ScenarioStatus.STOPPING);
+		});
+	}
+	
+	public void stopScenarioForeverInMode(int modeId) {
+		mapScenarioController.forEach((key,scenario) -> {
+			if( scenario.getModeId() == modeId ) 
+				scenario.setStatus(ScenarioStatus.STOP_FOREVER);
+		});
+	}
+	
+	public void stopScenarioInMode(int modeId) {
+		mapScenarioController.forEach((key,scenario) -> {
+			if( scenario.getModeId() == modeId ) 
+				scenario.setStatus(ScenarioStatus.STOPPING);
+		});
 	}
 }
