@@ -104,7 +104,7 @@ public class ScriptResource {
 				scenario.setId(addedScriptId);
 				scenario.setHomeId(1);
 				scenarioService.runScenario(scenario);
-				return new ResponseEntity<ResponeString>(new ResponeString(URINewAddedObject),HttpStatus.CREATED);
+				return new ResponseEntity<ResponeString>(new ResponeString(addedScriptId,URINewAddedObject),HttpStatus.CREATED);
 			}
 		}
 		

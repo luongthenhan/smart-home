@@ -99,7 +99,7 @@ public class HomeResource {
 				home);
 		if (addedHomeId > 0) {
 			String URINewAddedObject = String.format("homes/%s", addedHomeId);
-			return new ResponseEntity<ResponeString>(new ResponeString(URINewAddedObject),
+			return new ResponseEntity<ResponeString>(new ResponeString(addedHomeId,URINewAddedObject),
 					HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
@@ -153,7 +153,7 @@ public class HomeResource {
 		if (addedModeId > 0) {
 			String URINewAddedObject = String.format("homes/%s/modes/%s",
 					homeId, addedModeId);
-			return new ResponseEntity<ResponeString>(new ResponeString(URINewAddedObject),
+			return new ResponseEntity<ResponeString>(new ResponeString(addedModeId,URINewAddedObject),
 					HttpStatus.CREATED);
 		} else
 			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);

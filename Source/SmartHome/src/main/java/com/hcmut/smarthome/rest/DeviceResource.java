@@ -79,14 +79,14 @@ public class DeviceResource {
 		if(!authService.isAccessable(homeId)) {
 			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
-		
+			
 		int addedDeviceId = deviceService.addDevice(homeId, deviceTypeId,
 				device);
 		if (addedDeviceId > 0) {
 			String URINewAddedObject = String.format(
 					"homes/%s/device-types/%s/devices/%s", homeId,
 					deviceTypeId, addedDeviceId);
-			return new ResponseEntity<ResponeString>(new ResponeString(URINewAddedObject),
+			return new ResponseEntity<ResponeString>(new ResponeString(addedDeviceId, URINewAddedObject),
 					HttpStatus.CREATED);
 		} else
 			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
