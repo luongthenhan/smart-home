@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hcmut.smarthome.model.ResponeString;
 import com.hcmut.smarthome.model.Script;
-import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
@@ -122,21 +122,21 @@ public class ScriptResource {
 	 * @throws ScriptException 
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<String> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException{
+	public ResponseEntity<ResponeString> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException{
 		
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
 		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
 		int addedScriptId = deviceService.addScript(script, deviceId, modeId , homeId);
 		if (addedScriptId > 0) {
 			String URINewAddedObject = String.format( "devices/%s/modes/%s/scripts/%s", deviceId, modeId, addedScriptId);
-			return new ResponseEntity<String>(URINewAddedObject, HttpStatus.CREATED);
+			return new ResponseEntity<ResponeString>(new ResponeString(addedScriptId,URINewAddedObject),HttpStatus.CREATED);
 		}
 
-		return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
 	}
 
 }

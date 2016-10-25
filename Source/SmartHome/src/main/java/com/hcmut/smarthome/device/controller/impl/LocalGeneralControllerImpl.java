@@ -119,7 +119,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 				throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 			}
 			
-			LOGGER.debug("Get temperature: " + temp);
+			LOGGER.debug("Get temperature: " + deviceBase.getId());
 			return (temp = temp + 1);
 			
 			// ITemperatureSensor temperatureSensorController = new TemperatureSensorImpl(
@@ -150,13 +150,14 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 
 			try {
 				lightSensor = (LightSensor) deviceBase;
+				
 			} catch (ClassCastException e) {
 				LOGGER.error(e.getMessage());
 				throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 			}
 
-			LOGGER.debug("Is night: " + isNight);
-			
+			LOGGER.debug("Is night: " + deviceBase.getId());
+			return this.isNight;
 			//ILightSensor lightSensorController = new LightSensorImpl(
 			//		lightSensor);
 			//isNight = lightSensorController.isNight();
@@ -166,7 +167,6 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 		default:
 			throw DEVICE_CANNOT_PERFORM_THIS_ACTION;
 		}
-
 	}
 
 	@Override
@@ -191,7 +191,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			throw DEVICE_CANNOT_PERFORM_THIS_ACTION;
 		}
 		
-		LOGGER.debug("Is danger: " + isDanger);
+		LOGGER.debug("Is danger: " + deviceBase.getId());
 
 		return isDanger;
 
@@ -216,17 +216,16 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 				throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 			}
 
-			IMotionSensor motionSensorController = new MotionSensorImpl(
-					motionSensor);
-			hasHuman = motionSensorController.hasHuman();
-
+			//IMotionSensor motionSensorController = new MotionSensorImpl(
+			//		motionSensor);
+			//hasHuman = motionSensorController.hasHuman();
 			break;
 
 		default:
 			throw DEVICE_CANNOT_PERFORM_THIS_ACTION;
 		}
 		
-		LOGGER.debug("Has human: " + hasHuman);
+		LOGGER.debug("Has human: " + deviceBase.getId());
 
 		return hasHuman;
 	}
@@ -253,7 +252,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			throw DEVICE_CANNOT_PERFORM_THIS_ACTION;
 		}
 		
-		LOGGER.debug("Is on: " + isOn);
+		LOGGER.debug("Is on: " + deviceBase.getId());
 
 		return isOn;
 	}
@@ -277,8 +276,8 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 				throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 			}
 
-			ICamera cameraController = new CameraImpl(camera);
-			bufferedImage = cameraController.takeAPhoto();
+			//ICamera cameraController = new CameraImpl(camera);
+			//bufferedImage = cameraController.takeAPhoto();
 
 			break;
 
@@ -286,7 +285,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			throw DEVICE_CANNOT_PERFORM_THIS_ACTION;
 		}
 		
-		LOGGER.debug("Take a photo");
+		LOGGER.debug("Take a photo " + deviceBase.getId());
 
 		return bufferedImage;
 	}
@@ -302,9 +301,9 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 		}
 
-		IBuzzer buzzerController = new BuzzerImpl(buzzer);
-		buzzerController.turnOn();
-		LOGGER.debug("Turn on buzzer");
+		//IBuzzer buzzerController = new BuzzerImpl(buzzer);
+		//buzzerController.turnOn();
+		LOGGER.debug("Turn on buzzer " + deviceBase.getId());
 		
 	}
 
@@ -320,7 +319,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 		System.out.println("Turn on Light bulb " + deviceBase.getName());
 		//ILightBulb lightBulbController = new LightBulbImpl(lightBulb);
 		//lightBulbController.turnOn();
-		LOGGER.debug("Turn on light bulb");
+		LOGGER.debug("Turn on light bulb " + deviceBase.getId());
 	}
 
 	private void turnOffBuzzer(Device deviceBase) throws Exception {
@@ -336,7 +335,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 
 		//IBuzzer buzzerController = new BuzzerImpl(buzzer);
 		//buzzerController.turnOff();
-		LOGGER.debug("Turn off buzzer");
+		LOGGER.debug("Turn off buzzer " + deviceBase.getId());
 	}
 
 	private void turnOffLightBulb(Device deviceBase) throws Exception {
@@ -352,7 +351,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 //
 		//ILightBulb lightBulbController = new LightBulbImpl(lightBulb);
 		//lightBulbController.turnOff();
-		LOGGER.debug("Turn off light bulb");
+		LOGGER.debug("Turn off light bulb " + deviceBase.getId());
 	}
 
 	private void toggleBuzzer(Device deviceBase) throws Exception {
@@ -367,7 +366,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 		}
 		//IBuzzer buzzerController = new BuzzerImpl(buzzer);
 		//buzzerController.toggle();
-		LOGGER.debug("Toggle buzzer");
+		LOGGER.debug("Toggle buzzer " + deviceBase.getId());
 	}
 
 	private void toggleLightBulb(Device deviceBase) throws Exception {
@@ -383,7 +382,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 
 		//ILightBulb lightBulbController = new LightBulbImpl(lightBulb);
 		//lightBulbController.toggle();
-		LOGGER.debug("Toggle light");
+		LOGGER.debug("Toggle light " + deviceBase.getId());
 	}
 
 	private boolean isTemperatureDanger(Device deviceBase) throws Exception {
@@ -398,10 +397,10 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 		}
 
-		ITemperatureSensor temperatureSensorController = new TemperatureSensorImpl(
-				temperatureSensor);
-		isDanger = temperatureSensorController.isDanger();
-		LOGGER.debug("Is temperature danger: " + isDanger);
+//		ITemperatureSensor temperatureSensorController = new TemperatureSensorImpl(
+//				temperatureSensor);
+//		isDanger = temperatureSensorController.isDanger();
+		LOGGER.debug("Is temperature danger: " + deviceBase.getId());
 		return isDanger;
 	}
 
@@ -417,9 +416,9 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 		}
 
-		IGasSensor gasSensorController = new GasSensorImpl(gasSensor);
-		isDanger = gasSensorController.isDanger();
-		LOGGER.debug("Is gas danger: " + isDanger);
+//		IGasSensor gasSensorController = new GasSensorImpl(gasSensor);
+//		isDanger = gasSensorController.isDanger();
+		LOGGER.debug("Is gas danger: " + deviceBase.getId());
 		return isDanger;
 	}
 
@@ -435,9 +434,9 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 		}
 
-		IBuzzer buzzerController = new BuzzerImpl(buzzer);
-		isOn = buzzerController.isOn();
-		LOGGER.debug("Is buzzer on: " + isOn);
+//		IBuzzer buzzerController = new BuzzerImpl(buzzer);
+//		isOn = buzzerController.isOn();
+		LOGGER.debug("Is buzzer on: " + deviceBase.getId());
 		return isOn;
 	}
 
@@ -453,9 +452,9 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			throw DEVICE_BASE_CANNOT_CAST_TO_CORRECT_MODEL;
 		}
 
-		ILightBulb lightBulbController = new LightBulbImpl(lightBulb);
-		isOn = lightBulbController.isOn();
-		LOGGER.debug("Is light bulb on: " + isOn);
+//		ILightBulb lightBulbController = new LightBulbImpl(lightBulb);
+//		isOn = lightBulbController.isOn();
+		LOGGER.debug("Is light bulb on: " + deviceBase.getId());
 		return isOn;
 	}
 }
