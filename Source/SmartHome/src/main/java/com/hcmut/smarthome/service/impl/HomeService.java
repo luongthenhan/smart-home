@@ -142,7 +142,10 @@ public class HomeService implements IHomeService{
 	public boolean deleteMode(int homeId, int modeId){
 		HomeEntity home = homeDao.getById(homeId);
 		if( home.getCurrentMode() != null && home.getCurrentMode().getId() != modeId ){
-			return modeDao.deleteMode(homeId, modeId);
+			if( modeDao.deleteMode(homeId, modeId) ){
+				scenarioService.stopForeverScenarioInMode(modeId);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -162,4 +165,8 @@ public class HomeService implements IHomeService{
 		return homeDao.isEnabled(homeId);
 	}
 
+	@Override
+	public int getCurrentModeIdGivenHome(int homeId){
+		return homeDao.getCurrentModeIdGivenHome(homeId);
+	}
 }

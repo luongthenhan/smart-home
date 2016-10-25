@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.utils;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,9 +74,10 @@ public class ConstantUtil {
 	public static final String SCRIPT_CONFLICT_ITSELF = "Script conflict itself";
 
 	// Hard code
-	public static int HOME_ID = 1;
-	public static int VALID_USER_ID = 2;
-	public static final int TIMEOUT_CHECK_CONDITION = 5000;
+	public static final int HOME_ID = 1;
+	public static final int VALID_USER_ID = 2;
+	public static final int CONDITION_CHECKING_PERIOD = 5000;
+	public static final ZoneId DEFAULT_ZONE_ID = ZoneOffset.of("+07:00");
 
 	// List gpio
 	public static List<Integer> ALL_GPIO = Arrays.asList(3, 5, 7, 8, 10, 11,

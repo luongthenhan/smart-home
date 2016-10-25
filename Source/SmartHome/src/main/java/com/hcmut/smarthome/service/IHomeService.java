@@ -33,5 +33,7 @@ public interface IHomeService {
 
 	int getHomeIdGivenMode(int modeId);
 
+	int getCurrentModeIdGivenHome(int homeId);
+
 }
 	

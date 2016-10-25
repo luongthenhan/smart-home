@@ -168,15 +168,17 @@ public class DeviceService implements IDeviceService {
 
 	@Override
 	public boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script scriptToUpdate) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException {
-		ScriptEntity updatedScriptEntity = scriptDao.getById(scriptId);
+		ScriptEntity currentScriptEntity = scriptDao.getById(scriptId);
 		
 		// Found in DB
-		if( updatedScriptEntity != null ){
+		if( currentScriptEntity != null ){
 			Scenario updatedScenario = scriptToScenario(scriptToUpdate);
 			boolean isValid = scenarioService.isValid(modeId, deviceId, scriptToUpdate, updatedScenario);
 			if( isValid ){
-				boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,updatedScriptEntity);
+				boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,currentScriptEntity);
 				if( isUpdateSuccessfully ){
+					if( isScriptContentUpdated(scriptToUpdate, currentScriptEntity) )
+						scenarioService.stopForeverScenario(scriptId);
 					runScenario(scriptId, homeId, deviceId, modeId, updatedScenario);
 				}
 			}
@@ -186,20 +188,27 @@ public class DeviceService implements IDeviceService {
 		return false;
 	}
 
-	private boolean updateScriptToDB(Script scriptToUpdate, ScriptEntity updatedScriptEntity){
+	private boolean isScriptContentUpdated(Script scriptToUpdate, ScriptEntity currentScriptEntity){
+		if( scriptToUpdate.getContent() != null 
+			 && scriptToUpdate.getContent().equals(currentScriptEntity.getContent()))
+			return true;
+		return false;
+	}
+	
+	private boolean updateScriptToDB(Script scriptToUpdate, ScriptEntity currentScriptEntity){
 		if( scriptToUpdate.getContent() != null )
-			updatedScriptEntity.setContent(scriptToUpdate.getContent());
+			currentScriptEntity.setContent(scriptToUpdate.getContent());
 		
 		if( scriptToUpdate.getName() != null )
-			updatedScriptEntity.setName(scriptToUpdate.getName());
+			currentScriptEntity.setName(scriptToUpdate.getName());
 		
 		if( scriptToUpdate.getType() != null && scriptToUpdate.getType().getId() > 0 ){
 			ScriptTypeEntity scriptTypeEntity = new ScriptTypeEntity();
 			scriptTypeEntity.setId(scriptToUpdate.getType().getId());
-			updatedScriptEntity.setScriptType(scriptTypeEntity);
+			currentScriptEntity.setScriptType(scriptTypeEntity);
 		}
 		
-		if( scriptDao.update(updatedScriptEntity) ){
+		if( scriptDao.update(currentScriptEntity) ){
 //			if( mapHomeDevices.containsKey(homeId) ){
 //				List<Device> devices = mapHomeDevices.get(homeId);
 //				devices.removeIf(d -> d.getScripts().stream().filter(s -> s.getId() == scriptId).findFirst().get() != null);

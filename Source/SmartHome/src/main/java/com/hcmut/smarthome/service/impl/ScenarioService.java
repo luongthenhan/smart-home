@@ -47,7 +47,9 @@ public class ScenarioService implements IScenarioService {
 		List<Scenario> existedScenarios = new ArrayList<Scenario>();
 		for (Script existedScript : existedScripts) {
 			
-			if( isScriptExisted(script.getContent(), existedScript.getContent()) )
+			if( script.getContent() != null 
+					&& existedScript.getContent() != null
+					&& isScriptExisted(script.getContent(), existedScript.getContent()) )
 				return false;
 			
 			if( checkExistingName(script.getName(), existedScript.getName()) )
@@ -107,10 +109,20 @@ public class ScenarioService implements IScenarioService {
 	}
 	
 	@Override
+	public void stopScenarioInMode(int modeId){
+		scenarioRunner.stopScenarioInMode(modeId);
+	}
+	
+	@Override
 	public void stopForeverScenario(int id) {
 		scenarioRunner.stopForeverScenario(id);
 	}
 
+	@Override
+	public void stopForeverScenarioInMode(int modeId) {
+		scenarioRunner.stopScenarioForeverInMode(modeId);
+	}
+	
 	@Override
 	public void stopForeverScenarioInHome(int homeId){
 		scenarioRunner.stopForeverScenarioInHome(homeId);

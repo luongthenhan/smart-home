@@ -51,13 +51,21 @@ public interface IScenarioService {
 	 */
 	void stopForeverScenario(int id);
 	
+	void stopForeverScenarioInHome(int homeId);
+	
+	void stopForeverScenarioInMode(int modeId);
+	
+	void stopForeverScenarioInDevice(int deviceId);
+	
 	/**
 	 * Pause the timer , not run scenario in period of time 
 	 * @param id
 	 */
 	void stopScenario( int id );
-	void stopForeverScenarioInDevice(int deviceId);
-	void stopForeverScenarioInHome(int homeId);
-	void stopScenarioInDevice(int deviceId);
+	
 	void stopScenarioInHome(int homeId);
+	
+	void stopScenarioInMode(int modeId);
+	
+	void stopScenarioInDevice(int deviceId);
 }
