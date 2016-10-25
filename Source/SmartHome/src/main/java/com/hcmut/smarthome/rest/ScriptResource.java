@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hcmut.smarthome.model.ResponeString;
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IDeviceService;
@@ -84,7 +85,7 @@ public class ScriptResource {
 	 * @throws NotSupportedException 
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<String> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException{
+	public ResponseEntity<ResponeString> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException{
 		
 		boolean goToSaveAndRunStep = false;
 		Scenario scenario = null;
@@ -103,13 +104,13 @@ public class ScriptResource {
 				scenario.setId(addedScriptId);
 				scenario.setHomeId(1);
 				scenarioService.runScenario(scenario);
-				return new ResponseEntity<String>(URINewAddedObject,HttpStatus.CREATED);
+				return new ResponseEntity<ResponeString>(new ResponeString(URINewAddedObject),HttpStatus.CREATED);
 			}
 		}
 		
 		
 		
-		return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
 	}
 
 }

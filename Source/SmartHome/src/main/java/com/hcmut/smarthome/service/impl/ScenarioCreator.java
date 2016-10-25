@@ -266,12 +266,12 @@ public class ScenarioCreator {
 		IBlock block = null;
 		// TODO : UNcomment here , ensure device not null when pass to
 		// deviceController
-//		int deviceId = Integer.valueOf(object.get(0).toString());
-//		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
-//		String deviceTypeName = device.getDeviceType().getName();
+		int deviceId = Integer.valueOf(object.get(0).toString());
+		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
+		String deviceTypeName = device.getDeviceType().getName();
 		
-		Device device = null;
-		String deviceTypeName = object.get(0).toString();
+		//Device device = null;
+		//String deviceTypeName = object.get(0).toString();
 		
 		Supplier<Object> LHSExpression = () -> null;
 

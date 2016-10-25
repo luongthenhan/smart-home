@@ -24,16 +24,16 @@ public class ScenarioService implements IScenarioService {
 
 	// TODO: Remove new object here after testing
 	@Autowired
-	private ScenarioCreator scenarioCreator = new ScenarioCreator();
+	private ScenarioCreator scenarioCreator;
 	
 	@Autowired
-	private ScenarioRunner scenarioRunner = new ScenarioRunner();
+	private ScenarioRunner scenarioRunner;
 	
 	@Autowired
-	private ScenarioValidator scenarioValidator = new ScenarioValidator();
+	private ScenarioValidator scenarioValidator;
 	
 	@Autowired
-	private IDeviceService deviceService = new DeviceService();
+	private IDeviceService deviceService;
 	
 	public String JSONToString() {
 		throw new UnsupportedOperationException("Not supported");

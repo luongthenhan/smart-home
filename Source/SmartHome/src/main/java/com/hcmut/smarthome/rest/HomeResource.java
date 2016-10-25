@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hcmut.smarthome.model.Home;
 import com.hcmut.smarthome.model.Mode;
+import com.hcmut.smarthome.model.ResponeString;
 import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IHomeService;
 
@@ -92,16 +93,16 @@ public class HomeResource {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<String> addHome(@RequestBody Home home) {
+	public ResponseEntity<ResponeString> addHome(@RequestBody Home home) {
 
 		int addedHomeId = homeService.addHome(authService.getCurrentUserId(),
 				home);
 		if (addedHomeId > 0) {
 			String URINewAddedObject = String.format("homes/%s", addedHomeId);
-			return new ResponseEntity<String>(URINewAddedObject,
+			return new ResponseEntity<ResponeString>(new ResponeString(URINewAddedObject),
 					HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -141,21 +142,21 @@ public class HomeResource {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, path = "/{homeId}/modes")
-	public ResponseEntity<String> addMode(@PathVariable int homeId,
+	public ResponseEntity<ResponeString> addMode(@PathVariable int homeId,
 			@RequestBody Mode mode) {
 		
 		if(!authService.isAccessable(homeId)) {
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
 		int addedModeId = homeService.addMode(homeId, mode);
 		if (addedModeId > 0) {
 			String URINewAddedObject = String.format("homes/%s/modes/%s",
 					homeId, addedModeId);
-			return new ResponseEntity<String>(URINewAddedObject,
+			return new ResponseEntity<ResponeString>(new ResponeString(URINewAddedObject),
 					HttpStatus.CREATED);
 		} else
-			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/{homeId}/modes")

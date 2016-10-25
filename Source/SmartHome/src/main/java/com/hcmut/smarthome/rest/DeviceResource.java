@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.DeviceType;
+import com.hcmut.smarthome.model.ResponeString;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IDeviceService;
@@ -72,11 +73,11 @@ public class DeviceResource {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST, path = "/device-types/{deviceTypeId}/devices")
-	public ResponseEntity<String> addDevice(@PathVariable int deviceTypeId,
+	public ResponseEntity<ResponeString> addDevice(@PathVariable int deviceTypeId,
 			@PathVariable int homeId, @RequestBody Device device) {
 		
 		if(!authService.isAccessable(homeId)) {
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
 		int addedDeviceId = deviceService.addDevice(homeId, deviceTypeId,
@@ -85,10 +86,10 @@ public class DeviceResource {
 			String URINewAddedObject = String.format(
 					"homes/%s/device-types/%s/devices/%s", homeId,
 					deviceTypeId, addedDeviceId);
-			return new ResponseEntity<String>(URINewAddedObject,
+			return new ResponseEntity<ResponeString>(new ResponeString(URINewAddedObject),
 					HttpStatus.CREATED);
 		} else
-			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
 	}
 
 	/**
