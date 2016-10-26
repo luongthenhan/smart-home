@@ -24,7 +24,10 @@ import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
+
+import javax.transaction.NotSupportedException;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -46,11 +49,14 @@ import com.hcmut.smarthome.scenario.model.IBlock;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
+import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.ConstantUtil;
 
 @Service
 public class ScenarioCreator {
 	private final static Logger LOGGER = Logger.getLogger(ScenarioCreator.class);
+	
+	private final static List<Scenario> ITSELF = null;
 	
 	private JSONParser parser = new JSONParser();
 	
@@ -59,12 +65,15 @@ public class ScenarioCreator {
 	private IGeneralController deviceController;
 	
 	@Autowired
+	private ScenarioConflictValidator scenarioConflictValidator;
+	
+	@Autowired
 	private IDeviceService deviceService;
 	
 	// TODO: Change parameter from String to Script ( for assigning id to
 		// scenario after return)
 	@SuppressWarnings("unchecked")
-	public Scenario from(String script) throws ParseException{
+	public Scenario from(String script) throws ParseException, NotSupportedException, ConflictConditionException{
 		// Must do that because library can't parse the string with single quote
 		JSONArray listControlBlocksOrActions = (JSONArray) parser.parse(script.replace("'", "\""));
 
@@ -72,8 +81,11 @@ public class ScenarioCreator {
 		scenario.setBlocks(new ArrayList<IBlock>());
 		listControlBlocksOrActions.forEach(block -> scenario.getBlocks().add(createBlock((JSONArray) block)));
 
-		return scenario;
+		if( scenarioConflictValidator.isNotConflicted(scenario, ITSELF) )
+			return scenario;
+		else throw new ConflictConditionException("Can't create scenario because of self-conflicting");
 	}
+	
 	
 	/**
 	 * Create a element's block and one's contents
@@ -270,8 +282,8 @@ public class ScenarioCreator {
 		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
 		String deviceTypeName = device.getDeviceType().getName();
 		
-		//Device device = null;
-		//String deviceTypeName = object.get(0).toString();
+//		Device device = null;
+//		String deviceTypeName = object.get(0).toString();
 		
 		Supplier<Object> LHSExpression = () -> null;
 

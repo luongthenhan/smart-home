@@ -35,6 +35,7 @@ import com.hcmut.smarthome.utils.ScriptBuilder;
 @Service
 public class DeviceService implements IDeviceService {
 	private static final String CUSTOM_SCRIPT_TYPE = "Custom";
+	private static final int CUSTOM_SCRIPT_ID = 3;
 
 	// TODO : Update map after add new / update / delete something. Also in this time
 	// call stopOrRemoveScenario. 
@@ -251,12 +252,16 @@ public class DeviceService implements IDeviceService {
 	 * @return
 	 * @throws ParseException
 	 * @throws ScriptException
+	 * @throws ConflictConditionException 
+	 * @throws NotSupportedException 
 	 */
-	private Scenario scriptToScenario(Script script) throws ParseException, ScriptException{
+	private Scenario scriptToScenario(Script script) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException{
 		Scenario scenario = null;
 		if( script.getContent() != null ){
 			String jsonScript = script.getContent();
-			if( script.getType() != null && CUSTOM_SCRIPT_TYPE.equals(script.getType().getName()) ){
+			if( script.getType() != null 
+					&& ( CUSTOM_SCRIPT_TYPE.equals(script.getType().getName()) 
+						|| CUSTOM_SCRIPT_ID == script.getType().getId()	)){
 				jsonScript = ScriptBuilder.parseFromCodeAsString(script.getContent());
 			}
 			scenario = scenarioService.JSONToScenario(jsonScript);

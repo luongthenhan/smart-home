@@ -25,6 +25,7 @@ import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IDeviceTypeService;
 import com.hcmut.smarthome.service.IScenarioService;
+import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.ConstantUtil;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 
@@ -194,9 +195,11 @@ public class DeviceResource {
 	 * 
 	 * @return
 	 * @throws ParseException
+	 * @throws ConflictConditionException 
+	 * @throws NotSupportedException 
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "/test1")
-	public ResponseEntity<Void> test(@PathVariable int homeId) throws ParseException {
+	public ResponseEntity<Void> test(@PathVariable int homeId) throws ParseException, NotSupportedException, ConflictConditionException {
 		
 		if(!authService.isAccessable(homeId)) {
 			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
@@ -210,7 +213,7 @@ public class DeviceResource {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/test2")
-	public ResponseEntity<Void> test2(@PathVariable int homeId) throws ParseException {
+	public ResponseEntity<Void> test2(@PathVariable int homeId) throws ParseException, NotSupportedException, ConflictConditionException {
 		
 		if(!authService.isAccessable(homeId)) {
 			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
@@ -225,7 +228,7 @@ public class DeviceResource {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/test3")
-	public ResponseEntity<Void> test3(@PathVariable int homeId) throws ParseException {
+	public ResponseEntity<Void> test3(@PathVariable int homeId) throws ParseException, NotSupportedException, ConflictConditionException {
 		
 		String input = new ScriptBuilder()
 		.begin()

@@ -31,7 +31,8 @@ public class ScriptBuilder {
 			templateJSCode = new StringBuilder()
 				.append("var ScriptBuilderEngine = new JavaImporter(%s,%s);")
 		        .append("with(ScriptBuilderEngine){")
-		        .append("var script = %s;}").toString();
+		        //.append("var script = %s;}").toString();
+		        .append("var script = new ScriptBuilder().%s.build();}").toString();
 		}
 	}
 	

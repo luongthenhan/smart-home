@@ -117,7 +117,7 @@ public class ScenarioService implements IScenarioService {
 	// TODO: Change parameter from String to Script ( for assigning id to
 	// scenario after return)
 	@Override
-	public Scenario JSONToScenario(String script) throws ParseException {
+	public Scenario JSONToScenario(String script) throws ParseException, NotSupportedException, ConflictConditionException {
 		return scenarioCreator.from(script);
 	}
 }

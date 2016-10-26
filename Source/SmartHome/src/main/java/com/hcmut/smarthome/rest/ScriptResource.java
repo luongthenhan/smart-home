@@ -122,7 +122,7 @@ public class ScriptResource {
 	 * @throws ScriptException 
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<ResponeString> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException{
+	public ResponseEntity<ResponeString> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ){
 		
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
@@ -130,7 +130,14 @@ public class ScriptResource {
 //			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 //		}
 		
-		int addedScriptId = deviceService.addScript(script, deviceId, modeId , homeId);
+		int addedScriptId;
+		try {
+			addedScriptId = deviceService.addScript(script, deviceId, modeId , homeId);
+		} catch (ParseException | NotSupportedException
+				| ConflictConditionException | ScriptException e) {
+			ResponeString response = new ResponeString(e.getMessage());
+			return new ResponseEntity<ResponeString>(response, HttpStatus.BAD_REQUEST);
+		}
 		if (addedScriptId > 0) {
 			String URINewAddedObject = String.format( "devices/%s/modes/%s/scripts/%s", deviceId, modeId, addedScriptId);
 			return new ResponseEntity<ResponeString>(new ResponeString(addedScriptId,URINewAddedObject),HttpStatus.CREATED);

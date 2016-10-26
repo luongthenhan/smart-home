@@ -27,8 +27,10 @@ public interface IScenarioService {
 	 * @param script
 	 * @return
 	 * @throws ParseException
+	 * @throws ConflictConditionException 
+	 * @throws NotSupportedException 
 	 */
-	Scenario JSONToScenario(String script) throws ParseException;
+	Scenario JSONToScenario(String script) throws ParseException, NotSupportedException, ConflictConditionException;
 	
 	/**
 	 * Check scenario whether it is validate or not <br/>

@@ -63,9 +63,49 @@ public class ScenarioConflictValidator {
 		// Find out pair of action & condition of the inputScenario to be compared to existed list
 		// of scenario's blocks
 		List<Pair<Condition, SimpleAction>> listActionsAndConditionsToCompare = 
-				findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(inputScenario.getBlocks(), stackConditions);
+				getPairActionsAndMergedConditions(inputScenario.getBlocks(), stackConditions);
 
 		// Check stupid script here
+		checkBothIfElseBlocksHaveSameAction(listActionsAndConditionsToCompare);
+		
+		if( existedScenarios == null )
+			return true;
+		
+		// Check for each pair
+		for (Pair<Condition, SimpleAction> actionAndConditionsGroup : listActionsAndConditionsToCompare) {
+			for (Scenario existedScenario : existedScenarios) {
+				Condition conditionToCompare = actionAndConditionsGroup
+						.getFirst();
+				SimpleAction actionToCompare = actionAndConditionsGroup
+						.getSecond();
+
+				// Check existed counter action first, if any then we trace back
+				// to see whether condition is matching or not
+					// If counter action is found out
+						// if condition to be compared is null , we make no sense to
+						// call areNestedConditionMatching
+						// because this action always happen -> not valid script
+					// else we need to call areNestedCondtionMatching to find out if
+						// any conditions are matching -> not valid script
+				if (isCounteractionExisted(actionToCompare,
+						existedScenario.getBlocks())) {
+					
+					// Because only TreeRangeSet support remove function for not equal case
+					Map<String,Boolean> checkedRange = new HashMap<>();
+					
+					if (conditionToCompare == null
+							|| areNestedConditionsMatching(conditionToCompare,
+									existedScenario.getBlocks(), checkedRange))
+						return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private void checkBothIfElseBlocksHaveSameAction(
+			List<Pair<Condition, SimpleAction>> listActionsAndConditionsToCompare)
+			throws NotSupportedException, ConflictConditionException {
 		if( !listActionsAndConditionsToCompare.isEmpty() ){
 			for(int i = 0 ; i < listActionsAndConditionsToCompare.size(); ++i)
 				for(int j = i ; j < listActionsAndConditionsToCompare.size() ; ++j){
@@ -90,40 +130,6 @@ public class ScenarioConflictValidator {
 					}
 				}
 		}
-		
-		if( existedScenarios == null )
-			return true;
-		
-		// Check for each pair
-		for (Pair<Condition, SimpleAction> actionAndConditionsGroup : listActionsAndConditionsToCompare) {
-			for (Scenario existedScenario : existedScenarios) {
-				Condition conditionToCompare = actionAndConditionsGroup
-						.getFirst();
-				SimpleAction actionToCompare = actionAndConditionsGroup
-						.getSecond();
-
-				// Check existed counter action first, if any then we trace back
-				// to see whether condition is matching or not
-					// If counter action is found out
-						// if condition to be compared is null , we make no sense to
-						// call areNestedCondtionMatching
-						// because this action always happen -> not valid script
-					// else we need to call areNestedCondtionMatching to find out if
-						// any conditions are matching -> not valid script
-				if (isCounteractionExisted(actionToCompare,
-						existedScenario.getBlocks())) {
-					
-					// Because only TreeRangeSet support remove function for not equal case
-					Map<String,Boolean> checkedRange = new HashMap<>();
-					
-					if (conditionToCompare == null
-							|| areNestedConditionsMatching(conditionToCompare,
-									existedScenario.getBlocks(), checkedRange))
-						return false;
-				}
-			}
-		}
-		return true;
 	}
 
 	/**
@@ -134,7 +140,7 @@ public class ScenarioConflictValidator {
 	 * @throws NotSupportedException
 	 * @throws ConflictConditionException 
 	 */
-	private List<Pair<Condition, SimpleAction>> findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(
+	public List<Pair<Condition, SimpleAction>> getPairActionsAndMergedConditions(
 			List<IBlock> blocks, Stack<Condition> stackOuterConditions)
 			throws NotSupportedException, ConflictConditionException {
 
@@ -161,7 +167,7 @@ public class ScenarioConflictValidator {
 				mergeInnerWithOuterConditionFromToBlock(innerFromToCondition, stackOuterConditions);
 				stackOuterConditions.push(innerFromToCondition);
 				
-				pair.addAll(findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(
+				pair.addAll(getPairActionsAndMergedConditions(
 						blocksFromTo.getAction().getBlocks(),
 						stackOuterConditions));
 			}
@@ -173,7 +179,7 @@ public class ScenarioConflictValidator {
 				mergeInnerWithOuterConditions(innerIfCondition, stackOuterConditions);
 				stackOuterConditions.push(innerIfCondition);
 				
-				pair.addAll(findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(
+				pair.addAll(getPairActionsAndMergedConditions(
 								((ControlBlock) block).getAction().getBlocks(),
 								stackOuterConditions));
 
@@ -186,7 +192,7 @@ public class ScenarioConflictValidator {
 							.getCondition());
 					mergeInnerWithOuterConditions(innerElseCondition, stackOuterConditions);
 					stackOuterConditions.push(innerElseCondition);
-					pair.addAll(findListSimpleActionsAndRequireConditionsOfInputScenarioToCompare(
+					pair.addAll(getPairActionsAndMergedConditions(
 									blockIfElse.getElseAction().getBlocks(),
 									stackOuterConditions));
 				}
@@ -203,7 +209,7 @@ public class ScenarioConflictValidator {
 		Condition outerCondition = 
 				stackOuterConditions.stream().filter(c -> c.getName().equals(innerCondition.getName())).findAny().orElse(null);
 		
-		if( innerCondition.getValueClassType().getClass().equals(LocalTime.class) ){
+		if( LocalTime.class.equals(innerCondition.getValueClassType()) ){
 			Range<LocalTime> outerConditionRange = null;
 			if( outerCondition == null || outerCondition.getRange() == null)
 				outerConditionRange = Range.all();
@@ -231,14 +237,14 @@ public class ScenarioConflictValidator {
 		Condition outerCondition = 
 				stackOuterConditions.stream().filter(c -> c.getName().equals(innerCondition.getName())).findAny().orElse(null);
 		
-		if( innerCondition.getValue().getClass().equals(Boolean.class) ){
+		if( Boolean.class.equals(innerCondition.getValueClassType()) ){
 			if( outerCondition != null 
 					&& innerCondition != null 
 					&& !checkEqualBooleanConditions(innerCondition, outerCondition)){
 				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
 			}
 		}
-		else if( innerCondition.getValue().getClass().equals(Float.class)){
+		else if( Float.class.equals(innerCondition.getValueClassType())){
 			
 			Range<Float> outerConditionRange = null;
 			if( outerCondition == null || outerCondition.getRange() == null)

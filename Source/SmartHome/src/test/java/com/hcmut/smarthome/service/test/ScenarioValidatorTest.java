@@ -6,9 +6,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_OR_EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.IS_NIGHT;
 import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
-import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
 import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.TEMPERATURE_SENSOR;
 import static com.hcmut.smarthome.utils.ConstantUtil.TURN_OFF;
 import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
 import static org.hamcrest.CoreMatchers.is;
@@ -23,28 +21,36 @@ import org.json.simple.parser.ParseException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.service.impl.ScenarioConflictValidator;
-import com.hcmut.smarthome.service.impl.ScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.ConstantUtil;
 import com.hcmut.smarthome.utils.Pair;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 import com.hcmut.smarthome.utils.ScriptBuilder.ScriptBuilderTemplate;
 
+@ContextConfiguration( locations = { "classpath:ApplicationContext.xml", "classpath:spring-security.xml" } )
+@RunWith(SpringJUnit4ClassRunner.class)
 public class ScenarioValidatorTest {
 	
 	private static final int LIGHT_2 = 2;
 	private static final int LIGHT_3 = 3;
-	private static final String LSENSOR_4 = LIGHT_SENSOR + 4;
-	private static final String TSENSOR_5 = TEMPERATURE_SENSOR + 5;
-	private static final String TSENSOR_6 = TEMPERATURE_SENSOR + 6;
-	private static final String LSENSOR_7 = LIGHT_SENSOR + 7;
+	private static final int LSENSOR_4 = 11;
+	private static final int TSENSOR_5 = 5;
+	private static final int TSENSOR_6 = 6;
+	private static final int LSENSOR_7 = 7;
 	
-	IScenarioService scenarioService = new ScenarioService();
-	ScenarioConflictValidator scenarioConflictService = new ScenarioConflictValidator();
+	@Autowired
+	IScenarioService scenarioService;
+	
+	@Autowired
+	ScenarioConflictValidator scenarioConflictService;
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
