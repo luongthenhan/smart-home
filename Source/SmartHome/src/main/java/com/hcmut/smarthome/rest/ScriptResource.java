@@ -23,8 +23,6 @@ import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
-// TODO: If user has successfully login and get the token ( also authorize ) , the next time user call WS
-// maybe don't need check again. Or in case of ScriptResource , don't have homeId -> how to authorize ?
 @RestController
 @RequestMapping("devices/{deviceId}/modes/{modeId}/scripts")
 @CrossOrigin
@@ -51,9 +49,9 @@ public class ScriptResource {
 	public ResponseEntity<Void> deleteScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId){
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
-//		if (!authService.isAccessable(homeId)) {
-//			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-//		}
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+		}
 		
 		deviceService.deleteScript(deviceId, scriptId);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -69,9 +67,9 @@ public class ScriptResource {
 	public ResponseEntity<List<Script>> getScripts(@PathVariable int deviceId,@PathVariable int modeId){
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
-//		if (!authService.isAccessable(homeId)) {
-//			return new ResponseEntity<List<Script>>(HttpStatus.UNAUTHORIZED);
-//		}
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<List<Script>>(HttpStatus.UNAUTHORIZED);
+		}
 		
 		return new ResponseEntity<List<Script>>(deviceService.getScripts( modeId, deviceId),HttpStatus.OK);
 	}
@@ -126,9 +124,9 @@ public class ScriptResource {
 		
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
-//		if (!authService.isAccessable(homeId)) {
-//			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
-//		}
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
+		}
 		
 		int addedScriptId;
 		try {

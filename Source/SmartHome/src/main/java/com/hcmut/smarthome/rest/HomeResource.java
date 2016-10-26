@@ -32,14 +32,12 @@ public class HomeResource {
 	@Autowired
 	private IAuthenticationService authService;
 
-	// TODO : Replace hard-coded USER ID when token is implemented
-
 	@RequestMapping(method = RequestMethod.GET, path = "/{homeId}")
 	public ResponseEntity<Home> getHome(@PathVariable int homeId) {
 
-//		if (!authService.isAccessable(homeId)) {
-//			return new ResponseEntity<Home>(HttpStatus.UNAUTHORIZED);
-//		}
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<Home>(HttpStatus.UNAUTHORIZED);
+		}
 
 		Home home = homeService.getHome(ConstantUtil.VALID_USER_ID, homeId);
 		if (home != null) {
@@ -52,9 +50,9 @@ public class HomeResource {
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{homeId}")
 	public ResponseEntity<Void> deleteHome(@PathVariable int homeId) {
 
-//		if (!authService.isAccessable(homeId)) {
-//			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-//		}
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+		}
 
 		if (homeService.deleteHome(ConstantUtil.VALID_USER_ID, homeId)) {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -67,9 +65,9 @@ public class HomeResource {
 	public ResponseEntity<Void> updatePartialHome(@PathVariable int homeId,
 			@RequestBody Home home) {
 
-//		if (!authService.isAccessable(homeId)) {
-//			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-//		}
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+		}
 
 		if (homeService.updatePartialHome(ConstantUtil.VALID_USER_ID,
 				homeId, home))
