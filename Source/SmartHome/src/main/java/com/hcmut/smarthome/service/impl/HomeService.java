@@ -16,6 +16,7 @@ import com.hcmut.smarthome.entity.ModeEntity;
 import com.hcmut.smarthome.entity.UserEntity;
 import com.hcmut.smarthome.model.Home;
 import com.hcmut.smarthome.model.Mode;
+import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.service.IHomeService;
 import com.hcmut.smarthome.service.IScenarioService;
 
@@ -40,12 +41,18 @@ public class HomeService implements IHomeService{
 	
 	@Override
 	public List<Home> getAllHomes(int userId) {
-		return HomeConverter.toListModel(homeDao.getAllHomes(userId));
+		List<HomeEntity> homes = homeDao.getAllHomes(userId);
+		if( homes == null )
+			return null;
+		return HomeConverter.toListModel(homes);
 	}
 	
 	@Override
-	public Home getHome(int userId, int homeId) {
-		return HomeConverter.toModel(homeDao.getById(homeId));
+	public Home getHome(int userId, int homeId)  {
+		HomeEntity home = homeDao.getById(homeId);
+		if( home == null )
+			return null;
+		return HomeConverter.toModel(home);
 	}
 	
 	@Override
@@ -83,34 +90,44 @@ public class HomeService implements IHomeService{
 	}
 
 	@Override
-	public boolean updatePartialHome(int userId, int homeId, Home home) {
+	public boolean updatePartialHome(int userId, int homeId, Home homeToUpdate) {
 		HomeEntity homeEntity = homeDao.getById(homeId);
-		if( home.getAddress() != null )
-			homeEntity.setAddress(home.getAddress());
+		if( homeToUpdate.getAddress() != null )
+			homeEntity.setAddress(homeToUpdate.getAddress());
 		
-		if( home.getDescription() != null )
-			homeEntity.setDescription(home.getDescription());
+		if( homeToUpdate.getDescription() != null )
+			homeEntity.setDescription(homeToUpdate.getDescription());
 		
-		if( home.getName() != null )
-			homeEntity.setName(home.getName());
+		if( homeToUpdate.getName() != null )
+			homeEntity.setName(homeToUpdate.getName());
 		
-		if( home.isEnabled() != homeEntity.isEnabled() )
-			homeEntity.setEnabled(home.isEnabled());
+		if( homeToUpdate.isEnabled() != null 
+				&& homeToUpdate.isEnabled() != homeEntity.isEnabled() )
+			homeEntity.setEnabled(homeToUpdate.isEnabled());
 		
-		if( home.getCurrentMode() != null && home.getCurrentMode().getId() > 0 ){
+		if( homeToUpdate.getCurrentMode() != null && homeToUpdate.getCurrentMode().getId() > 0 ){
 			ModeEntity currentMode = new ModeEntity();
-			currentMode.setId(home.getCurrentMode().getId());
+			currentMode.setId(homeToUpdate.getCurrentMode().getId());
 			homeEntity.setCurrentMode(currentMode);
 		}
 		
-		return homeDao.update(homeEntity);
+		if( homeDao.update(homeEntity) ){
+			if( homeToUpdate.isEnabled() != null
+					&& homeToUpdate.isEnabled() != homeEntity.isEnabled() ){
+				if( homeToUpdate.isEnabled() )
+					scenarioService.updateAllScenarioStatusInHome(homeId, ScenarioStatus.RUNNING);
+				else scenarioService.updateAllScenarioStatusInHome(homeId, ScenarioStatus.STOPPING);
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
 	public boolean deleteHome(int userId, int homeId){
 		boolean isDeletedSuccessfully = homeDao.deleteHome(userId, homeId);
 		if( isDeletedSuccessfully ){
-			scenarioService.stopForeverScenarioInHome(homeId);
+			scenarioService.updateAllScenarioStatusInHome(homeId,ScenarioStatus.STOP_FOREVER);
 			return true;
 		}
 		return false;
@@ -143,7 +160,7 @@ public class HomeService implements IHomeService{
 		HomeEntity home = homeDao.getById(homeId);
 		if( home.getCurrentMode() != null && home.getCurrentMode().getId() != modeId ){
 			if( modeDao.deleteMode(homeId, modeId) ){
-				scenarioService.stopForeverScenarioInMode(modeId);
+				scenarioService.updateAllScenarioStatusInMode(modeId,ScenarioStatus.STOP_FOREVER);
 				return true;
 			}
 		}

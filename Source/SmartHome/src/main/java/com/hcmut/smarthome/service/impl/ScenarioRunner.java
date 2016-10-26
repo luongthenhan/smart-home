@@ -1,11 +1,10 @@
 package com.hcmut.smarthome.service.impl;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.CONDITION_CHECKING_PERIOD;
 import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF_ELSE;
 import static com.hcmut.smarthome.utils.ConstantUtil.DEFAULT_ZONE_ID;
-import static com.hcmut.smarthome.utils.ConstantUtil.CONDITION_CHECKING_PERIOD;
 
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +19,10 @@ import com.hcmut.smarthome.scenario.model.ControlBlockFromTo;
 import com.hcmut.smarthome.scenario.model.ControlBlockIfElse;
 import com.hcmut.smarthome.scenario.model.IBlock;
 import com.hcmut.smarthome.scenario.model.Scenario;
-import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
+import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
-import com.hcmut.smarthome.utils.ConstantUtil;
 
 @Service
 public class ScenarioRunner {
@@ -139,57 +137,31 @@ public class ScenarioRunner {
 		}
 		
 	}
-
-	public void stopForeverScenario(int scenarioId) {
-		if (mapScenarioController.containsKey(scenarioId)){
-			mapScenarioController.get(scenarioId).setStatus(ScenarioStatus.STOP_FOREVER);
-		}
-	}
 	
-	public void stopForeverScenarioInHome(int homeId) {
-		mapScenarioController.forEach((key,scenario) -> {
-			if( scenario.getHomeId() == homeId ) 
-				scenario.setStatus(ScenarioStatus.STOP_FOREVER);
-		});
-	}
-
-	public void stopScenarioForeverInMode(int modeId) {
-		mapScenarioController.forEach((key,scenario) -> {
-			if( scenario.getModeId() == modeId ) 
-				scenario.setStatus(ScenarioStatus.STOP_FOREVER);
-		});
-	}
-	
-	public void stopForeverScenarioInDevice(int deviceId) {
-		mapScenarioController.forEach((key,scenario) -> {
-			if( scenario.getDeviceId() == deviceId ) 
-				scenario.setStatus(ScenarioStatus.STOP_FOREVER);
-		});
-	}
-
-	public void stopScenario(int scenarioId) {
+	public void updateScenarioStatus(int scenarioId, ScenarioStatus status){
 		if (mapScenarioController.containsKey(scenarioId))
-			mapScenarioController.get(scenarioId).setStatus(ScenarioStatus.STOPPING);
+			mapScenarioController.get(scenarioId).setStatus(status);
 	}
 	
-	public void stopScenarioInDevice(int deviceId) {
+	public void updateAllScenarioStatusInHome(int homeId, ScenarioStatus status){
 		mapScenarioController.forEach((key,scenario) -> {
-			if( scenario.getDeviceId() == deviceId ) 
-				scenario.setStatus(ScenarioStatus.STOPPING);
+			if( scenario.getHomeId() == homeId ) 
+				scenario.setStatus(status);
 		});
 	}
 
-	public void stopScenarioInHome(int homeId) {
+	public void updateAllScenarioStatusInDevice(int deviceId, ScenarioStatus status){
 		mapScenarioController.forEach((key,scenario) -> {
-			if( scenario.getHomeId() == homeId ) 
-				scenario.setStatus(ScenarioStatus.STOPPING);
+			if( scenario.getDeviceId() == deviceId ) 
+				scenario.setStatus(status);
 		});
 	}
-	
-	public void stopScenarioInMode(int modeId) {
+
+	public void updateAllScenarioStatusInMode(int modeId, ScenarioStatus status){
 		mapScenarioController.forEach((key,scenario) -> {
 			if( scenario.getModeId() == modeId ) 
-				scenario.setStatus(ScenarioStatus.STOPPING);
+				scenario.setStatus(status);
 		});
 	}
+
 }

@@ -15,7 +15,7 @@ public class Home implements Serializable{
 	
 	private String description;
 	
-	private boolean enabled;
+	private Boolean enabled = null;
 	
 	private Mode currentMode;
 	
@@ -60,11 +60,10 @@ public class Home implements Serializable{
 	public void setModes(List<Mode> modes) {
 		this.modes = modes;
 	}
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	
 }

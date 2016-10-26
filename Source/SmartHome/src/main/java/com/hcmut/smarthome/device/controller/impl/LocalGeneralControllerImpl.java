@@ -100,12 +100,12 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			throw DEVICE_CANNOT_PERFORM_THIS_ACTION;
 		}
 	}
-	private long temp = 31L;
+	
 	@Override
 	public float getTemperature(Device deviceBase) throws Exception {
 		
 		String deviceType = deviceBase.getDeviceType().getName();
-		float temperature = 0;
+		float temperature = 30;
 
 		switch (deviceType) {
 		case TEMPERATURE_SENSOR:
@@ -120,7 +120,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			}
 			
 			LOGGER.debug("Get temperature: " + deviceBase.getId());
-			return (temp = temp + 1);
+			return temperature;
 			
 			// ITemperatureSensor temperatureSensorController = new TemperatureSensorImpl(
 			//		temperatureSensor);
@@ -135,7 +135,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 
 	}
 
-	private boolean isNight = false;
+	
 	@Override
 	public boolean isNight(Device deviceBase) throws Exception {
 
@@ -157,7 +157,7 @@ public class LocalGeneralControllerImpl implements IGeneralController {
 			}
 
 			LOGGER.debug("Is night: " + deviceBase.getId());
-			return this.isNight;
+			return isNight;
 			//ILightSensor lightSensorController = new LightSensorImpl(
 			//		lightSensor);
 			//isNight = lightSensorController.isNight();

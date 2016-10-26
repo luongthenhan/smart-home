@@ -51,9 +51,9 @@ public class ScriptResource {
 	public ResponseEntity<Void> deleteScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId){
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
-		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-		}
+//		if (!authService.isAccessable(homeId)) {
+//			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+//		}
 		
 		deviceService.deleteScript(deviceId, scriptId);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -69,9 +69,9 @@ public class ScriptResource {
 	public ResponseEntity<List<Script>> getScripts(@PathVariable int deviceId,@PathVariable int modeId){
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
-		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<List<Script>>(HttpStatus.UNAUTHORIZED);
-		}
+//		if (!authService.isAccessable(homeId)) {
+//			return new ResponseEntity<List<Script>>(HttpStatus.UNAUTHORIZED);
+//		}
 		
 		return new ResponseEntity<List<Script>>(deviceService.getScripts( modeId, deviceId),HttpStatus.OK);
 	}
@@ -102,9 +102,9 @@ public class ScriptResource {
 	public ResponseEntity<Void> updatePartialScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId, @RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException{
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
-		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-		}
+//		if (!authService.isAccessable(homeId)) {
+//			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+//		}
 		
 		deviceService.updatePartialScript(homeId, modeId, deviceId, scriptId, script);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -126,9 +126,9 @@ public class ScriptResource {
 		
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
-		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
-		}
+//		if (!authService.isAccessable(homeId)) {
+//			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
+//		}
 		
 		int addedScriptId = deviceService.addScript(script, deviceId, modeId , homeId);
 		if (addedScriptId > 0) {

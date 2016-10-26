@@ -28,7 +28,7 @@ public class Device implements Serializable {
 	
 	protected BriefDeviceType deviceType;
 	
-	protected boolean enabled;
+	protected Boolean enabled = null;
 	
 	protected Integer GPIOPin;
 	
@@ -98,7 +98,7 @@ public class Device implements Serializable {
 	public void setLocation(String location) {
 		this.location = location;
 	}
-	public boolean isEnabled() {
+	public Boolean isEnabled() {
 		return enabled;
 	}
 	public void setEnabled(boolean enabled) {

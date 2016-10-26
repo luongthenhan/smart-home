@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.hcmut.smarthome.model.Home;
 import com.hcmut.smarthome.model.Mode;
+import com.hcmut.smarthome.utils.NotFoundException;
 
 public interface IHomeService {
 	

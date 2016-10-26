@@ -97,20 +97,26 @@ public class HomeDaoImpl extends CommonDaoImpl<HomeEntity> implements IHomeDao {
 	}
 	
 	@Override
-	public int getHomeIdGivenMode(int modeId){
+	public Integer getHomeIdGivenMode(int modeId){
 		String query = "SELECT home_id FROM mode WHERE id = :modeId ;";
 		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
 		sqlStatement.setParameter("modeId", modeId);
 		
-		return (Integer) sqlStatement.uniqueResult();
+		Object result = sqlStatement.uniqueResult();
+		if( result != null )
+			return (Integer) result; 
+		return null;
 	}
 	
 	@Override
-	public int getCurrentModeIdGivenHome(int homeId){
+	public Integer getCurrentModeIdGivenHome(int homeId){
 		String query = "SELECT current_mode_id FROM home WHERE id = :homeId ;";
 		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
 		sqlStatement.setParameter("homeId", homeId);
 		
-		return (Integer) sqlStatement.uniqueResult();
+		Object result = sqlStatement.uniqueResult();
+		if( result != null )
+			return (Integer) result; 
+		return null;
 	}
 }

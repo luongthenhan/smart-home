@@ -18,7 +18,7 @@ public interface IHomeDao extends ICommonDao<HomeEntity>{
 	
 	boolean isEnabled(int homeId);
 
-	int getHomeIdGivenMode(int modeId);
+	Integer getHomeIdGivenMode(int modeId);
 
-	int getCurrentModeIdGivenHome(int homeId);
+	Integer getCurrentModeIdGivenHome(int homeId);
 }

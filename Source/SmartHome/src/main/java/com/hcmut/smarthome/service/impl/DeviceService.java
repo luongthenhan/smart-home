@@ -26,6 +26,7 @@ import com.hcmut.smarthome.entity.ScriptTypeEntity;
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.scenario.model.Scenario;
+import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
@@ -82,9 +83,33 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	@Override
+	public boolean updatePartialDevice(int homeId, int deviceId,
+			int deviceTypeId, Device updatedDevice) {
+		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
+		
+		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
+		
+		if( deviceDao.update(deviceEntity)){
+			// TODO : When we have already had the function to create home , this case will not happen anymore
+			//updateMapHomeDevices(homeId, deviceId, deviceEntity);
+			
+			//if( updatedDevice.isEnabled() != deviceEntity.isEnabled() )
+			//	scenarioService.s
+			if( updatedDevice.isEnabled() != null
+					&& updatedDevice.isEnabled() != deviceEntity.isEnabled() ){
+				if( updatedDevice.isEnabled() )
+					scenarioService.updateAllScenarioStatusInDevice(deviceId, ScenarioStatus.RUNNING);
+				else scenarioService.updateAllScenarioStatusInDevice(deviceId, ScenarioStatus.STOPPING);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
 	public boolean deleteDevice(int homeId, int deviceId) {
 		if( deviceDao.delete(deviceId) ){
-			scenarioService.stopForeverScenarioInDevice(deviceId);
+			scenarioService.updateAllScenarioStatusInDevice(deviceId, ScenarioStatus.STOP_FOREVER);
 			//updateMapHomeDevices(homeId, deviceId, null);
 			return true;
 		}
@@ -130,7 +155,7 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public boolean deleteScript( int deviceId, int scriptId) {
 		if (scriptDao.deleteScript(scriptId)) {
-			scenarioService.stopForeverScenario(scriptId);
+			scenarioService.updateScenarioStatus(scriptId,ScenarioStatus.STOP_FOREVER);
 			
 //			int homeId = homeDao.getHomeIdGivenDevice(deviceId);
 //			
@@ -178,7 +203,7 @@ public class DeviceService implements IDeviceService {
 				boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,currentScriptEntity);
 				if( isUpdateSuccessfully ){
 					if( isScriptContentUpdated(scriptToUpdate, currentScriptEntity) )
-						scenarioService.stopForeverScenario(scriptId);
+						scenarioService.updateScenarioStatus(scriptId, ScenarioStatus.STOP_FOREVER);
 					runScenario(scriptId, homeId, deviceId, modeId, updatedScenario);
 				}
 			}
@@ -195,6 +220,7 @@ public class DeviceService implements IDeviceService {
 		return false;
 	}
 	
+	// TODO: Now don't allow to edit mode of script
 	private boolean updateScriptToDB(Script scriptToUpdate, ScriptEntity currentScriptEntity){
 		if( scriptToUpdate.getContent() != null )
 			currentScriptEntity.setContent(scriptToUpdate.getContent());
@@ -271,21 +297,6 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	@Override
-	public boolean updatePartialDevice(int homeId, int deviceId,
-			int deviceTypeId, Device updatedDevice) {
-		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
-		
-		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
-		
-		if( deviceDao.update(deviceEntity)){
-			// TODO : When we have already had the function to create home , this case will not happen anymore
-			//updateMapHomeDevices(homeId, deviceId, deviceEntity);
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public Script getScript(int scriptId){
 		return ScriptConverter.toModel(scriptDao.getById(scriptId));
 	}
@@ -304,7 +315,8 @@ public class DeviceService implements IDeviceService {
 		if( updatedDevice.getDescription() != null )
 			deviceEntity.setDescription(updatedDevice.getDescription());
 		
-		if( deviceEntity.isEnabled() != updatedDevice.isEnabled() )
+		if( updatedDevice.isEnabled() != null
+				&& updatedDevice.isEnabled() != deviceEntity.isEnabled() )
 			deviceEntity.setEnabled(updatedDevice.isEnabled());
 		
 		// TODO: Not implement check valid GPIO yet

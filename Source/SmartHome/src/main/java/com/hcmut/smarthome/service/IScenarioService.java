@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.scenario.model.Scenario;
+import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 
 public interface IScenarioService {
@@ -44,28 +45,12 @@ public interface IScenarioService {
 	 * @throws ConflictConditionException
 	 */
 	boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws ParseException, NotSupportedException, ConflictConditionException;
-	
-	/**
-	 * Stop ( remove ) forever a scenario
-	 * @param id
-	 */
-	void stopForeverScenario(int id);
-	
-	void stopForeverScenarioInHome(int homeId);
-	
-	void stopForeverScenarioInMode(int modeId);
-	
-	void stopForeverScenarioInDevice(int deviceId);
-	
-	/**
-	 * Pause the timer , not run scenario in period of time 
-	 * @param id
-	 */
-	void stopScenario( int id );
-	
-	void stopScenarioInHome(int homeId);
-	
-	void stopScenarioInMode(int modeId);
-	
-	void stopScenarioInDevice(int deviceId);
+
+	void updateScenarioStatus(int scenarioId, ScenarioStatus status);
+
+	void updateAllScenarioStatusInHome(int homeId, ScenarioStatus status);
+
+	void updateAllScenarioStatusInDevice(int deviceId, ScenarioStatus status);
+
+	void updateAllScenarioStatusInMode(int modeId, ScenarioStatus status);
 }

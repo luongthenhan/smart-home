@@ -70,6 +70,8 @@ public class ConstantUtil {
 	public static final Exception DEVICE_CANNOT_PERFORM_THIS_ACTION = new Exception(
 			"Device cannot perform this action");
 	public static final int ADD_UNSUCCESSFULLY = -1;
+	public static final boolean SUCCESSFULLY = true;
+	public static final boolean UNSUCCESSFULLY = false;
 	public static final String BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION = "Both block If and Else yield the same action";
 	public static final String SCRIPT_CONFLICT_ITSELF = "Script conflict itself";
 

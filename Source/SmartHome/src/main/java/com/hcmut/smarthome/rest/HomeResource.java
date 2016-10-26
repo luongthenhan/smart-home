@@ -67,11 +67,11 @@ public class HomeResource {
 	public ResponseEntity<Void> updatePartialHome(@PathVariable int homeId,
 			@RequestBody Home home) {
 
-		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-		}
+//		if (!authService.isAccessable(homeId)) {
+//			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+//		}
 
-		if (homeService.updatePartialHome(authService.getCurrentUserId(),
+		if (homeService.updatePartialHome(ConstantUtil.VALID_USER_ID,
 				homeId, home))
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		else
@@ -109,9 +109,10 @@ public class HomeResource {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Home>> getHomes() {
-		return new ResponseEntity<List<Home>>(
-				homeService.getAllHomes(/*authService.getCurrentUserId()*/ConstantUtil.VALID_USER_ID),
-				HttpStatus.OK);
+		List<Home> homes = homeService.getAllHomes(/*authService.getCurrentUserId()*/ConstantUtil.VALID_USER_ID);
+		if( homes != null  )
+			return new ResponseEntity<List<Home>>(homes,HttpStatus.OK);
+		else return new ResponseEntity<List<Home>>(HttpStatus.NOT_FOUND);
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{homeId}/modes/{modeId}")

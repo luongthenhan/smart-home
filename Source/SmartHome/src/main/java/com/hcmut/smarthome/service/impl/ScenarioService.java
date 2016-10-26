@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.scenario.model.Scenario;
+import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
@@ -92,45 +93,25 @@ public class ScenarioService implements IScenarioService {
 	public void runScenario(Scenario scenario) {
 		scenarioRunner.runScenario(scenario);
 	}
-
+	
 	@Override
-	public void stopScenario(int id) {
-		scenarioRunner.stopScenario(id);
-	}
-
-	@Override
-	public void stopScenarioInHome(int homeId){
-		scenarioRunner.stopScenarioInHome(homeId);
+	public void updateScenarioStatus(int scenarioId, ScenarioStatus status){
+		scenarioRunner.updateScenarioStatus(scenarioId, status);
 	}
 	
 	@Override
-	public void stopScenarioInDevice(int deviceId){
-		scenarioRunner.stopScenarioInDevice(deviceId);
-	}
-	
-	@Override
-	public void stopScenarioInMode(int modeId){
-		scenarioRunner.stopScenarioInMode(modeId);
-	}
-	
-	@Override
-	public void stopForeverScenario(int id) {
-		scenarioRunner.stopForeverScenario(id);
+	public void updateAllScenarioStatusInHome(int homeId, ScenarioStatus status){
+		scenarioRunner.updateAllScenarioStatusInHome(homeId, status);
 	}
 
 	@Override
-	public void stopForeverScenarioInMode(int modeId) {
-		scenarioRunner.stopScenarioForeverInMode(modeId);
+	public void updateAllScenarioStatusInDevice(int deviceId, ScenarioStatus status){
+		scenarioRunner.updateAllScenarioStatusInDevice(deviceId, status);
 	}
-	
+
 	@Override
-	public void stopForeverScenarioInHome(int homeId){
-		scenarioRunner.stopForeverScenarioInHome(homeId);
-	}
-	
-	@Override
-	public void stopForeverScenarioInDevice(int deviceId){
-		scenarioRunner.stopForeverScenarioInDevice(deviceId);
+	public void updateAllScenarioStatusInMode(int modeId, ScenarioStatus status){
+		scenarioRunner.updateAllScenarioStatusInMode(modeId, status);
 	}
 	
 	// TODO: Change parameter from String to Script ( for assigning id to
