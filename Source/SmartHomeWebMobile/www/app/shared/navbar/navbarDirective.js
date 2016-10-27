@@ -1,6 +1,21 @@
-app.directive("navbar", function() {
+app.directive("navbar", ['MainService', function(MainService) {
     return {
         restrict: "E",
-        templateUrl: "app/shared/navbar/navbarView.html"
+        templateUrl: "app/shared/navbar/navbarView.html",
+        controllerAs: 'navBarCtrl',
+        controller: function() {
+            var self = this;
+
+            self.modes = [];
+            self.selectedMode = null;
+
+            self.init = function() {
+                MainService.navBarCtrl = self;
+            }
+
+            self.changeMode = function(mode) {
+
+            }
+        }
     }
-})
+}])

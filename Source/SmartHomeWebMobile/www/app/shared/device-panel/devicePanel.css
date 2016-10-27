@@ -75,12 +75,18 @@
     margin-top: 10px;
 }
 
-.device-panel-operational-button-row {
-    margin-bottom: 15px !important;
+.device-panel-disable-button {
+    display: block;
+    margin-right: 17px;
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: black;
 }
 
-.device-panel-operational-button {
-    padding: 3px 12px 3px 12px;
+.device-panel-remove-button {
+    margin-right: 17px;
+    font-size: 20px;
+    color: red;
 }
 
 .add-script-btn {

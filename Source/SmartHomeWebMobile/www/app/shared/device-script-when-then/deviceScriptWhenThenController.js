@@ -130,7 +130,7 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
             }
 
             self.deleteScript = function() {
-                MainService.deleteScript($scope.device, $scope.script.id);
+                MainService.deleteScript($scope.device, $scope.script.id, self.selectedOtherDevice);
             }
 
             self.parseInfoFromScript = function() {

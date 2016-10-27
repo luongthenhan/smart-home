@@ -1,0 +1,4 @@
+.glyphicon-none:before {
+    content: "\2122";
+    color: transparent !important;
+}
