@@ -51,6 +51,7 @@ import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.ConstantUtil;
+import com.hcmut.smarthome.utils.NotFoundException;
 
 @Service
 public class ScenarioCreator {
@@ -198,7 +199,11 @@ public class ScenarioCreator {
 
 		// SETUP DEVICE CONDITION
 		default:
-			block = setupCondition(object);
+			try {
+				block = setupCondition(object);
+			} catch (NotFoundException e) {
+				LOGGER.error(e.getMessage());
+			}
 			break;
 		}
 
@@ -273,8 +278,9 @@ public class ScenarioCreator {
 	 * 
 	 * @param object
 	 * @return
+	 * @throws NotFoundException 
 	 */
-	private IBlock setupCondition(JSONArray object) {
+	private IBlock setupCondition(JSONArray object) throws NotFoundException {
 		IBlock block = null;
 		// TODO : UNcomment here , ensure device not null when pass to
 		// deviceController

@@ -2,10 +2,6 @@ package com.hcmut.smarthome.rest;
 
 import java.util.List;
 
-import javax.script.ScriptException;
-import javax.transaction.NotSupportedException;
-
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +18,7 @@ import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
 import com.hcmut.smarthome.service.IScenarioService;
-import com.hcmut.smarthome.utils.ConflictConditionException;
+import com.hcmut.smarthome.utils.NotFoundException;
 @RestController
 @RequestMapping("devices/{deviceId}/modes/{modeId}/scripts")
 @CrossOrigin
@@ -46,15 +42,19 @@ public class ScriptResource {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.DELETE, path="/{scriptId}")
-	public ResponseEntity<Void> deleteScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId){
+	public ResponseEntity<ResponeString> deleteScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId){
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
 		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		deviceService.deleteScript(deviceId, scriptId);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		try {
+			deviceService.deleteScript(deviceId, scriptId);
+		} catch (NotFoundException e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 	}
 	
 	/**
@@ -71,7 +71,11 @@ public class ScriptResource {
 			return new ResponseEntity<List<Script>>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		return new ResponseEntity<List<Script>>(deviceService.getScripts( modeId, deviceId),HttpStatus.OK);
+		try {
+			return new ResponseEntity<List<Script>>(deviceService.getScripts( modeId, deviceId),HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<List<Script>>(HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	/**
@@ -79,33 +83,38 @@ public class ScriptResource {
 	 * @param scriptId
 	 * @param script
 	 * @return
-	 * @throws ScriptException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
-	 * @throws ParseException 
 	 */
 	@RequestMapping(method = RequestMethod.PUT, path="/{scriptId}")
-	public ResponseEntity<Void> updateScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId, @RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException{
+	public ResponseEntity<ResponeString> updateScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId, @RequestBody Script script ) {
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
 		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		deviceService.updateScript(homeId, modeId, deviceId, scriptId,script);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		
+		try {
+			deviceService.updateScript(homeId, modeId, deviceId, scriptId,script);
+		} catch (Exception e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 	}
 	
 	@RequestMapping(method = RequestMethod.PATCH, path="/{scriptId}")
-	public ResponseEntity<Void> updatePartialScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId, @RequestBody Script script ) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException{
+	public ResponseEntity<ResponeString> updatePartialScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId, @RequestBody Script script ) {
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
 //		if (!authService.isAccessable(homeId)) {
 //			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 //		}
 		
-		deviceService.updatePartialScript(homeId, modeId, deviceId, scriptId, script);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		try {
+			deviceService.updatePartialScript(homeId, modeId, deviceId, scriptId, script);
+		} catch (Exception e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 	}
 	
 	/**
@@ -114,10 +123,6 @@ public class ScriptResource {
 	 * @param modeId
 	 * @param script
 	 * @return
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
-	 * @throws ScriptException 
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<ResponeString> addScript(@PathVariable int deviceId,@PathVariable int modeId,@RequestBody Script script ){
@@ -131,10 +136,8 @@ public class ScriptResource {
 		int addedScriptId;
 		try {
 			addedScriptId = deviceService.addScript(script, deviceId, modeId , homeId);
-		} catch (ParseException | NotSupportedException
-				| ConflictConditionException | ScriptException e) {
-			ResponeString response = new ResponeString(e.getMessage());
-			return new ResponseEntity<ResponeString>(response, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 		if (addedScriptId > 0) {
 			String URINewAddedObject = String.format( "devices/%s/modes/%s/scripts/%s", deviceId, modeId, addedScriptId);

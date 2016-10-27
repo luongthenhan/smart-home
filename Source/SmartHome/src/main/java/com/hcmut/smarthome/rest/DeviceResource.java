@@ -27,6 +27,7 @@ import com.hcmut.smarthome.service.IDeviceTypeService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.ConstantUtil;
+import com.hcmut.smarthome.utils.NotFoundException;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @CrossOrigin
@@ -54,15 +55,19 @@ public class DeviceResource {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.DELETE, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
-	public ResponseEntity<Void> deleteDevice(@PathVariable int homeId,
+	public ResponseEntity<ResponeString> deleteDevice(@PathVariable int homeId,
 			@PathVariable int deviceId) {
 
 		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 
-		deviceService.deleteDevice(homeId, deviceId);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		try {
+			deviceService.deleteDevice(homeId, deviceId);
+		} catch (NotFoundException e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 	}
 
 	/**
@@ -81,8 +86,14 @@ public class DeviceResource {
 			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 			
-		int addedDeviceId = deviceService.addDevice(homeId, deviceTypeId,
-				device);
+		int addedDeviceId;
+		try {
+			addedDeviceId = deviceService.addDevice(homeId, deviceTypeId,
+					device);
+		} catch (Exception e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),
+					HttpStatus.BAD_REQUEST);
+		}
 		if (addedDeviceId > 0) {
 			String URINewAddedObject = String.format(
 					"homes/%s/device-types/%s/devices/%s", homeId,
@@ -100,35 +111,43 @@ public class DeviceResource {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.PUT, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
-	public ResponseEntity<Void> updateDevice(@PathVariable int homeId,
+	public ResponseEntity<ResponeString> updateDevice(@PathVariable int homeId,
 			@PathVariable int deviceId, @PathVariable int deviceTypeId,
 			@RequestBody Device updatedDevice) {
 		
 		if(!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		if (deviceService.updateDevice(homeId, deviceId, deviceTypeId,
-				updatedDevice))
-			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-		else
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		try {
+			if (deviceService.updateDevice(homeId, deviceId, deviceTypeId,
+					updatedDevice))
+				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
+			else
+				return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@RequestMapping(method = RequestMethod.PATCH, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
-	public ResponseEntity<Void> updatePartialDevice(@PathVariable int homeId,
+	public ResponseEntity<ResponeString> updatePartialDevice(@PathVariable int homeId,
 			@PathVariable int deviceId, @PathVariable int deviceTypeId,
 			@RequestBody Device updatedDevice) {
 		
 		if(!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		if (deviceService.updatePartialDevice(homeId, deviceId, deviceTypeId,
-				updatedDevice))
-			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-		else
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		try {
+			if (deviceService.updatePartialDevice(homeId, deviceId, deviceTypeId,
+					updatedDevice))
+				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
+			else
+				return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	/**
@@ -166,10 +185,13 @@ public class DeviceResource {
 			return new ResponseEntity<List<Device>>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		return new ResponseEntity<List<Device>>(
-				deviceService
-						.getAllGivenHomeAndDeviceType(homeId, deviceTypeId),
-				HttpStatus.OK);
+		try {
+			return new ResponseEntity<List<Device>>(
+					deviceService.getAllGivenHomeAndDeviceType(homeId, deviceTypeId),
+					HttpStatus.OK);
+		} catch (NotFoundException e) {
+			return new ResponseEntity<List<Device>>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	/**

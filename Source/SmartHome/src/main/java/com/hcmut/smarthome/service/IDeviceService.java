@@ -2,43 +2,38 @@ package com.hcmut.smarthome.service;
 
 import java.util.List;
 
-import javax.script.ScriptException;
-import javax.transaction.NotSupportedException;
-
-import org.json.simple.parser.ParseException;
-
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
-import com.hcmut.smarthome.utils.ConflictConditionException;
+import com.hcmut.smarthome.utils.NotFoundException;
 
 public interface IDeviceService {
-	List<Device> getAllGivenHomeAndDeviceType(int homeId, int deviceTypeId);
+	List<Device> getAllGivenHomeAndDeviceType(int homeId, int deviceTypeId) throws NotFoundException;
 	
 	List<Device> getAllDevices(int homeId);
 	
-	Device getDevice(int homeId, int deviceId);
+	Device getDevice(int homeId, int deviceId) throws NotFoundException;
 	
-	List<Script> getScripts(int modeId, int deviceId);
+	List<Script> getScripts(int modeId, int deviceId) throws Exception;
 	
-	Script getScript(int scriptId);
+	Script getScript(int scriptId) throws NotFoundException;
 	
-	int addScript(Script script, int deviceId , int modeId, int homeId) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException;
+	int addScript(Script script, int deviceId , int modeId, int homeId) throws Exception;
 	
-	boolean deleteScript( int deviceId, int scriptId);
+	boolean deleteScript( int deviceId, int scriptId) throws NotFoundException;
 	
-	boolean updateScript(int homeId, int modeId, int deviceId, int scriptId, Script updatedScript) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException;
+	boolean updateScript(int homeId, int modeId, int deviceId, int scriptId, Script updatedScript) throws Exception;
 	
-	boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script updatedScript) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException;
+	boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script updatedScript) throws Exception;
 	
 	List<Integer> getAllAvailableGpio(int homeId);
 
-	boolean updateDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice);
+	boolean updateDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice) throws Exception;
 	
-	int addDevice(int homeId, int deviceTypeId, Device device);
+	int addDevice(int homeId, int deviceTypeId, Device device) throws Exception;
 	
-	boolean deleteDevice(int homeId, int deviceId);
+	boolean deleteDevice(int homeId, int deviceId) throws NotFoundException;
 
-	boolean updatePartialDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice);
+	boolean updatePartialDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice) throws Exception;
 
-	boolean isDeviceEnabled(int deviceId);
+	boolean isDeviceEnabled(int deviceId) throws Exception;
 }

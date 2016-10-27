@@ -20,8 +20,7 @@ import com.hcmut.smarthome.utils.ConflictConditionException;
 @Service
 public class ScenarioService implements IScenarioService {
 
-	private static final Logger LOGGER = Logger
-			.getLogger(ScenarioService.class);
+	private static final Logger LOGGER = Logger.getLogger(ScenarioService.class);
 
 	// TODO: Remove new object here after testing
 	@Autowired
@@ -42,7 +41,7 @@ public class ScenarioService implements IScenarioService {
 
 	// TODO: when update , don't forget that input scenario may exist in one of them
 	@Override
-	public boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws ParseException, NotSupportedException, ConflictConditionException{
+	public boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws Exception{
 		List<Script> existedScripts = deviceService.getScripts(modeId,deviceId);
 		
 		List<Scenario> existedScenarios = new ArrayList<Scenario>();

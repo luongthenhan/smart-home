@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ import com.hcmut.smarthome.service.IHomeService;
 
 @Service
 public class ScenarioRunner {
+	private final static Logger LOGGER = Logger.getLogger(ScenarioRunner.class);
 	
 	private Map<Integer, Scenario> mapScenarioController = new HashMap<>();
 	
@@ -60,12 +62,16 @@ public class ScenarioRunner {
 				System.out.println("Goes here - timertask in runScenario "+ scenario.getId());
 				ScenarioStatus status = mapScenarioController.get(scenario.getId()).getStatus();
 
-				handleScenarioBasedOnStatus(scenario, status);
+				try {
+					handleScenarioBasedOnStatus(scenario, status);
+				} catch (Exception e) {
+					LOGGER.error(e.getMessage());
+				}
 
 			}
 
 			private void handleScenarioBasedOnStatus(Scenario scenario,
-					ScenarioStatus status) {
+					ScenarioStatus status) throws Exception {
 				switch (status) {
 					case RUNNING:
 						// Only do action when home is enabled || device is enabled

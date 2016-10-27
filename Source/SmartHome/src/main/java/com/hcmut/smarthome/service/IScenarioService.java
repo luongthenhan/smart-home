@@ -42,11 +42,9 @@ public interface IScenarioService {
 	 * @param script script used to check name valid or not
 	 * @param scenario if it is null , just check valid name or not. Otherwise, also check scenario conflict
 	 * @return
-	 * @throws ParseException
-	 * @throws NotSupportedException
-	 * @throws ConflictConditionException
+	 * @throws Exception 
 	 */
-	boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws ParseException, NotSupportedException, ConflictConditionException;
+	boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws Exception;
 
 	void updateScenarioStatus(int scenarioId, ScenarioStatus status);
 

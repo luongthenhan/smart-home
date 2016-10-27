@@ -30,6 +30,7 @@ import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
+import com.hcmut.smarthome.utils.NotFoundException;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @Service
@@ -63,7 +64,7 @@ public class DeviceService implements IDeviceService {
 //	}
 	
 	@Override
-	public int addDevice(int homeId, int deviceTypeId, Device device) {
+	public int addDevice(int homeId, int deviceTypeId, Device device) throws Exception{
 		
 		DeviceEntity deviceEntity = new DeviceEntity();
 		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, device, deviceEntity);
@@ -108,13 +109,13 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	@Override
-	public boolean deleteDevice(int homeId, int deviceId) {
+	public boolean deleteDevice(int homeId, int deviceId) throws NotFoundException {
 		if( deviceDao.delete(deviceId) ){
 			scenarioService.updateAllScenarioStatusInDevice(deviceId, ScenarioStatus.STOP_FOREVER);
 			//updateMapHomeDevices(homeId, deviceId, null);
 			return true;
 		}
-		return false;
+		throw new NotFoundException("Can't find device with id " + deviceId);
 	}
 	
 	@Override
@@ -154,7 +155,7 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	@Override
-	public boolean deleteScript( int deviceId, int scriptId) {
+	public boolean deleteScript( int deviceId, int scriptId) throws NotFoundException {
 		if (scriptDao.deleteScript(scriptId)) {
 			scenarioService.updateScenarioStatus(scriptId,ScenarioStatus.STOP_FOREVER);
 			
@@ -166,12 +167,12 @@ public class DeviceService implements IDeviceService {
 //			}
 			return true;
 		}
-		return false;
+		throw new NotFoundException("Can't find script with id " + scriptId);
 	}
 
 	// TODO : save/update script custom . check name 
 	@Override
-	public int addScript(Script script, int deviceId , int modeId, int homeId) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException {
+	public int addScript(Script script, int deviceId , int modeId, int homeId) throws Exception {
 		
 		Scenario scenario = scriptToScenario(script);
 		boolean isValid = scenarioService.isValid(modeId, deviceId, script, scenario);
@@ -187,13 +188,13 @@ public class DeviceService implements IDeviceService {
 	
 	// TODO: Now update a script involved so many queries -> need to improve performance
 	@Override
-	public boolean updateScript(int homeId, int modeId, int deviceId, int scriptId, Script updatedScript) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException {
+	public boolean updateScript(int homeId, int modeId, int deviceId, int scriptId, Script updatedScript) throws Exception {
 		return updatePartialScript(homeId, modeId, deviceId, scriptId, updatedScript);
 	}
 
 
 	@Override
-	public boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script scriptToUpdate) throws ParseException, NotSupportedException, ConflictConditionException, ScriptException {
+	public boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script scriptToUpdate) throws Exception {
 		ScriptEntity currentScriptEntity = scriptDao.getById(scriptId);
 		
 		// Found in DB
