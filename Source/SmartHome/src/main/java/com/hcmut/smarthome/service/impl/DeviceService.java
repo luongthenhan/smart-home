@@ -38,8 +38,7 @@ public class DeviceService implements IDeviceService {
 	private static final String CUSTOM_SCRIPT_TYPE = "Custom";
 	private static final int CUSTOM_SCRIPT_ID = 3;
 
-	// TODO : Update map after add new / update / delete something. Also in this time
-	// call stopOrRemoveScenario. 
+	// TODO : Update map after add new / update / delete something.
 	// * Handle add new home ?
 	//private HashMap<Integer,List<Device>> mapHomeDevices = new HashMap<>();
 	
@@ -92,7 +91,6 @@ public class DeviceService implements IDeviceService {
 		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
 		
 		if( deviceDao.update(deviceEntity)){
-			// TODO : When we have already had the function to create home , this case will not happen anymore
 			//updateMapHomeDevices(homeId, deviceId, deviceEntity);
 			
 			//if( updatedDevice.isEnabled() != deviceEntity.isEnabled() )
@@ -170,7 +168,6 @@ public class DeviceService implements IDeviceService {
 		throw new NotFoundException("Can't find script with id " + scriptId);
 	}
 
-	// TODO : save/update script custom . check name 
 	@Override
 	public int addScript(Script script, int deviceId , int modeId, int homeId) throws Exception {
 		
@@ -270,7 +267,6 @@ public class DeviceService implements IDeviceService {
 		return scenario;
 	}
 	
-	// TODO HomeId now is hard-coded
 	private void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario){
 		if( scenarioId > 0 ){
 			scenario.setId(scenarioId);
@@ -325,7 +321,7 @@ public class DeviceService implements IDeviceService {
 				&& updatedDevice.isEnabled() != deviceEntity.isEnabled() )
 			deviceEntity.setEnabled(updatedDevice.isEnabled());
 		
-		// TODO: Not implement check valid GPIO yet
+		// TODO: Not implement check valid GPIO yet, because client has checked it already
 		if( updatedDevice.getGPIO() != null && updatedDevice.getGPIO() > 0 )
 			deviceEntity.setGPIOPin(updatedDevice.getGPIO());
 
@@ -335,8 +331,10 @@ public class DeviceService implements IDeviceService {
 		if( updatedDevice.getLocation() != null )
 			deviceEntity.setLocation(updatedDevice.getLocation());
 		
-		if( updatedDevice.getName() != null )
+		if( updatedDevice.getName() != null 
+				&& !isDeviceNameExisted(homeId, updatedDevice.getName())){
 			deviceEntity.setName(updatedDevice.getName());
+		}
 		
 		if( updatedDevice.getTimeout() != null )
 			deviceEntity.setTimeout(updatedDevice.getTimeout());
@@ -356,6 +354,10 @@ public class DeviceService implements IDeviceService {
 		return deviceDao.isEnabled(deviceId);
 	}
 	
+	
+	private boolean isDeviceNameExisted(int homeId, String deviceName){
+		return deviceDao.isDeviceNameExisted(homeId, deviceName);
+	}
 //	private void updateMapHomeDevices(int homeId, int deviceId, DeviceEntity device){
 //		if( mapHomeDevices.containsKey(homeId) ){
 //			List<Device> devices = mapHomeDevices.get(homeId);

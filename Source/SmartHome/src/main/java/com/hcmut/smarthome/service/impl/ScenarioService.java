@@ -1,5 +1,8 @@
 package com.hcmut.smarthome.service.impl;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.INPUT_SCRIPT_HAS_SAME_CONTENT_WITH_EXISTING_ONE;
+import static com.hcmut.smarthome.utils.ConstantUtil.INPUT_SCRIPT_HAS_SAME_NAME_WITH_EXISTING_ONE_IN_SAME_MODE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +25,6 @@ public class ScenarioService implements IScenarioService {
 
 	private static final Logger LOGGER = Logger.getLogger(ScenarioService.class);
 
-	// TODO: Remove new object here after testing
 	@Autowired
 	private ScenarioCreator scenarioCreator;
 	
@@ -39,7 +41,6 @@ public class ScenarioService implements IScenarioService {
 		throw new UnsupportedOperationException("Not supported");
 	}
 
-	// TODO: when update , don't forget that input scenario may exist in one of them
 	@Override
 	public boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws Exception{
 		List<Script> existedScripts = deviceService.getScripts(modeId,deviceId);
@@ -49,11 +50,16 @@ public class ScenarioService implements IScenarioService {
 			
 			if( script.getContent() != null 
 					&& existedScript.getContent() != null
-					&& isScriptExisted(script.getContent(), existedScript.getContent()) )
+					&& isScriptExisted(script.getContent(), existedScript.getContent()) ){
+				LOGGER.debug(INPUT_SCRIPT_HAS_SAME_CONTENT_WITH_EXISTING_ONE);
 				return false;
+			}
 			
-			if( checkExistingName(script.getName(), existedScript.getName()) )
+			// Check existing name in mode level , because existed scripts is get by mode
+			if( checkExistingName(script.getName(), existedScript.getName()) ){
+				LOGGER.debug(INPUT_SCRIPT_HAS_SAME_NAME_WITH_EXISTING_ONE_IN_SAME_MODE);
 				return false;
+			}
 			
 			Scenario existedScenario = JSONToScenario(existedScript.getContent());
 			existedScenarios.add(existedScenario);
@@ -86,8 +92,6 @@ public class ScenarioService implements IScenarioService {
 		return scenarioConflictValidator.isNotConflicted(inputScenario, existedScenarios);
 	}
 	
-	// TODO : When one script is removed , how to know and get rid of it and
-	// also stop the timer
 	@Override
 	public void runScenario(Scenario scenario) {
 		scenarioRunner.runScenario(scenario);
@@ -113,8 +117,6 @@ public class ScenarioService implements IScenarioService {
 		scenarioRunner.updateAllScenarioStatusInMode(modeId, status);
 	}
 	
-	// TODO: Change parameter from String to Script ( for assigning id to
-	// scenario after return)
 	@Override
 	public Scenario JSONToScenario(String script) throws ParseException, NotSupportedException, ConflictConditionException {
 		return scenarioCreator.from(script);

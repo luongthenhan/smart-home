@@ -16,4 +16,6 @@ public interface IDeviceDao extends ICommonDao<DeviceEntity> {
 
 	boolean isEnabled(int deviceId);
 
+	boolean isDeviceNameExisted(int homeId, String deviceName);
+
 }

@@ -74,6 +74,7 @@ public class ScenarioRunner {
 					ScenarioStatus status) throws Exception {
 				switch (status) {
 					case RUNNING:
+						// TODO: Improve performance
 						// Only do action when home is enabled || device is enabled
 						if( canScenarioRunInCurrentMode(scenario) 
 							&& homeService.isEnabled(scenario.getHomeId()) 
@@ -111,8 +112,6 @@ public class ScenarioRunner {
 	private void runBlocks(List<IBlock> blocks) {
 		for (IBlock block : blocks) {
 			if (block instanceof SimpleAction) {
-
-				// TODO: Improve performance
 				SimpleAction action = (SimpleAction) block;
 				action.doAction();
 

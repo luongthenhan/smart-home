@@ -75,4 +75,15 @@ public class DeviceDaoImpl extends CommonDaoImpl<DeviceEntity> implements IDevic
 		
 		return (boolean) crit.uniqueResult();
 	}
+
+	@Override
+	@Transactional
+	public boolean isDeviceNameExisted(int homeId, String deviceName) {
+		String query = "SELECT * FROM public.device WHERE device.home_id = :homeId AND device.name = :deviceName ;";
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query.toString());
+		sqlStatement.setParameter("homeId", homeId);
+		sqlStatement.setParameter("deviceName", deviceName);
+		
+		return sqlStatement.uniqueResult() != null;
+	}
 }
