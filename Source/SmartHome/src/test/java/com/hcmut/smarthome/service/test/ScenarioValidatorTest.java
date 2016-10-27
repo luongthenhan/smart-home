@@ -10,7 +10,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.TURN_OFF;
 import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;

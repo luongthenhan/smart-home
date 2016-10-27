@@ -4,6 +4,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.ADD_UNSUCCESSFULLY;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.script.ScriptException;
 import javax.transaction.NotSupportedException;
 
@@ -57,10 +58,11 @@ public class DeviceService implements IDeviceService {
 	@Autowired
 	private IModeDao modeDao;
 	
-//	@PostConstruct
-//	private void init(){
-//		mapHomeDevices.put(HOME_ID, getAllDevices(HOME_ID));
-//	}
+	@PostConstruct
+	private void init(){
+		//mapHomeDevices.put(HOME_ID, getAllDevices(HOME_ID));
+		ScriptBuilder.setDeviceService(this);
+	}
 	
 	@Override
 	public int addDevice(int homeId, int deviceTypeId, Device device) throws Exception{
@@ -171,7 +173,7 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public int addScript(Script script, int deviceId , int modeId, int homeId) throws Exception {
 		
-		Scenario scenario = scriptToScenario(script);
+		Scenario scenario = scriptToScenario(homeId, script);
 		boolean isValid = scenarioService.isValid(modeId, deviceId, script, scenario);
 		
 		if( isValid ){
@@ -196,7 +198,7 @@ public class DeviceService implements IDeviceService {
 		
 		// Found in DB
 		if( currentScriptEntity != null ){
-			Scenario updatedScenario = scriptToScenario(scriptToUpdate);
+			Scenario updatedScenario = scriptToScenario(homeId, scriptToUpdate);
 			boolean isValid = scenarioService.isValid(modeId, deviceId, scriptToUpdate, updatedScenario);
 			if( isValid ){
 				boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,currentScriptEntity);
@@ -253,14 +255,14 @@ public class DeviceService implements IDeviceService {
 	 * @throws ConflictConditionException 
 	 * @throws NotSupportedException 
 	 */
-	private Scenario scriptToScenario(Script script) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException{
+	private Scenario scriptToScenario(int homeId, Script script) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException{
 		Scenario scenario = null;
 		if( script.getContent() != null ){
 			String jsonScript = script.getContent();
 			if( script.getType() != null 
 					&& ( CUSTOM_SCRIPT_TYPE.equals(script.getType().getName()) 
 						|| CUSTOM_SCRIPT_ID == script.getType().getId()	)){
-				jsonScript = ScriptBuilder.parseFromCodeAsString(script.getContent());
+				jsonScript = ScriptBuilder.parseFromCodeAsString(script.getContent(), homeId);
 			}
 			scenario = scenarioService.JSONToScenario(jsonScript);
 		}
@@ -354,6 +356,10 @@ public class DeviceService implements IDeviceService {
 		return deviceDao.isEnabled(deviceId);
 	}
 	
+	@Override
+	public Integer getDeviceIdGivenNameAndHomeId(int homeId, String deviceName) throws NotFoundException{
+		return deviceDao.getDeviceIdGivenNameAndHomeId(homeId, deviceName);
+	}
 	
 	private boolean isDeviceNameExisted(int homeId, String deviceName){
 		return deviceDao.isDeviceNameExisted(homeId, deviceName);

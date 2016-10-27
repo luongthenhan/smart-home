@@ -36,4 +36,6 @@ public interface IDeviceService {
 	boolean updatePartialDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice) throws Exception;
 
 	boolean isDeviceEnabled(int deviceId) throws Exception;
+
+	Integer getDeviceIdGivenNameAndHomeId(int homeId, String deviceName) throws NotFoundException;
 }

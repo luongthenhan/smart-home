@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import com.hcmut.smarthome.dao.IDeviceDao;
 import com.hcmut.smarthome.entity.DeviceEntity;
 import com.hcmut.smarthome.model.Device;
+import com.hcmut.smarthome.utils.NotFoundException;
 
 @Repository
 public class DeviceDaoImpl extends CommonDaoImpl<DeviceEntity> implements IDeviceDao{
@@ -79,11 +80,25 @@ public class DeviceDaoImpl extends CommonDaoImpl<DeviceEntity> implements IDevic
 	@Override
 	@Transactional
 	public boolean isDeviceNameExisted(int homeId, String deviceName) {
-		String query = "SELECT * FROM public.device WHERE device.home_id = :homeId AND device.name = :deviceName ;";
+		try {
+			getDeviceIdGivenNameAndHomeId(homeId, deviceName);
+			return true;
+		} catch (NotFoundException e) {
+			return false;
+		}
+	}
+	
+	@Override
+	@Transactional
+	public Integer getDeviceIdGivenNameAndHomeId(int homeId, String deviceName) throws NotFoundException {
+		String query = "SELECT device.id FROM public.device WHERE device.home_id = :homeId AND device.name = :deviceName ;";
 		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query.toString());
 		sqlStatement.setParameter("homeId", homeId);
 		sqlStatement.setParameter("deviceName", deviceName);
 		
-		return sqlStatement.uniqueResult() != null;
+		Object result = sqlStatement.uniqueResult();
+		if( result == null )
+			throw new NotFoundException(String.format("Device with name %s is not found in home id %s",deviceName, homeId));
+		return (Integer) result;
 	}
 }
