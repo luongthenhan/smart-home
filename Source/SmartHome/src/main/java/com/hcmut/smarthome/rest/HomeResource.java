@@ -19,7 +19,6 @@ import com.hcmut.smarthome.model.Mode;
 import com.hcmut.smarthome.model.ResponeString;
 import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IHomeService;
-import com.hcmut.smarthome.utils.ConstantUtil;
 
 @RestController
 @RequestMapping(path = "/homes")
@@ -39,7 +38,7 @@ public class HomeResource {
 			return new ResponseEntity<Home>(HttpStatus.UNAUTHORIZED);
 		}
 
-		Home home = homeService.getHome(ConstantUtil.VALID_USER_ID, homeId);
+		Home home = homeService.getHome(authService.getCurrentUserId(), homeId);
 		if (home != null) {
 			return new ResponseEntity<Home>(home, HttpStatus.OK);
 		} else {
@@ -54,7 +53,7 @@ public class HomeResource {
 			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 		}
 
-		if (homeService.deleteHome(ConstantUtil.VALID_USER_ID, homeId)) {
+		if (homeService.deleteHome(authService.getCurrentUserId(), homeId)) {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		} else {
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
@@ -69,7 +68,7 @@ public class HomeResource {
 			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 		}
 
-		if (homeService.updatePartialHome(ConstantUtil.VALID_USER_ID,
+		if (homeService.updatePartialHome(authService.getCurrentUserId(),
 				homeId, home))
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		else
@@ -107,7 +106,7 @@ public class HomeResource {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Home>> getHomes() {
-		List<Home> homes = homeService.getAllHomes(/*authService.getCurrentUserId()*/ConstantUtil.VALID_USER_ID);
+		List<Home> homes = homeService.getAllHomes(authService.getCurrentUserId());
 		if( homes != null  )
 			return new ResponseEntity<List<Home>>(homes,HttpStatus.OK);
 		else return new ResponseEntity<List<Home>>(HttpStatus.NOT_FOUND);
