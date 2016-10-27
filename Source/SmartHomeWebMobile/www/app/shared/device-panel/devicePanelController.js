@@ -9,6 +9,7 @@ app.directive("devicePanel", ['MainService', function(MainService) {
         controllerAs: "devicePanelCtrl",
         controller: function($scope) {
             var self = this;
+            self.device = $scope.device;
             self.isShowDetails = false;
 
             self.selectedScriptTypeToAdd = "When/Then";
@@ -16,11 +17,14 @@ app.directive("devicePanel", ['MainService', function(MainService) {
             self.customScriptNameForAdd = null;
             self.customScriptContentForAdd = null;
 
+            self.otherDevices = [];
+
             self.toggleShowDetails = function() {
                 self.isShowDetails = !self.isShowDetails;
             }
 
             self.init = function() {
+                MainService.devicePanelCtrlList.push(self);
                 $(".panel-collapse").on('hide.bs.collapse', function () {
                     var deviceId = $(this).attr("id").slice(-1);
                     $("#devicePanelToggleIcon" + deviceId).removeClass("glyphicon-menu-down");
@@ -86,7 +90,7 @@ app.directive("devicePanel", ['MainService', function(MainService) {
                         name: "IfThen",
                         template: "['If',C, A]"
                     }
-                    MainService.addScript($scope.device, newScript);
+                    MainService.addScript($scope.device, newScript, self.selectedOtherDevice);
                 } else if (self.selectedScriptTypeToAdd == "Custom") {
                     newScript.name = self.customScriptNameForAdd;
                     newScript.content = self.customScriptContentForAdd;
@@ -95,7 +99,7 @@ app.directive("devicePanel", ['MainService', function(MainService) {
                         name: "Custom",
                         template: ""
                     }
-                    MainService.addScript($scope.device, newScript);
+                    MainService.addScript($scope.device, newScript, self.selectedOtherDevice);
                 }
 
             }
