@@ -1,7 +1,7 @@
 package com.hcmut.smarthome.dao.impl;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.EMAIL_ALREADY_EXISTED;
-import static com.hcmut.smarthome.utils.ConstantUtil.USERNAME_ALREADY_EXISTED;
+import static com.hcmut.smarthome.utils.ConstantUtil.EMAIL_ALREADY_EXISTS;
+import static com.hcmut.smarthome.utils.ConstantUtil.USERNAME_ALREADY_EXISTS;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -28,11 +28,11 @@ public class UserDaoImpl extends CommonDaoImpl<UserEntity> implements IUserDao {
 	public int addUser(UserEntity userEntity) {
 
 		if(!isValidUsername(userEntity.getUsrName())) {
-			return USERNAME_ALREADY_EXISTED;
+			return USERNAME_ALREADY_EXISTS;
 		}
 		
 		if(!isValidEmail(userEntity.getEmail())) {
-			return EMAIL_ALREADY_EXISTED;
+			return EMAIL_ALREADY_EXISTS;
 		}
 		
 		int id = save(userEntity);
