@@ -1,0 +1,87 @@
+<div class="wrapper-content-vertical-center">
+    <form name="registerForm" ng-controller="RegisterController as registerCtrl"
+          ng-submit="registerCtrl.register()">
+        <div class="row form-row form-title">Register</div>
+
+        <div class="form-group">
+            <div class="row form-row">
+                <div class="col-xs-12">
+                    <input ng-model="registerCtrl.fullname" type="text" class="form-control input-field"
+                           name="fullname" id="fullname" placeholder="Fullname" required>
+                </div>
+            </div>
+        </div>
+
+        <div ng-messages="registerForm.fullname.$error" ng-show="registerForm.username.$touched"
+             class="red fs14 margin-bottom-15" role="alert" >
+            <div ng-message="required">Fullname is required</div>
+        </div>
+
+        <div class="form-group">
+            <div class="row form-row">
+                <div class="col-xs-12">
+                    <input ng-model="registerCtrl.username" type="text" class="form-control input-field"
+                          name="username" id="username" placeholder="Username" required ng-change="registerCtrl.usernameExists = false;">
+                </div>
+            </div>
+        </div>
+
+        <div ng-messages="registerForm.username.$error"
+             class="red fs14 margin-bottom-15" role="alert" ng-show="registerForm.username.$touched" >
+            <div ng-message="required">Username is required</div>
+            <div ng-if="registerCtrl.usernameExists">Username already exists</div>
+        </div>
+
+        <div class="form-group">
+            <div class="row form-row">
+                <div class="col-xs-12">
+                    <input ng-model="registerCtrl.password" type="password" class="form-control input-field"
+                           name="password" id="password" placeholder="Password" required>
+                </div>
+            </div>
+        </div>
+
+        <div ng-messages="registerForm.password.$error"
+             class="red fs14 margin-bottom-15" role="alert" ng-show="registerForm.password.$touched" >
+            <div ng-message="required">Password is required</div>
+        </div>
+
+        <div class="form-group">
+            <div class="row form-row">
+                <div class="col-xs-12">
+                    <input ng-model="registerCtrl.confirmPassword" type="password" class="form-control input-field"
+                           name="confirmPassword" id="confirm-password" placeholder="Confirm password" required>
+                </div>
+            </div>
+        </div>
+
+        <div ng-messages="registerForm.confirmPassword.$error"
+             class="red fs14 margin-bottom-15" role="alert" ng-show="registerForm.confirmPassword.$touched" >
+            <div ng-message="required">Confirm password is required</div>
+        </div>
+
+        <div class="form-group">
+            <div class="row form-row">
+                <div class="col-xs-12">
+                    <input ng-model="registerCtrl.email" type="email" class="form-control input-field"
+                           name="email" id="email" placeholder="Email" required ng-change="registerCtrl.emailExists = false;">
+                </div>
+            </div>
+        </div>
+
+        <div ng-messages="registerForm.email.$error"
+             class="red fs14 margin-bottom-15" role="alert" ng-show="registerForm.email.$touched" >
+            <div ng-message="required">Email is required</div>
+            <div ng-message="email">Invalid email</div>
+            <div ng-if="registerCtrl.emailExists">Email already exists</div>
+        </div>
+        
+        <div class="form-group">
+            <div class="row form-row">
+                <div class="col-xs-12">
+                    <button type="submit" class="form-button">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
