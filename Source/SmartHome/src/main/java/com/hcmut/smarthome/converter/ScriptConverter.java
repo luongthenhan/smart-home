@@ -13,6 +13,7 @@ public class ScriptConverter {
 		script.setId(scriptEntity.getId());
 		script.setName(scriptEntity.getName());
 		script.setContent(scriptEntity.getContent());
+		script.setEnabled(scriptEntity.isEnabled());
 		script.setType(ScriptTypeConverter.toModel(scriptEntity.getScriptType()));
 		
 		return script;

@@ -20,6 +20,7 @@ import com.hcmut.smarthome.model.Mode;
 import com.hcmut.smarthome.model.ResponeString;
 import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IHomeService;
+import com.hcmut.smarthome.utils.NotFoundException;
 
 @RestController
 @RequestMapping(path = "/homes")
@@ -62,33 +63,40 @@ public class HomeResource {
 	}
 
 	@RequestMapping(method = RequestMethod.PATCH, path = "/{homeId}")
-	public ResponseEntity<Void> updatePartialHome(@PathVariable int homeId,
+	public ResponseEntity<ResponeString> updatePartialHome(@PathVariable int homeId,
 			@RequestBody Home home) {
 
 		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 
-		if (homeService.updatePartialHome(VALID_USER_ID/*authService.getCurrentUserId()*/,
-				homeId, home))
-			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-		else
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		try {
+			if (homeService.updatePartialHome(VALID_USER_ID/*authService.getCurrentUserId()*/,
+					homeId, home))
+				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
+			else
+				return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
+		} catch (NotFoundException e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, path = "/{homeId}")
-	public ResponseEntity<Void> updateHome(@PathVariable int homeId,
+	public ResponseEntity<ResponeString> updateHome(@PathVariable int homeId,
 			@RequestBody Home home) {
 
 		if (!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 
-		if (homeService
-				.updateHome(/*authService.getCurrentUserId()*/VALID_USER_ID, homeId, home))
-			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-		else
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		try {
+			if (homeService.updateHome(/*authService.getCurrentUserId()*/VALID_USER_ID, homeId, home))
+				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
+			else
+				return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
+		} catch (NotFoundException e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

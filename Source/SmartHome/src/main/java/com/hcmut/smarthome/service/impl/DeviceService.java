@@ -81,24 +81,26 @@ public class DeviceService implements IDeviceService {
 	
 	// TODO: Now PUT use the implementation of PATCH
 	@Override
-	public boolean updateDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice) {
+	public boolean updateDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice) throws Exception {
 		return updatePartialDevice(homeId, deviceId, deviceTypeId, updatedDevice);
 	}
 	
 	@Override
 	public boolean updatePartialDevice(int homeId, int deviceId,
-			int deviceTypeId, Device updatedDevice) {
+			int deviceTypeId, Device updatedDevice) throws Exception{
 		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
+		
+		if( deviceEntity == null )
+			throw new NotFoundException(String.format("Device id %d not found", deviceId));
+		
+		boolean isDeviceStatusChanged = updatedDevice.isEnabled() != null
+				&& updatedDevice.isEnabled() != deviceEntity.isEnabled();
 		
 		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
 		
-		if( deviceDao.update(deviceEntity)){
+		if( deviceDao.update(deviceEntity) ){
 			//updateMapHomeDevices(homeId, deviceId, deviceEntity);
-			
-			//if( updatedDevice.isEnabled() != deviceEntity.isEnabled() )
-			//	scenarioService.s
-			if( updatedDevice.isEnabled() != null
-					&& updatedDevice.isEnabled() != deviceEntity.isEnabled() ){
+			if( isDeviceStatusChanged ){
 				if( updatedDevice.isEnabled() )
 					scenarioService.updateAllScenarioStatusInDevice(deviceId, ScenarioStatus.RUNNING);
 				else scenarioService.updateAllScenarioStatusInDevice(deviceId, ScenarioStatus.STOPPING);
@@ -178,11 +180,12 @@ public class DeviceService implements IDeviceService {
 		
 		if( isValid ){
 			int scenarioId = saveScriptToDB(modeId, deviceId, script); 
+			// TODO: We must decide when script is created , which status is default ? running or stopping ??
 			runScenario(scenarioId, homeId, deviceId, modeId, scenario);
 			return (scenarioId > 0 ? scenarioId : ADD_UNSUCCESSFULLY);
 		}
+		else throw new Exception("The script to add is not valid");
 		
-		return ADD_UNSUCCESSFULLY;
 	}
 	
 	// TODO: Now update a script involved so many queries -> need to improve performance
@@ -196,27 +199,43 @@ public class DeviceService implements IDeviceService {
 	public boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script scriptToUpdate) throws Exception {
 		ScriptEntity currentScriptEntity = scriptDao.getById(scriptId);
 		
-		// Found in DB
-		if( currentScriptEntity != null ){
-			Scenario updatedScenario = scriptToScenario(homeId, scriptToUpdate);
-			boolean isValid = scenarioService.isValid(modeId, deviceId, scriptToUpdate, updatedScenario);
-			if( isValid ){
-				boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,currentScriptEntity);
-				if( isUpdateSuccessfully ){
-					if( isScriptContentUpdated(scriptToUpdate, currentScriptEntity) )
-						scenarioService.updateScenarioStatus(scriptId, ScenarioStatus.STOP_FOREVER);
+		if( currentScriptEntity == null )
+			throw new NotFoundException(String.format("Script id %d not found", scriptId ));
+		
+		Scenario updatedScenario = scriptToScenario(homeId, scriptToUpdate);
+		
+		boolean isValid = scenarioService.isValid(modeId, deviceId, scriptToUpdate, updatedScenario);
+		if( isValid ){
+			boolean isScriptContentChanged = isScriptContentChanged(scriptToUpdate, currentScriptEntity);
+			boolean isScriptStatusChanged = isScriptStatusChanged(scriptToUpdate, currentScriptEntity);
+			
+			boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,currentScriptEntity);
+			if( isUpdateSuccessfully ){
+				if( isScriptContentChanged ){
+					scenarioService.updateScenarioStatus(scriptId, ScenarioStatus.STOP_FOREVER);
 					runScenario(scriptId, homeId, deviceId, modeId, updatedScenario);
 				}
+				else if ( isScriptStatusChanged )
+					scenarioService.updateScenarioStatus(scriptId, ScenarioStatus.STOPPING);
+				return true;
 			}
 		}
+		else throw new Exception(String.format("Updated script id %d is not valid", scriptId));	
 		
 		// Not found or not valid
 		return false;
 	}
 
-	private boolean isScriptContentUpdated(Script scriptToUpdate, ScriptEntity currentScriptEntity){
+	private boolean isScriptStatusChanged(Script scriptToUpdate, ScriptEntity currentScriptEntity) {
+		if (scriptToUpdate.isEnabled() != null
+				&& !scriptToUpdate.isEnabled().equals(currentScriptEntity.isEnabled()))
+			return true;
+		return false;
+	}
+	
+	private boolean isScriptContentChanged(Script scriptToUpdate, ScriptEntity currentScriptEntity){
 		if( scriptToUpdate.getContent() != null 
-			 && scriptToUpdate.getContent().equals(currentScriptEntity.getContent()))
+			 && !scriptToUpdate.getContent().equals(currentScriptEntity.getContent()))
 			return true;
 		return false;
 	}
@@ -228,6 +247,9 @@ public class DeviceService implements IDeviceService {
 		
 		if( scriptToUpdate.getName() != null )
 			currentScriptEntity.setName(scriptToUpdate.getName());
+		
+		if( scriptToUpdate.isEnabled() != null )
+			currentScriptEntity.setEnabled(scriptToUpdate.isEnabled());
 		
 		if( scriptToUpdate.getType() != null && scriptToUpdate.getType().getId() > 0 ){
 			ScriptTypeEntity scriptTypeEntity = new ScriptTypeEntity();
@@ -284,6 +306,10 @@ public class DeviceService implements IDeviceService {
 		scriptEntity.setName(scriptToSave.getName());
 		scriptEntity.setContent(scriptToSave.getContent());
 		
+		if( scriptToSave.isEnabled() == null )
+			scriptEntity.setEnabled(true);
+		else scriptEntity.setEnabled(scriptToSave.isEnabled());
+		
 		ModeEntity mode = new ModeEntity();
 		mode.setId(modeId);
 		scriptEntity.setMode(mode);
@@ -319,9 +345,9 @@ public class DeviceService implements IDeviceService {
 		if( updatedDevice.getDescription() != null )
 			deviceEntity.setDescription(updatedDevice.getDescription());
 		
-		if( updatedDevice.isEnabled() != null
-				&& updatedDevice.isEnabled() != deviceEntity.isEnabled() )
+		if( updatedDevice.isEnabled() != null )
 			deviceEntity.setEnabled(updatedDevice.isEnabled());
+		else deviceEntity.setEnabled(true);
 		
 		// TODO: Not implement check valid GPIO yet, because client has checked it already
 		if( updatedDevice.getGPIO() != null && updatedDevice.getGPIO() > 0 )

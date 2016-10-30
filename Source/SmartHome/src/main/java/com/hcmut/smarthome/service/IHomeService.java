@@ -18,9 +18,9 @@ public interface IHomeService {
 	
 	int addHome(int userId, Home home);
 
-	boolean updateHome(int userId, int homeId, Home home);
+	boolean updateHome(int userId, int homeId, Home home) throws NotFoundException;
 	
-	boolean updatePartialHome(int userId, int homeId, Home home);
+	boolean updatePartialHome(int userId, int homeId, Home home) throws NotFoundException;
 
 	boolean deleteHome(int userId, int homeId);
 

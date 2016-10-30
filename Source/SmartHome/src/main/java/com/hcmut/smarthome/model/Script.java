@@ -10,6 +10,8 @@ public class Script implements Serializable {
 	private String name;
 
 	private String content;
+	
+	private Boolean enabled = null;
 
 	private ScriptType scriptType;
 
@@ -47,5 +49,13 @@ public class Script implements Serializable {
 
 	public void setType(ScriptType scriptType) {
 		this.scriptType = scriptType;
+	}
+
+	public Boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 }

@@ -26,6 +26,9 @@ public class ScriptEntity implements Serializable{
 	@Column(name="content", nullable = true , length = 4096)
 	private String content;
 	
+	@Column(name="enabled", nullable = false)
+	private boolean enabled; 
+	
 	@ManyToOne
 	@JoinColumn(name="device_id", nullable =false)
 	private DeviceEntity device;
@@ -77,6 +80,12 @@ public class ScriptEntity implements Serializable{
 	}
 	public void setMode(ModeEntity mode) {
 		this.mode = mode;
+	}
+	public boolean isEnabled() {
+		return enabled;
+	}
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 	

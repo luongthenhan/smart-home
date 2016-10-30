@@ -19,6 +19,7 @@ import com.hcmut.smarthome.model.Mode;
 import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.service.IHomeService;
 import com.hcmut.smarthome.service.IScenarioService;
+import com.hcmut.smarthome.utils.NotFoundException;
 
 @Service
 public class HomeService implements IHomeService{
@@ -61,21 +62,16 @@ public class HomeService implements IHomeService{
 		homeEntity.setAddress(home.getAddress());
 		homeEntity.setDescription(home.getDescription());
 		homeEntity.setName(home.getName());
-		homeEntity.setEnabled(home.isEnabled());
+		if( home.isEnabled() != null )
+			homeEntity.setEnabled(home.isEnabled());
+		else homeEntity.setEnabled(true);
 		UserEntity userEntity = new UserEntity();
 		userEntity.setId(userId);
 		homeEntity.setUser(userEntity);
 
 		int homeId = homeDao.save(homeEntity).intValue(); 
 		if( homeId > 0 ){
-			Mode defaultMode = new Mode();
-			defaultMode.setName(DEFAULT_MODE);
-			int defaultModeId = addMode(homeId, defaultMode);
-			
-			ModeEntity defaultModeEntity = new ModeEntity();
-			defaultModeEntity.setId(defaultModeId);
-			homeEntity.setCurrentMode(defaultModeEntity);
-			
+			addDefaultModeToHome(homeEntity, homeId);
 			homeDao.update(homeEntity);
 			
 			return homeId;
@@ -83,15 +79,46 @@ public class HomeService implements IHomeService{
 		
 		return ADD_UNSUCCESSFULLY;
 	}
+
+	private void addDefaultModeToHome(HomeEntity homeEntity, int homeId) {
+		Mode defaultMode = new Mode();
+		defaultMode.setName(DEFAULT_MODE);
+		int defaultModeId = addMode(homeId, defaultMode);
+		
+		ModeEntity defaultModeEntity = new ModeEntity();
+		defaultModeEntity.setId(defaultModeId);
+		homeEntity.setCurrentMode(defaultModeEntity);
+	}
 	
 	@Override
-	public boolean updateHome(int userId, int homeId, Home home){
+	public boolean updateHome(int userId, int homeId, Home home) throws NotFoundException{
 		return updatePartialHome(userId, homeId, home);
 	}
 
 	@Override
-	public boolean updatePartialHome(int userId, int homeId, Home homeToUpdate) {
+	public boolean updatePartialHome(int userId, int homeId, Home homeToUpdate) throws NotFoundException {
 		HomeEntity homeEntity = homeDao.getById(homeId);
+		
+		if( homeEntity == null )
+			throw new NotFoundException(String.format("Home id %d not found", homeId));
+		
+		boolean isHomeStatusChanged = homeToUpdate.isEnabled() != null
+				&& homeToUpdate.isEnabled() != homeEntity.isEnabled();
+		
+		boolean isUpdateSuccessfully = updateHomeToDB(homeToUpdate, homeEntity);
+		
+		if( isUpdateSuccessfully ){
+			if( isHomeStatusChanged ){
+				if( homeToUpdate.isEnabled() )
+					scenarioService.updateAllScenarioStatusInHome(homeId, ScenarioStatus.RUNNING);
+				else scenarioService.updateAllScenarioStatusInHome(homeId, ScenarioStatus.STOPPING);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private boolean updateHomeToDB(Home homeToUpdate, HomeEntity homeEntity) {
 		if( homeToUpdate.getAddress() != null )
 			homeEntity.setAddress(homeToUpdate.getAddress());
 		
@@ -111,16 +138,7 @@ public class HomeService implements IHomeService{
 			homeEntity.setCurrentMode(currentMode);
 		}
 		
-		if( homeDao.update(homeEntity) ){
-			if( homeToUpdate.isEnabled() != null
-					&& homeToUpdate.isEnabled() != homeEntity.isEnabled() ){
-				if( homeToUpdate.isEnabled() )
-					scenarioService.updateAllScenarioStatusInHome(homeId, ScenarioStatus.RUNNING);
-				else scenarioService.updateAllScenarioStatusInHome(homeId, ScenarioStatus.STOPPING);
-			}
-			return true;
-		}
-		return false;
+		return homeDao.update(homeEntity);
 	}
 	
 	@Override
