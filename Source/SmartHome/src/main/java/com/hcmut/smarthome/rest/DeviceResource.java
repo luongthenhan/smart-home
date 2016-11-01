@@ -205,13 +205,4 @@ public class DeviceResource {
 		return new ResponseEntity<List<Device>>(
 				deviceService.getAllDevices(homeId), HttpStatus.OK);
 	}
-
-	/**
-	 * For testing purpose
-	 * 
-	 * @return
-	 * @throws ParseException
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
-	 */
 }

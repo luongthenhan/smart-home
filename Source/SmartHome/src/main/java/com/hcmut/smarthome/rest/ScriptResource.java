@@ -105,9 +105,9 @@ public class ScriptResource {
 	public ResponseEntity<ResponeString> updatePartialScript(@PathVariable int modeId, @PathVariable int deviceId, @PathVariable int scriptId, @RequestBody Script script ) {
 		int homeId = homeService.getHomeIdGivenMode(modeId);
 		
-//		if (!authService.isAccessable(homeId)) {
-//			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-//		}
+		if (!authService.isAccessable(homeId)) {
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
+		}
 		
 		try {
 			deviceService.updatePartialScript(homeId, modeId, deviceId, scriptId, script);

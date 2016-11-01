@@ -169,4 +169,7 @@ public class ScenarioRunner {
 		});
 	}
 
+	public boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario){
+		return mapScenarioController.replace(scenarioId, newScenario) != null;
+	}
 }

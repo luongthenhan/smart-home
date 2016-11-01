@@ -5,10 +5,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.ADD_UNSUCCESSFULLY;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.script.ScriptException;
-import javax.transaction.NotSupportedException;
 
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,14 +27,12 @@ import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
-import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.NotFoundException;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @Service
 public class DeviceService implements IDeviceService {
-	private static final String CUSTOM_SCRIPT_TYPE = "Custom";
-	private static final int CUSTOM_SCRIPT_ID = 3;
+	private static final String THE_SCRIPT_TO_ADD_IS_NOT_VALID = "The script to add is not valid";
 
 	// TODO : Update map after add new / update / delete something.
 	// * Handle add new home ?
@@ -175,7 +170,7 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public int addScript(Script script, int deviceId , int modeId, int homeId) throws Exception {
 		
-		Scenario scenario = scriptToScenario(homeId, script);
+		Scenario scenario = scenarioService.scriptToScenario(homeId, script);
 		boolean isValid = scenarioService.isValid(modeId, deviceId, script, scenario);
 		
 		if( isValid ){
@@ -184,7 +179,7 @@ public class DeviceService implements IDeviceService {
 			runScenario(scenarioId, homeId, deviceId, modeId, scenario);
 			return (scenarioId > 0 ? scenarioId : ADD_UNSUCCESSFULLY);
 		}
-		else throw new Exception("The script to add is not valid");
+		else throw new Exception(THE_SCRIPT_TO_ADD_IS_NOT_VALID);
 		
 	}
 	
@@ -202,7 +197,7 @@ public class DeviceService implements IDeviceService {
 		if( currentScriptEntity == null )
 			throw new NotFoundException(String.format("Script id %d not found", scriptId ));
 		
-		Scenario updatedScenario = scriptToScenario(homeId, scriptToUpdate);
+		Scenario updatedScenario = scenarioService.scriptToScenario(homeId, scriptToUpdate);
 		
 		boolean isValid = scenarioService.isValid(modeId, deviceId, scriptToUpdate, updatedScenario);
 		if( isValid ){
@@ -211,12 +206,10 @@ public class DeviceService implements IDeviceService {
 			
 			boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,currentScriptEntity);
 			if( isUpdateSuccessfully ){
-				if( isScriptContentChanged ){
-					scenarioService.updateScenarioStatus(scriptId, ScenarioStatus.STOP_FOREVER);
-					runScenario(scriptId, homeId, deviceId, modeId, updatedScenario);
-				}
+				if( isScriptContentChanged )
+					scenarioService.replaceOldScenarioWithNewOne(scriptId, updatedScenario);
 				else if ( isScriptStatusChanged )
-					scenarioService.updateScenarioStatus(scriptId, ScenarioStatus.STOPPING);
+					scenarioService.updateScenarioStatus(scriptId, scriptToUpdate.isEnabled()? ScenarioStatus.RUNNING: ScenarioStatus.STOPPING);
 				return true;
 			}
 		}
@@ -265,30 +258,6 @@ public class DeviceService implements IDeviceService {
 			return true;
 		}
 		return false;
-	}
-	
-	/**
-	 * Convert script to scenario <br/>
-	 * If script is custom type , need to use ScriptBuilder.parse first
-	 * @param script
-	 * @return
-	 * @throws ParseException
-	 * @throws ScriptException
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
-	 */
-	private Scenario scriptToScenario(int homeId, Script script) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException{
-		Scenario scenario = null;
-		if( script.getContent() != null ){
-			String jsonScript = script.getContent();
-			if( script.getType() != null 
-					&& ( CUSTOM_SCRIPT_TYPE.equals(script.getType().getName()) 
-						|| CUSTOM_SCRIPT_ID == script.getType().getId()	)){
-				jsonScript = ScriptBuilder.parseFromCodeAsString(script.getContent(), homeId);
-			}
-			scenario = scenarioService.JSONToScenario(jsonScript);
-		}
-		return scenario;
 	}
 	
 	private void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario){

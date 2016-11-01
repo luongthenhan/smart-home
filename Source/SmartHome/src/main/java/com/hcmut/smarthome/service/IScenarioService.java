@@ -1,5 +1,6 @@
 package com.hcmut.smarthome.service;
 
+import javax.script.ScriptException;
 import javax.transaction.NotSupportedException;
 
 import org.json.simple.parser.ParseException;
@@ -53,4 +54,18 @@ public interface IScenarioService {
 	void updateAllScenarioStatusInDevice(int deviceId, ScenarioStatus status);
 
 	void updateAllScenarioStatusInMode(int modeId, ScenarioStatus status);
+	
+	/**
+	 * Convert script to scenario <br/>
+	 * If script is custom type , need to use ScriptBuilder.parse first
+	 * @param script
+	 * @return
+	 * @throws ParseException
+	 * @throws ScriptException
+	 * @throws ConflictConditionException 
+	 * @throws NotSupportedException 
+	 */
+	Scenario scriptToScenario(int homeId, Script script) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException;
+	
+	boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario);
 }

@@ -1,7 +1,6 @@
 package com.hcmut.smarthome.rest;
 
 import static com.hcmut.smarthome.utils.ConstantUtil.ALL_GPIO;
-import static com.hcmut.smarthome.utils.ConstantUtil.VALID_USER_ID;
 
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class HomeResource {
 			return new ResponseEntity<Home>(HttpStatus.UNAUTHORIZED);
 		}
 
-		Home home = homeService.getHome(/*authService.getCurrentUserId()*/VALID_USER_ID, homeId);
+		Home home = homeService.getHome(authService.getCurrentUserId(), homeId);
 		if (home != null) {
 			return new ResponseEntity<Home>(home, HttpStatus.OK);
 		} else {
@@ -55,7 +54,7 @@ public class HomeResource {
 			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 		}
 
-		if (homeService.deleteHome(VALID_USER_ID/*authService.getCurrentUserId()*/, homeId)) {
+		if (homeService.deleteHome(authService.getCurrentUserId(), homeId)) {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		} else {
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
@@ -71,7 +70,7 @@ public class HomeResource {
 		}
 
 		try {
-			if (homeService.updatePartialHome(VALID_USER_ID/*authService.getCurrentUserId()*/,
+			if (homeService.updatePartialHome(authService.getCurrentUserId(),
 					homeId, home))
 				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 			else
@@ -90,7 +89,7 @@ public class HomeResource {
 		}
 
 		try {
-			if (homeService.updateHome(/*authService.getCurrentUserId()*/VALID_USER_ID, homeId, home))
+			if (homeService.updateHome(authService.getCurrentUserId(), homeId, home))
 				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 			else
 				return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
@@ -102,7 +101,7 @@ public class HomeResource {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<ResponeString> addHome(@RequestBody Home home) {
 
-		int addedHomeId = homeService.addHome(/*authService.getCurrentUserId()*/VALID_USER_ID,
+		int addedHomeId = homeService.addHome(authService.getCurrentUserId(),
 				home);
 		if (addedHomeId > 0) {
 			String URINewAddedObject = String.format("homes/%s", addedHomeId);
@@ -115,7 +114,7 @@ public class HomeResource {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Home>> getHomes() {
-		List<Home> homes = homeService.getAllHomes(/*authService.getCurrentUserId()*/VALID_USER_ID);
+		List<Home> homes = homeService.getAllHomes(authService.getCurrentUserId());
 		if( homes != null  )
 			return new ResponseEntity<List<Home>>(homes,HttpStatus.OK);
 		else return new ResponseEntity<List<Home>>(HttpStatus.NOT_FOUND);
