@@ -92,3 +92,23 @@ form {
 .script-condition-modify-input-number {
     width: 45px;
 }
+
+.center {
+    text-align: center;
+}
+
+.margin-auto {
+    margin: auto;
+}
+
+.fs14 {
+    font-size: 14px;
+}
+
+.red {
+    color: #ff0000;
+}
+
+.margin-bottom-15 {
+    margin-bottom: 15px;
+}

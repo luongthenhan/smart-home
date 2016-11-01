@@ -3,7 +3,7 @@ app.controller('LoginController', ['MainService', '$location', function(MainServ
 
     self.username = "";
     self.password = "";
-    self.hostDomain = "";
+    self.hostDomain = "https://localhost:8443/smarthome/api/";
 
     self.login = function() {
         MainService.hostDomain = self.hostDomain;
@@ -13,5 +13,9 @@ app.controller('LoginController', ['MainService', '$location', function(MainServ
 
     self.redirectToHome = function() {
         $location.path("/home");
+    }
+
+    self.register = function() {
+        $location.path("/register");
     }
 }])

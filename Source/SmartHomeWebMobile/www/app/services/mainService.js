@@ -1,4 +1,4 @@
-app.service('MainService', function($http) {
+app.service('MainService', function($http, $location) {
 
     var self = this;
 
@@ -428,5 +428,29 @@ app.service('MainService', function($http) {
             }
         })
         return true;
+    }
+
+    self.register = function (controller) {
+        var user = {"usrName" : controller.username, "password" : controller.password,
+            "name" : controller.fullname, "email" : controller.email};
+
+        var ERROR_WHEN_ADD_USER = -1;
+        var USERNAME_ALREADY_EXISTS = -2;
+        var EMAIL_ALREADY_EXISTS = -3;
+        var returnCode = 0;
+        $http.post(self.hostDomain + "users/signup", user)
+            .success(function (data, status, headers, config) {
+                $location.path("/register_success");
+            })
+            .error(function (data, status, header, config) {
+                returnCode = data.returnCode;
+                if (returnCode == EMAIL_ALREADY_EXISTS) {
+                    controller.emailExists = true;
+                }
+                else if (returnCode == USERNAME_ALREADY_EXISTS) {
+                    controller.usernameExists = true;
+                }
+            });
+
     }
 })

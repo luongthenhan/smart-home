@@ -93,8 +93,8 @@ public class ConstantUtil {
 	
 	// sign up
 	public static int ERROR_WHEN_ADD_USER = -1;
-	public static int USERNAME_ALREADY_EXISTED = -2;
-	public static int EMAIL_ALREADY_EXISTED = -3;
+	public static int USERNAME_ALREADY_EXISTS = -2;
+	public static int EMAIL_ALREADY_EXISTS = -3;
 	
 	// not login request
 	public static List<String> NO_LOGIN_REQUESTS = Arrays.asList("signup", "activation");

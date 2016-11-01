@@ -1,4 +1,4 @@
-var app = angular.module('app', ["ngRoute"]);
+var app = angular.module('app', ["ngRoute", "ngMessages"]);
 
 app.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
@@ -16,6 +16,12 @@ app.config(['$routeProvider', function ($routeProvider) {
         })
         .when('/device_list', {
             templateUrl: 'app/components/device_list/deviceListView.html',
+        })
+        .when('/register', {
+            templateUrl: 'app/components/register/register.html',
+        })
+        .when('/register_success', {
+            templateUrl: 'app/components/register_success/register_success.html',
         })
         .otherwise({
             redirectTo: "/login"
