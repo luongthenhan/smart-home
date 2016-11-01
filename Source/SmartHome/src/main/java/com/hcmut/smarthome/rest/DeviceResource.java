@@ -1,12 +1,9 @@
 package com.hcmut.smarthome.rest;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
-
 import java.util.List;
 
 import javax.transaction.NotSupportedException;
 
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.DeviceType;
 import com.hcmut.smarthome.model.ResponeString;
-import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IDeviceTypeService;
 import com.hcmut.smarthome.service.IScenarioService;
-import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.ConstantUtil;
 import com.hcmut.smarthome.utils.NotFoundException;
-import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @CrossOrigin
 @RestController
@@ -220,65 +214,4 @@ public class DeviceResource {
 	 * @throws ConflictConditionException 
 	 * @throws NotSupportedException 
 	 */
-	@RequestMapping(method = RequestMethod.GET, path = "/test1")
-	public ResponseEntity<Void> test(@PathVariable int homeId) throws ParseException, NotSupportedException, ConflictConditionException {
-		
-		if(!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-		}
-		
-		String script3 = "[['If',['4','=', 'true'],[['TurnOnLight','2']]]]";
-		Scenario scenario = scenarioService.JSONToScenario(script3);
-		scenario.setId(1);
-		scenarioService.runScenario(scenario);
-		return null;
-	}
-
-	@RequestMapping(method = RequestMethod.GET, path = "/test2")
-	public ResponseEntity<Void> test2(@PathVariable int homeId) throws ParseException, NotSupportedException, ConflictConditionException {
-		
-		if(!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
-		}
-		
-		String script1 = "[['If',['5','>=', '31.0'],[['TurnOn','2']]]]";
-		Scenario scenario = scenarioService.JSONToScenario(script1);
-		scenario.setId(2);
-		scenario.setHomeId(ConstantUtil.HOME_ID);
-		scenarioService.runScenario(scenario);
-		return null;
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, path = "/test3")
-	public ResponseEntity<Void> test3(@PathVariable int homeId) throws ParseException, NotSupportedException, ConflictConditionException {
-		
-		String input = new ScriptBuilder()
-		.begin()
-			.FromTo("00:00", "01:40")
-				.action(TURN_ON, 2)
-			.endFromTo()
-		.end().build();
-		
-		Scenario scenario = scenarioService.JSONToScenario(input);
-		scenario.setId(1);
-		scenario.setHomeId(1);
-		scenario.setDeviceId(2);System.out.println("Create " + scenario);
-		scenarioService.runScenario(scenario);
-		
-		String input1 = new ScriptBuilder()
-		.begin()
-			.FromTo("00:00", "01:40")
-				.action(TURN_ON, 4)
-			.endFromTo()
-		.end().build();
-		
-		Scenario scenario1 = scenarioService.JSONToScenario(input1);
-		scenario1.setId(2);
-		scenario1.setHomeId(1);
-		scenario1.setDeviceId(4);System.out.println("Create " + scenario1);
-		scenarioService.runScenario(scenario1);
-		
-		return null;
-	}
-
 }

@@ -1,9 +1,6 @@
 package com.hcmut.smarthome.utils.test;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.time.LocalTime;
-import java.util.Stack;
 
 import org.junit.Test;
 

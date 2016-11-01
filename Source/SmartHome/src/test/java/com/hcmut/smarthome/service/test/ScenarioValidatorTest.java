@@ -59,12 +59,10 @@ public class ScenarioValidatorTest {
 	 * Input is more simpler than existing one 
 	 * 
 	 * -> INVALID
-	 * @throws ParseException
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase10_ManyExistingScripts() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase10_ManyExistingScripts() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5,GREATER_OR_EQUAL,35.5f)
@@ -121,12 +119,10 @@ public class ScenarioValidatorTest {
 	 * Input is more complex than existing one
 	 * 
 	 * -> VALID
-	 * @throws ParseException
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase11() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase11() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -158,12 +154,10 @@ public class ScenarioValidatorTest {
 	 * Input has conflicted conditions itself ( float value )
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase3() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase3() throws Exception{
 		expectedException.expect(ConflictConditionException.class);
 		
 		String input = new ScriptBuilder()
@@ -185,12 +179,10 @@ public class ScenarioValidatorTest {
 	 * Input has conflicted conditions itself ( boolean value )
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase3_1() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase3_1() throws Exception{
 		expectedException.expect(ConflictConditionException.class);
 		
 		String input = new ScriptBuilder()
@@ -211,12 +203,10 @@ public class ScenarioValidatorTest {
 	 * Input has conflicted conditions itself ( mixed condition types)
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase3_2() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase3_2() throws Exception{
 		expectedException.expect(ConflictConditionException.class);
 		
 		String input = new ScriptBuilder()
@@ -239,12 +229,10 @@ public class ScenarioValidatorTest {
 	 * Input has conflicted conditions itself ( conflict in Else clause)
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase3_3() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase3_3() throws Exception{
 		expectedException.expect(ConflictConditionException.class);
 		
 		String input = new ScriptBuilder()
@@ -269,12 +257,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase4() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase4() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -305,12 +291,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No ( just use temp sensor in condition )
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase5() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase5() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -341,12 +325,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No ( just use Light Sensor in condition )
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase5_1() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase5_1() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(LSENSOR_4, EQUAL, IS_NIGHT)
@@ -377,12 +359,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No ( just use Temp sensor )
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -413,12 +393,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No ( just use Temp sensor in Condition )
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6_3() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6_3() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, EQUAL, 35.5f)
@@ -447,12 +425,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No ( just use Temp sensor in Condition )
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6_4() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6_4() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, EQUAL, 35.5f)
@@ -484,12 +460,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No ( just use Temp sensor in Condition )
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6_8() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6_8() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, LESS_THAN, 35.5f)
@@ -520,12 +494,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No ( just use Temp sensor in Condition )
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6_9() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6_9() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, LESS_THAN, 35.5f)
@@ -554,12 +526,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No ( just use Light Sensor in Condition )
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6_1() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6_1() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -590,12 +560,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No ( just use Light Sensor in Condition )
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6_2() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6_2() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -628,12 +596,10 @@ public class ScenarioValidatorTest {
 	 * Different devs Yes ( just use Light Sensor in Condition )
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6_7() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6_7() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -667,12 +633,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6_5() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6_5() throws Exception{
 		expectedException.expect(ConflictConditionException.class);
 		expectedException.expectMessage(BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION);
 		
@@ -706,12 +670,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase6_6() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase6_6() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -741,13 +703,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase7() throws ParseException, NotSupportedException, ConflictConditionException{
-		
+	public void testCase7() throws Exception{
 		
 		String input = new ScriptBuilder()
 		.begin()
@@ -778,12 +737,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No
 	 * 
 	 * -> INVALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase7_1() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase7_1() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.action(TURN_OFF, LIGHT_3)
@@ -810,13 +767,10 @@ public class ScenarioValidatorTest {
 	 * Different devs No
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase7_2() throws ParseException, NotSupportedException, ConflictConditionException{
-		
+	public void testCase7_2() throws Exception{
 		
 		String input = new ScriptBuilder()
 		.begin()
@@ -854,12 +808,10 @@ public class ScenarioValidatorTest {
 	 * Different devs Yes ( in Condition )
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase8() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase8() throws Exception{
 		String input = ScriptBuilderTemplate.blockIfOneAction(TSENSOR_5, GREATER_OR_EQUAL, 30, TURN_ON, LIGHT_2);
 		
 		List<String> existedScritps = new ArrayList<>();
@@ -876,12 +828,10 @@ public class ScenarioValidatorTest {
 	 * Different devs Yes ( in Action )
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase8_1() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase8_1() throws Exception{
 		String input = ScriptBuilderTemplate.blockIfOneAction(TSENSOR_5, GREATER_OR_EQUAL, 30, TURN_ON, LIGHT_2);
 		
 		List<String> existedScritps = new ArrayList<>();
@@ -898,12 +848,10 @@ public class ScenarioValidatorTest {
 	 * Different devs Yes
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase9() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase9() throws Exception{
 		String input = ScriptBuilderTemplate.blockIfOneAction(TSENSOR_5, GREATER_OR_EQUAL, 30, TURN_ON, LIGHT_2);
 		
 		List<String> existedScritps = new ArrayList<>();
@@ -920,12 +868,10 @@ public class ScenarioValidatorTest {
 	 * Different devs Yes ( in Action )
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase1() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase1() throws Exception{
 		String input = ScriptBuilderTemplate.blockIfOneAction(TSENSOR_5, LESS_THAN, 30, TURN_ON, LIGHT_2);
 		
 		List<String> existedScritps = new ArrayList<>();
@@ -937,7 +883,7 @@ public class ScenarioValidatorTest {
 	}
 	
 	@Test
-	public void testCase12() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase12() throws Exception{
 		String input = ScriptBuilderTemplate.blockIfOneAction(TSENSOR_5, LESS_THAN, 30, TURN_ON, LIGHT_2);
 		
 		List<String> existedScritps = new ArrayList<>();
@@ -955,12 +901,10 @@ public class ScenarioValidatorTest {
 	
 	/**
 	 * VALID
-	 * @throws ParseException
-	 * @throws NotSupportedException
-	 * @throws ConflictConditionException
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase12_3() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase12_3() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -984,7 +928,7 @@ public class ScenarioValidatorTest {
 	}
 	
 	@Test
-	public void testCase12_1() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase12_1() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -1007,7 +951,7 @@ public class ScenarioValidatorTest {
 	}
 	
 	@Test
-	public void testCase12_2() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase12_2() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -1031,12 +975,10 @@ public class ScenarioValidatorTest {
 	/**
 	 * From To always converse with other conditions type , such as : If
 	 * -> INVALID
-	 * @throws ParseException
-	 * @throws NotSupportedException
-	 * @throws ConflictConditionException
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase13() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase13() throws Exception{
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -1058,12 +1000,10 @@ public class ScenarioValidatorTest {
 	 * Different devs Yes ( in Condition )
 	 * 
 	 * -> VALID
-	 * @throws ParseException 
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCase1_1() throws ParseException, NotSupportedException, ConflictConditionException{
+	public void testCase1_1() throws Exception{
 		String input = ScriptBuilderTemplate.blockIfOneAction(TSENSOR_6, LESS_THAN, 30, TURN_ON, LIGHT_3);
 		
 		List<String> existedScritps = new ArrayList<>();

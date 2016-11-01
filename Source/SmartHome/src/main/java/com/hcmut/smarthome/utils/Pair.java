@@ -22,6 +22,11 @@ public class Pair<U,V> {
 	public void setSecond(V second) {
 		this.second = second;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("[%s, %s]", this.getFirst().toString(), this.getSecond().toString());
+	}
 	
 	
 }

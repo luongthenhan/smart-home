@@ -71,8 +71,6 @@ public class ScenarioCreator {
 	@Autowired
 	private IDeviceService deviceService;
 	
-	// TODO: Change parameter from String to Script ( for assigning id to
-		// scenario after return)
 	@SuppressWarnings("unchecked")
 	public Scenario from(String script) throws ParseException, NotSupportedException, ConflictConditionException{
 		// Must do that because library can't parse the string with single quote
@@ -105,6 +103,7 @@ public class ScenarioCreator {
 		switch (blockName) {
 
 		// CONTROL BLOCK
+		// TODO: Do we need to check from value and to value ???
 		case CONTROL_BLOCK_FROM_TO:
 			ControlBlockFromTo conFromTo = new ControlBlockFromTo();
 			LocalTime t1,t2;
@@ -137,7 +136,6 @@ public class ScenarioCreator {
 			break;
 
 		// deviceName = object.get(1).toString()
-		// TODO: Now hard code homeId
 		case TURN_ON:
 			Supplier<Void> turnOn = () -> {
 				try {
@@ -282,14 +280,9 @@ public class ScenarioCreator {
 	 */
 	private IBlock setupCondition(JSONArray object) throws NotFoundException {
 		IBlock block = null;
-		// TODO : UNcomment here , ensure device not null when pass to
-		// deviceController
 		int deviceId = Integer.valueOf(object.get(0).toString());
 		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
 		String deviceTypeName = device.getDeviceType().getName();
-		
-//		Device device = null;
-//		String deviceTypeName = object.get(0).toString();
 		
 		Supplier<Object> LHSExpression = () -> null;
 
@@ -447,12 +440,9 @@ public class ScenarioCreator {
 
 	private ControlBlockIfElse setupControlBlockIfElse(JSONArray object) {
 		ControlBlockIfElse controlBlockIfElse = new ControlBlockIfElse();
-		controlBlockIfElse
-				.setCondition((Condition) createBlock((JSONArray) object.get(1)));
-		controlBlockIfElse.setAction((Action) createBlock((JSONArray) object
-				.get(2)));
-		controlBlockIfElse
-				.setElseAction((Action) createBlock((JSONArray) object.get(3)));
+		controlBlockIfElse.setCondition((Condition) createBlock((JSONArray) object.get(1)));
+		controlBlockIfElse.setAction((Action) createBlock((JSONArray) object.get(2)));
+		controlBlockIfElse.setElseAction((Action) createBlock((JSONArray) object.get(3)));
 		return controlBlockIfElse;
 	}
 
