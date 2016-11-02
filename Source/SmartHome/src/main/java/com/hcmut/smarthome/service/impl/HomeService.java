@@ -104,18 +104,40 @@ public class HomeService implements IHomeService{
 		
 		boolean isHomeStatusChanged = homeToUpdate.isEnabled() != null
 				&& homeToUpdate.isEnabled() != homeEntity.isEnabled();
+		boolean isCurrentModeChanged = homeToUpdate.getCurrentMode() != null
+				&& homeEntity.getCurrentMode() != null
+				&& homeToUpdate.getCurrentMode().getId() != homeEntity.getCurrentMode().getId();
 		
 		boolean isUpdateSuccessfully = updateHomeToDB(homeToUpdate, homeEntity);
 		
 		if( isUpdateSuccessfully ){
-			if( isHomeStatusChanged ){
-				if( homeToUpdate.isEnabled() )
-					scenarioService.updateAllScenarioStatusInHome(homeId, ScenarioStatus.RUNNING);
-				else scenarioService.updateAllScenarioStatusInHome(homeId, ScenarioStatus.STOPPING);
-			}
+			updateScenarioStatusIfHomeStatusChanged(homeId, homeToUpdate,
+					isHomeStatusChanged);
+			updateScenarioStatusIfCurrentModeChanged(homeToUpdate, homeEntity,
+					isCurrentModeChanged);
+				
 			return true;
 		}
 		return false;
+	}
+
+	private void updateScenarioStatusIfCurrentModeChanged(Home homeToUpdate,
+			HomeEntity homeEntity, boolean isCurrentModeChanged) {
+		if( isCurrentModeChanged ){
+			int oldModeId = homeEntity.getCurrentMode().getId();
+			int currModeId = homeToUpdate.getCurrentMode().getId();
+			scenarioService.updateAllScenarioStatusOfMode(oldModeId, ScenarioStatus.STOPPING);
+			scenarioService.updateAllScenarioStatusOfMode(currModeId, ScenarioStatus.RUNNING);
+		}
+	}
+
+	private void updateScenarioStatusIfHomeStatusChanged(int homeId,
+			Home homeToUpdate, boolean isHomeStatusChanged) {
+		if( isHomeStatusChanged ){
+			if( homeToUpdate.isEnabled() )
+				scenarioService.updateAllScenarioStatusOfHome(homeId, ScenarioStatus.RUNNING);
+			else scenarioService.updateAllScenarioStatusOfHome(homeId, ScenarioStatus.STOPPING);
+		}
 	}
 
 	private boolean updateHomeToDB(Home homeToUpdate, HomeEntity homeEntity) {
@@ -145,7 +167,7 @@ public class HomeService implements IHomeService{
 	public boolean deleteHome(int userId, int homeId){
 		boolean isDeletedSuccessfully = homeDao.deleteHome(userId, homeId);
 		if( isDeletedSuccessfully ){
-			scenarioService.updateAllScenarioStatusInHome(homeId,ScenarioStatus.STOP_FOREVER);
+			scenarioService.updateAllScenarioStatusOfHome(homeId,ScenarioStatus.STOP_FOREVER);
 			return true;
 		}
 		return false;
@@ -178,7 +200,7 @@ public class HomeService implements IHomeService{
 		HomeEntity home = homeDao.getById(homeId);
 		if( home.getCurrentMode() != null && home.getCurrentMode().getId() != modeId ){
 			if( modeDao.deleteMode(homeId, modeId) ){
-				scenarioService.updateAllScenarioStatusInMode(modeId,ScenarioStatus.STOP_FOREVER);
+				scenarioService.updateAllScenarioStatusOfMode(modeId,ScenarioStatus.STOP_FOREVER);
 				return true;
 			}
 		}

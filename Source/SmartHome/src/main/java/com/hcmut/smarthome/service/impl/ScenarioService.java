@@ -110,18 +110,18 @@ public class ScenarioService implements IScenarioService {
 	}
 	
 	@Override
-	public void updateAllScenarioStatusInHome(int homeId, ScenarioStatus status){
-		scenarioRunner.updateAllScenarioStatusInHome(homeId, status);
+	public void updateAllScenarioStatusOfHome(int homeId, ScenarioStatus status){
+		scenarioRunner.updateAllScenarioStatusOfHome(homeId, status);
 	}
 
 	@Override
-	public void updateAllScenarioStatusInDevice(int deviceId, ScenarioStatus status){
-		scenarioRunner.updateAllScenarioStatusInDevice(deviceId, status);
+	public void updateAllScenarioStatusOfDevice(int deviceId, ScenarioStatus status){
+		scenarioRunner.updateAllScenarioStatusOfDevice(deviceId, status);
 	}
 
 	@Override
-	public void updateAllScenarioStatusInMode(int modeId, ScenarioStatus status){
-		scenarioRunner.updateAllScenarioStatusInMode(modeId, status);
+	public void updateAllScenarioStatusOfMode(int modeId, ScenarioStatus status){
+		scenarioRunner.updateAllScenarioStatusOfMode(modeId, status);
 	}
 	
 	@Override

@@ -49,11 +49,11 @@ public interface IScenarioService {
 
 	void updateScenarioStatus(int scenarioId, ScenarioStatus status);
 
-	void updateAllScenarioStatusInHome(int homeId, ScenarioStatus status);
+	void updateAllScenarioStatusOfHome(int homeId, ScenarioStatus status);
 
-	void updateAllScenarioStatusInDevice(int deviceId, ScenarioStatus status);
+	void updateAllScenarioStatusOfDevice(int deviceId, ScenarioStatus status);
 
-	void updateAllScenarioStatusInMode(int modeId, ScenarioStatus status);
+	void updateAllScenarioStatusOfMode(int modeId, ScenarioStatus status);
 	
 	/**
 	 * Convert script to scenario <br/>

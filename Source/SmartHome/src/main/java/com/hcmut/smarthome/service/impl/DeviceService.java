@@ -34,10 +34,6 @@ import com.hcmut.smarthome.utils.ScriptBuilder;
 public class DeviceService implements IDeviceService {
 	private static final String THE_SCRIPT_TO_ADD_IS_NOT_VALID = "The script to add is not valid";
 
-	// TODO : Update map after add new / update / delete something.
-	// * Handle add new home ?
-	//private HashMap<Integer,List<Device>> mapHomeDevices = new HashMap<>();
-	
 	@Autowired
 	private IScenarioService scenarioService;
 	
@@ -55,7 +51,6 @@ public class DeviceService implements IDeviceService {
 	
 	@PostConstruct
 	private void init(){
-		//mapHomeDevices.put(HOME_ID, getAllDevices(HOME_ID));
 		ScriptBuilder.setDeviceService(this);
 	}
 	
@@ -67,8 +62,6 @@ public class DeviceService implements IDeviceService {
 
 		int deviceId = deviceDao.save(deviceEntity).intValue();
 		if( deviceId > 0 ){
-//			deviceEntity = deviceDao.getById(deviceId);
-//			updateMapHomeDevices(homeId, deviceId, deviceEntity);
 			return deviceId;
 		}
 		return ADD_UNSUCCESSFULLY;
@@ -94,22 +87,26 @@ public class DeviceService implements IDeviceService {
 		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
 		
 		if( deviceDao.update(deviceEntity) ){
-			//updateMapHomeDevices(homeId, deviceId, deviceEntity);
-			if( isDeviceStatusChanged ){
-				if( updatedDevice.isEnabled() )
-					scenarioService.updateAllScenarioStatusInDevice(deviceId, ScenarioStatus.RUNNING);
-				else scenarioService.updateAllScenarioStatusInDevice(deviceId, ScenarioStatus.STOPPING);
-			}
+			updateScenarioStatusIfDeviceStatusChanged(deviceId, updatedDevice,
+					isDeviceStatusChanged);
 			return true;
 		}
 		return false;
+	}
+
+	private void updateScenarioStatusIfDeviceStatusChanged(int deviceId,
+			Device updatedDevice, boolean isDeviceStatusChanged) {
+		if( isDeviceStatusChanged ){
+			if( updatedDevice.isEnabled() )
+				scenarioService.updateAllScenarioStatusOfDevice(deviceId, ScenarioStatus.RUNNING);
+			else scenarioService.updateAllScenarioStatusOfDevice(deviceId, ScenarioStatus.STOPPING);
+		}
 	}
 	
 	@Override
 	public boolean deleteDevice(int homeId, int deviceId) throws NotFoundException {
 		if( deviceDao.delete(deviceId) ){
-			scenarioService.updateAllScenarioStatusInDevice(deviceId, ScenarioStatus.STOP_FOREVER);
-			//updateMapHomeDevices(homeId, deviceId, null);
+			scenarioService.updateAllScenarioStatusOfDevice(deviceId, ScenarioStatus.STOP_FOREVER);
 			return true;
 		}
 		throw new NotFoundException("Can't find device with id " + deviceId);
@@ -118,31 +115,17 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public List<Device> getAllGivenHomeAndDeviceType(int homeId, int deviceTypeId){
 		return DeviceConverter.toListModel(deviceDao.getAllGivenHomeAndDeviceType(homeId, deviceTypeId));
-//		if( !mapHomeDevices.containsKey(homeId) ){
-//			List<DeviceEntity> deviceEntities = deviceDao.getAll(homeId);
-//			mapHomeDevices.put(homeId, DeviceConverter.toListModel(deviceEntities));
-//		}
-//		return mapHomeDevices.get(homeId).stream().filter(d->d.getDeviceType().getId() == deviceTypeId).collect(Collectors.toList()) ;
 	}
 
 	@Override
 	public List<Device> getAllDevices(int homeId) {
 		return DeviceConverter.toListModel(deviceDao.getAll(homeId));
-//		if( !mapHomeDevices.containsKey(homeId) ){
-//			List<DeviceEntity> deviceEntities = deviceDao.getAll(homeId);
-//			mapHomeDevices.put(homeId, DeviceConverter.toListModel(deviceEntities));
-//		}
-//		return mapHomeDevices.get(homeId);
 	}
 	
 	
 	@Override
 	public Device getDevice(int homeId, int deviceId) {
 		return DeviceConverter.toModel(deviceDao.getById(deviceId));
-//		if( mapHomeDevices.containsKey(homeId) ){
-//			return mapHomeDevices.get(homeId).stream().filter(t -> t.getId() == deviceId).findFirst().orElse(null);
-//		}
-//		return null;
 	}
 	
 	@Override
@@ -156,12 +139,6 @@ public class DeviceService implements IDeviceService {
 		if (scriptDao.deleteScript(scriptId)) {
 			scenarioService.updateScenarioStatus(scriptId,ScenarioStatus.STOP_FOREVER);
 			
-//			int homeId = homeDao.getHomeIdGivenDevice(deviceId);
-//			
-//			if( mapHomeDevices.containsKey(homeId) ){
-//				List<Device> devices = mapHomeDevices.get(homeId);
-//				devices.removeIf(d -> d.getScripts().stream().filter(s -> s.getId() == scriptId).findFirst().orElse(null) != null);
-//			}
 			return true;
 		}
 		throw new NotFoundException("Can't find script with id " + scriptId);
@@ -200,25 +177,31 @@ public class DeviceService implements IDeviceService {
 		Scenario updatedScenario = scenarioService.scriptToScenario(homeId, scriptToUpdate);
 		
 		boolean isValid = scenarioService.isValid(modeId, deviceId, scriptToUpdate, updatedScenario);
-		if( isValid ){
-			boolean isScriptContentChanged = isScriptContentChanged(scriptToUpdate, currentScriptEntity);
-			boolean isScriptStatusChanged = isScriptStatusChanged(scriptToUpdate, currentScriptEntity);
-			
-			boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,currentScriptEntity);
-			if( isUpdateSuccessfully ){
-				if( isScriptContentChanged )
-					scenarioService.replaceOldScenarioWithNewOne(scriptId, updatedScenario);
-				else if ( isScriptStatusChanged )
-					scenarioService.updateScenarioStatus(scriptId, scriptToUpdate.isEnabled()? ScenarioStatus.RUNNING: ScenarioStatus.STOPPING);
-				return true;
-			}
-		}
-		else throw new Exception(String.format("Updated script id %d is not valid", scriptId));	
+		if( isValid )
+			return handleWhenScriptIsValid(scriptId, scriptToUpdate, currentScriptEntity, updatedScenario);
 		
 		// Not found or not valid
 		return false;
 	}
 
+	private boolean handleWhenScriptIsValid(int scriptId, Script scriptToUpdate,
+			ScriptEntity currentScriptEntity, Scenario updatedScenario) {
+		boolean isScriptContentChanged = isScriptContentChanged(scriptToUpdate, currentScriptEntity);
+		boolean isScriptStatusChanged = isScriptStatusChanged(scriptToUpdate, currentScriptEntity);
+		
+		boolean isUpdateSuccessfully = updateScriptToDB(scriptToUpdate,currentScriptEntity);
+		if( isUpdateSuccessfully ){
+			if( isScriptContentChanged )
+				scenarioService.replaceOldScenarioWithNewOne(scriptId, updatedScenario);
+			if ( isScriptStatusChanged )
+				scenarioService.updateScenarioStatus(scriptId, scriptToUpdate.isEnabled()? ScenarioStatus.RUNNING: ScenarioStatus.STOPPING);
+			return true;
+		}
+		return false;
+	}
+
+
+	
 	private boolean isScriptStatusChanged(Script scriptToUpdate, ScriptEntity currentScriptEntity) {
 		if (scriptToUpdate.isEnabled() != null
 				&& !scriptToUpdate.isEnabled().equals(currentScriptEntity.isEnabled()))
@@ -251,10 +234,6 @@ public class DeviceService implements IDeviceService {
 		}
 		
 		if( scriptDao.update(currentScriptEntity) ){
-//			if( mapHomeDevices.containsKey(homeId) ){
-//				List<Device> devices = mapHomeDevices.get(homeId);
-//				devices.removeIf(d -> d.getScripts().stream().filter(s -> s.getId() == scriptId).findFirst().get() != null);
-//			}
 			return true;
 		}
 		return false;
@@ -359,12 +338,4 @@ public class DeviceService implements IDeviceService {
 	private boolean isDeviceNameExisted(int homeId, String deviceName){
 		return deviceDao.isDeviceNameExisted(homeId, deviceName);
 	}
-//	private void updateMapHomeDevices(int homeId, int deviceId, DeviceEntity device){
-//		if( mapHomeDevices.containsKey(homeId) ){
-//			List<Device> devices = mapHomeDevices.get(homeId);
-//			devices.removeIf(d -> d.getId() == deviceId);
-//			if( device != null )
-//				devices.add(DeviceConverter.toModel(device));
-//		}
-//	}
 }

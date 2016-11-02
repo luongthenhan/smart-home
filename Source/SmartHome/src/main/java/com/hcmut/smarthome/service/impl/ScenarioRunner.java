@@ -148,21 +148,21 @@ public class ScenarioRunner {
 			mapScenarioController.get(scenarioId).setStatus(status);
 	}
 	
-	public void updateAllScenarioStatusInHome(int homeId, ScenarioStatus status){
+	public void updateAllScenarioStatusOfHome(int homeId, ScenarioStatus status){
 		mapScenarioController.forEach((key,scenario) -> {
 			if( scenario.getHomeId() == homeId ) 
 				scenario.setStatus(status);
 		});
 	}
 
-	public void updateAllScenarioStatusInDevice(int deviceId, ScenarioStatus status){
+	public void updateAllScenarioStatusOfDevice(int deviceId, ScenarioStatus status){
 		mapScenarioController.forEach((key,scenario) -> {
 			if( scenario.getDeviceId() == deviceId ) 
 				scenario.setStatus(status);
 		});
 	}
 
-	public void updateAllScenarioStatusInMode(int modeId, ScenarioStatus status){
+	public void updateAllScenarioStatusOfMode(int modeId, ScenarioStatus status){
 		mapScenarioController.forEach((key,scenario) -> {
 			if( scenario.getModeId() == modeId ) 
 				scenario.setStatus(status);
