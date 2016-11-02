@@ -3,6 +3,7 @@ package com.hcmut.smarthome.service.impl;
 import static com.hcmut.smarthome.utils.ConstantUtil.CONDITION_CHECKING_PERIOD;
 import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF_ELSE;
 import static com.hcmut.smarthome.utils.ConstantUtil.DEFAULT_ZONE_ID;
+import static com.hcmut.smarthome.utils.ConstantUtil.DELAY;
 
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -24,9 +25,12 @@ import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
+import com.hcmut.smarthome.utils.NotFoundException;
 
 @Service
 public class ScenarioRunner {
+	private static final String NOT_ENOUGH_INFORMATION_OF_SCRIPT_TO_RUN = "Not enough information of script to run";
+
 	private final static Logger LOGGER = Logger.getLogger(ScenarioRunner.class);
 	
 	private Map<Integer, Scenario> mapScenarioController = new HashMap<>();
@@ -37,16 +41,17 @@ public class ScenarioRunner {
 	@Autowired
 	private IDeviceService deviceService;
 	
-	public void runScenario( Scenario scenario) {
+	public void runScenario( Scenario scenario) throws Exception {
 		if (scenario == null || scenario.getId() == null 
 				|| scenario.getHomeId() <= 0
 				|| scenario.getModeId() <= 0
 				|| scenario.getDeviceId() <= 0)
-			return;
+			throw new Exception(NOT_ENOUGH_INFORMATION_OF_SCRIPT_TO_RUN);
 
 		// Mark scenario as running
 		scenario.setStatus(ScenarioStatus.RUNNING);
 		mapScenarioController.put(scenario.getId(), scenario);
+		LOGGER.debug(String.format("New scenario with id %s is running", scenario.getId() ));
 		
 		scheduleTask(scenario);
 		
@@ -86,6 +91,7 @@ public class ScenarioRunner {
 						break;
 					case STOP_FOREVER:
 						mapScenarioController.remove(scenario.getId());
+						LOGGER.debug("Stop forever scenario " + scenario.getId() );
 						this.cancel(); 
 						break;
 					default:
@@ -95,7 +101,7 @@ public class ScenarioRunner {
 			
 			private boolean canScenarioRunInCurrentMode(Scenario scenario){
 				if( homeService.getCurrentModeIdGivenHome(scenario.getHomeId()) != scenario.getModeId() ){
-					System.out.println(String.format("The script %s didn't run in current mode %s", scenario.getId(), scenario.getModeId()));
+					LOGGER.debug(String.format("The script %s can only run in mode %s", scenario.getId(), scenario.getModeId()));
 					return false;
 				}
 				return true;
@@ -169,7 +175,21 @@ public class ScenarioRunner {
 		});
 	}
 
-	public boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario){
-		return mapScenarioController.replace(scenarioId, newScenario) != null;
+	public boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario) throws Exception{
+		Scenario oldScenario = mapScenarioController.get(scenarioId);
+		if( oldScenario == null )
+			throw new NotFoundException(String.format("Found no script with id %s to update", scenarioId));
+		
+		newScenario.setId(oldScenario.getId());
+		newScenario.setHomeId(oldScenario.getHomeId());
+		newScenario.setDeviceId(oldScenario.getDeviceId());
+		newScenario.setModeId(oldScenario.getModeId());
+		newScenario.setTimeout(oldScenario.getTimeout());
+		
+		updateScenarioStatus(scenarioId, ScenarioStatus.STOP_FOREVER);
+		// TODO: So far, we may put scenario.getTimeout() here
+		Thread.sleep(CONDITION_CHECKING_PERIOD + DELAY);
+		runScenario(newScenario);
+		return true;
 	}
 }

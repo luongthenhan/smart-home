@@ -32,7 +32,6 @@ import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @Service
 public class DeviceService implements IDeviceService {
-	private static final String THE_SCRIPT_TO_ADD_IS_NOT_VALID = "The script to add is not valid";
 
 	@Autowired
 	private IScenarioService scenarioService;
@@ -145,7 +144,7 @@ public class DeviceService implements IDeviceService {
 	}
 
 	@Override
-	public int addScript(Script script, int deviceId , int modeId, int homeId) throws Exception {
+	public int addScript(Script script, int deviceId , int modeId, int homeId) throws Exception  {
 		
 		Scenario scenario = scenarioService.scriptToScenario(homeId, script);
 		boolean isValid = scenarioService.isValid(modeId, deviceId, script, scenario);
@@ -156,8 +155,8 @@ public class DeviceService implements IDeviceService {
 			runScenario(scenarioId, homeId, deviceId, modeId, scenario);
 			return (scenarioId > 0 ? scenarioId : ADD_UNSUCCESSFULLY);
 		}
-		else throw new Exception(THE_SCRIPT_TO_ADD_IS_NOT_VALID);
 		
+		return ADD_UNSUCCESSFULLY;
 	}
 	
 	// TODO: Now update a script involved so many queries -> need to improve performance
@@ -185,7 +184,7 @@ public class DeviceService implements IDeviceService {
 	}
 
 	private boolean handleWhenScriptIsValid(int scriptId, Script scriptToUpdate,
-			ScriptEntity currentScriptEntity, Scenario updatedScenario) {
+			ScriptEntity currentScriptEntity, Scenario updatedScenario) throws Exception {
 		boolean isScriptContentChanged = isScriptContentChanged(scriptToUpdate, currentScriptEntity);
 		boolean isScriptStatusChanged = isScriptStatusChanged(scriptToUpdate, currentScriptEntity);
 		
@@ -239,7 +238,7 @@ public class DeviceService implements IDeviceService {
 		return false;
 	}
 	
-	private void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario){
+	private void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario) throws Exception{
 		if( scenarioId > 0 ){
 			scenario.setId(scenarioId);
 			scenario.setHomeId(homeId);

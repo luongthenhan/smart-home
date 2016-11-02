@@ -40,7 +40,6 @@ public class GeneralControllerImpl implements IGeneralController {
 
 	@Override
 	public void turnOn(Device deviceBase) throws Exception {
-
 		String deviceType = deviceBase.getDeviceType().getName();
 
 		switch (deviceType) {

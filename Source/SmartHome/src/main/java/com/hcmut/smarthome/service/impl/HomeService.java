@@ -107,13 +107,14 @@ public class HomeService implements IHomeService{
 		boolean isCurrentModeChanged = homeToUpdate.getCurrentMode() != null
 				&& homeEntity.getCurrentMode() != null
 				&& homeToUpdate.getCurrentMode().getId() != homeEntity.getCurrentMode().getId();
+		int oldModeId = homeEntity.getCurrentMode().getId();
 		
 		boolean isUpdateSuccessfully = updateHomeToDB(homeToUpdate, homeEntity);
 		
 		if( isUpdateSuccessfully ){
 			updateScenarioStatusIfHomeStatusChanged(homeId, homeToUpdate,
 					isHomeStatusChanged);
-			updateScenarioStatusIfCurrentModeChanged(homeToUpdate, homeEntity,
+			updateScenarioStatusIfCurrentModeChanged(oldModeId, homeToUpdate,
 					isCurrentModeChanged);
 				
 			return true;
@@ -121,10 +122,8 @@ public class HomeService implements IHomeService{
 		return false;
 	}
 
-	private void updateScenarioStatusIfCurrentModeChanged(Home homeToUpdate,
-			HomeEntity homeEntity, boolean isCurrentModeChanged) {
+	private void updateScenarioStatusIfCurrentModeChanged(int oldModeId, Home homeToUpdate, boolean isCurrentModeChanged) {
 		if( isCurrentModeChanged ){
-			int oldModeId = homeEntity.getCurrentMode().getId();
 			int currModeId = homeToUpdate.getCurrentMode().getId();
 			scenarioService.updateAllScenarioStatusOfMode(oldModeId, ScenarioStatus.STOPPING);
 			scenarioService.updateAllScenarioStatusOfMode(currModeId, ScenarioStatus.RUNNING);

@@ -6,7 +6,6 @@ import static com.hcmut.smarthome.utils.ConstantUtil.INPUT_SCRIPT_HAS_SAME_NAME_
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.script.ScriptException;
 import javax.transaction.NotSupportedException;
 
 import org.apache.log4j.Logger;
@@ -25,6 +24,7 @@ import com.hcmut.smarthome.utils.ScriptBuilder;
 @Service
 public class ScenarioService implements IScenarioService {
 
+	private static final String REQUIRED_SCRIPT_TYPE_TO_UPDATE = "Required script type to update";
 	private static final Logger LOGGER = Logger.getLogger(ScenarioService.class);
 	private static final String CUSTOM_SCRIPT_TYPE = "Custom";
 	private static final int CUSTOM_SCRIPT_ID = 3;
@@ -55,7 +55,7 @@ public class ScenarioService implements IScenarioService {
 			// Check existing name in mode level , because existed scripts is get by mode
 			if( checkExistingName(script.getName(), existedScript.getName()) ){
 				LOGGER.debug(INPUT_SCRIPT_HAS_SAME_NAME_WITH_EXISTING_ONE_IN_SAME_MODE);
-				return false;
+				throw new Exception(INPUT_SCRIPT_HAS_SAME_NAME_WITH_EXISTING_ONE_IN_SAME_MODE);
 			}			
 			
 			// Below code is used to check content of the script, if the script didn't have content
@@ -65,7 +65,7 @@ public class ScenarioService implements IScenarioService {
 			
 			if( isScriptExisted(script.getContent(), existedScript.getContent()) ){
 				LOGGER.debug(INPUT_SCRIPT_HAS_SAME_CONTENT_WITH_EXISTING_ONE);
-				return false;
+				throw new Exception(INPUT_SCRIPT_HAS_SAME_CONTENT_WITH_EXISTING_ONE);
 			}
 				
 			Scenario existedScenario = scriptToScenario(scenario.getHomeId(), existedScript);
@@ -100,7 +100,7 @@ public class ScenarioService implements IScenarioService {
 	}
 	
 	@Override
-	public void runScenario(Scenario scenario) {
+	public void runScenario(Scenario scenario) throws Exception {
 		scenarioRunner.runScenario(scenario);
 	}
 	
@@ -131,14 +131,17 @@ public class ScenarioService implements IScenarioService {
 
 	@Override
 	public Scenario scriptToScenario(int homeId, Script script)
-			throws ParseException, ScriptException, NotSupportedException,
-			ConflictConditionException {
+			throws Exception {
 		Scenario scenario = null;
 		if( script.getContent() != null ){
 			String jsonScript = script.getContent();
-			if( script.getType() != null 
-					&& ( CUSTOM_SCRIPT_TYPE.equals(script.getType().getName()) 
-						|| CUSTOM_SCRIPT_ID == script.getType().getId()	)){
+			
+			if( script.getType() == null 
+					|| ( script.getType().getName() == null && script.getType().getId() <= 0 ))
+				throw new Exception(REQUIRED_SCRIPT_TYPE_TO_UPDATE);
+			
+			if( CUSTOM_SCRIPT_TYPE.equals(script.getType().getName()) 
+					|| CUSTOM_SCRIPT_ID == script.getType().getId()	){
 				jsonScript = ScriptBuilder.parseFromCodeAsString(script.getContent(), homeId);
 			}
 			scenario = JSONToScenario(jsonScript);
@@ -147,7 +150,7 @@ public class ScenarioService implements IScenarioService {
 	}
 
 	@Override
-	public boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario){
+	public boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario) throws Exception{
 		return scenarioRunner.replaceOldScenarioWithNewOne(scenarioId, newScenario);
 	}
 }

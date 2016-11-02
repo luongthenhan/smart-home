@@ -96,7 +96,7 @@ public class ScenarioConflictValidator {
 					if (conditionToCompare == null
 							|| areNestedConditionsMatching(conditionToCompare,
 									existedScenario.getBlocks(), checkedRange))
-						return false;
+						throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
 				}
 			}
 		}

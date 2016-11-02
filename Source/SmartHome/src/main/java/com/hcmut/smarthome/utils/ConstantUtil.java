@@ -82,6 +82,7 @@ public class ConstantUtil {
 	public static final int HOME_ID = 1;
 	public static final int VALID_USER_ID = 2;
 	public static final int CONDITION_CHECKING_PERIOD = 5000;
+	public static final int DELAY = 100;
 	public static final ZoneId DEFAULT_ZONE_ID = ZoneOffset.of("+07:00");
 
 	// List gpio

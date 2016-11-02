@@ -20,8 +20,9 @@ public interface IScenarioService {
 	/**
 	 * Run a given scenario 
 	 * @param scenario
+	 * @throws Exception 
 	 */
-	void runScenario(Scenario scenario);
+	void runScenario(Scenario scenario) throws Exception;
 	
 	/**
 	 * Convert one JSONArray object to Scenario
@@ -60,12 +61,9 @@ public interface IScenarioService {
 	 * If script is custom type , need to use ScriptBuilder.parse first
 	 * @param script
 	 * @return
-	 * @throws ParseException
-	 * @throws ScriptException
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
-	Scenario scriptToScenario(int homeId, Script script) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException;
+	Scenario scriptToScenario(int homeId, Script script) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException, Exception;
 	
-	boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario);
+	boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario) throws Exception;
 }
