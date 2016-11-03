@@ -13,7 +13,7 @@
     </select>
     <select class="combobox script-condition-modify-input"
             ng-model="deviceScriptWhenThenCtrl.selectedCondition"
-            ng-options="condition.name for condition in deviceScriptWhenThenCtrl.conditions"
+            ng-options="condition.name for condition in deviceScriptWhenThenCtrl.selectedOtherDevice.conditions"
             ng-change="deviceScriptWhenThenCtrl.updateConditionChange()">
     </select>
     <input class="script-condition-modify-input script-condition-modify-input-number"
@@ -24,7 +24,7 @@
     <span>Then</span>
     <select class="script-condition-modify-input combobox"
             ng-model="deviceScriptWhenThenCtrl.selectedAction"
-            ng-options="action.name for action in deviceScriptWhenThenCtrl.actions"
+            ng-options="action.name for action in deviceScriptWhenThenCtrl.currentDevice.actions"
             ng-change="deviceScriptWhenThenCtrl.updateActionChange()">
     </select>
 

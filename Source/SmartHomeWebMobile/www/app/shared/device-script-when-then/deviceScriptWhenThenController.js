@@ -12,11 +12,12 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
 
             self.currentDevice = null;
             self.scriptId = $scope.script.id;
-            self.scriptContent = $scope.script.content.replace(/ /g, "");
-            self.scriptCondInfo = self.scriptContent.substring(self.scriptContent.split('[', 3).join('[').length + 1,
-                self.scriptContent.indexOf(']')).split(",");
-            self.scriptActionContent = self.scriptContent.substring(self.scriptContent.split('[', 5).join('[').length + 1,
-                self.scriptContent.indexOf(']', self.scriptContent.indexOf(']') + 1));
+            self.scriptInfo = MainService.parseScriptInfo($scope.script);
+            // self.scriptContent = $scope.script.content.replace(/ /g, "");
+            // self.scriptCondInfo = self.scriptContent.substring(self.scriptContent.split('[', 3).join('[').length + 1,
+            //     self.scriptContent.indexOf(']')).split(",");
+            // self.scriptActionContent = self.scriptContent.substring(self.scriptContent.split('[', 5).join('[').length + 1,
+            //     self.scriptContent.indexOf(']', self.scriptContent.indexOf(']') + 1));
 
             self.otherDevices = [];
             self.conditions = [];
@@ -28,47 +29,60 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
             self.selectedAction = null;
 
             self.init = function() {
+                MainService.deviceWhenThenCtrlList.push(self);
+                self.initializeData();
+            }
+
+            self.initializeData = function() {
                 // Get current device
-                self.currentDevice = $.grep(MainService.devices, function(device) {
+                self.currentDevice = $.grep(MainService.selectedModeConditionableDevices, function(device) {
                     return device.id == $scope.device.id;
                 })[0];
 
-                // Filter keep only devices that not the current device
-                self.otherDevices = $.grep(MainService.devices, function(device) {
-                    return device.id != $scope.device.id && device.gpio != $scope.device.gpio;
-                })
+                // check whether the device that contains this script is existed on the UI
+                if (typeof self.currentDevice == 'undefined') {
+                    // if not existed, then remove itself from devicteWhenThenCtrlList of MainService to prevent updating this controller
+                    MainService.deviceWhenThenCtrlList = $.grep(MainService.deviceWhenThenCtrlList, function(whenThenCtrl) {
+                        return whenThenCtrl != self;
+                    })
+                } else {
+                    // if existed
+                    // Filter keep only devices that not the current device
+                    self.otherDevices = $.grep(MainService.selectedModeConditionableDevices, function (device) {
+                        var deviceTypeOfDevice = $.grep(MainService.allDeviceTypes, function (devType) {
+                            return devType.id == device.deviceType.id;
+                        })[0];
+                        var isDeviceHasAnyCondition = (typeof deviceTypeOfDevice != "undefined"
+                        && deviceTypeOfDevice.conditions.length != 0);
 
-                // Parse selected device from script
-                self.selectedOtherDevice = $.grep(self.otherDevices, function(device){
-                    return device.id == parseInt(self.scriptCondInfo[0].replace(/'/g, ""));
-                })[0];
+                        return device.id != $scope.device.id && device.gpio != $scope.device.gpio && isDeviceHasAnyCondition;
+                    })
 
-                // Get conditions from selected other device
-                self.conditions = self.selectedOtherDevice.conditions;
+                    // Parse selected device from script
+                    self.selectedOtherDevice = $.grep(self.otherDevices, function (device) {
+                        return device.id == self.scriptInfo.conditionDeviceId;
+                    })[0];
 
-                // Get action from current device
-                self.actions = self.currentDevice.actions;
+                    // Parse selected condition and it's param from condition list
+                    self.selectedCondition = $.grep(self.selectedOtherDevice.conditions, function (cond) {
+                        var condScript = cond.script;
+                        if (cond.hasParameter) {
+                            condScript = condScript.substring(0, condScript.lastIndexOf(","));
+                            self.selectedConditionParam = self.scriptInfo.conditionParam;
+                        }
+                        return $scope.script.content.indexOf(condScript) != -1;
+                    })[0];
 
-                // Parse selected condition and it's param from condition list
-                self.selectedCondition = $.grep(self.conditions, function(cond) {
-                    var condScript = cond.script;
-                    if (cond.hasParameter) {
-                        condScript = condScript.substring(0, condScript.lastIndexOf(","));
-                        self.selectedConditionParam = parseFloat(self.scriptCondInfo[2].replace(/'/g, ""));
-                    }
-                    return self.scriptContent.indexOf(condScript) != -1;
-                })[0];
-
-                // Parse selected action from action list
-                self.selectedAction = $.grep(self.actions, function(act) {
-                    return self.scriptContent.indexOf(act.script) != -1;
-                })[0];
+                    // Parse selected action from action list
+                    self.selectedAction = $.grep(self.currentDevice.actions, function (act) {
+                        return $scope.script.content.indexOf(act.script) != -1;
+                    })[0];
+                }
             }
 
             self.updateDeviceChange = function() {
                 // Get conditions from selected other device
-                self.conditions = self.selectedOtherDevice.conditions;
-                self.selectedCondition = self.conditions[0];
+                self.selectedCondition = self.selectedOtherDevice.conditions[0];
 
                 var newScriptContent = "";
                 newScriptContent = "[['If'," + self.selectedCondition.script
@@ -123,14 +137,14 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
                     .replace("]","");
                 $scope.script.content = $scope.script.content
                     .replace(/ /g, "")
-                    .replace(self.scriptActionContent, newActionContent)
+                    .replace(self.scriptInfo.actionContent, newActionContent)
                     .replace(/ /g, "");
-                self.parseInfoFromScript();
+                self.scriptInfo = MainService.parseScriptInfo($scope.script);
                 MainService.updateScript($scope.device, $scope.script);
             }
 
             self.deleteScript = function() {
-                MainService.deleteScript($scope.device, $scope.script.id, self.selectedOtherDevice);
+                MainService.deleteScript($scope.device, $scope.script, self.selectedOtherDevice);
             }
 
             self.parseInfoFromScript = function() {

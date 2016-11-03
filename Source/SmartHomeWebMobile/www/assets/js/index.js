@@ -14,7 +14,7 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when('/home', {
             templateUrl: 'app/components/home/homeView.html'
         })
-        .when('/device_list', {
+        .when('/device_list/:deviceTypeId', {
             templateUrl: 'app/components/device_list/deviceListView.html',
         })
         .when('/register', {

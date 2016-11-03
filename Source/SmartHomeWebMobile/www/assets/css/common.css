@@ -112,3 +112,11 @@ form {
 .margin-bottom-15 {
     margin-bottom: 15px;
 }
+
+.empty-message {
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+}
