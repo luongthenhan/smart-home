@@ -2,6 +2,7 @@ package com.hcmut.smarthome.service.impl;
 
 import static com.hcmut.smarthome.utils.ConstantUtil.ADD_UNSUCCESSFULLY;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +73,6 @@ public class HomeService implements IHomeService{
 		int homeId = homeDao.save(homeEntity).intValue(); 
 		if( homeId > 0 ){
 			addDefaultModeToHome(homeEntity, homeId);
-			homeDao.update(homeEntity);
-			
 			return homeId;
 		}
 		
@@ -81,13 +80,15 @@ public class HomeService implements IHomeService{
 	}
 
 	private void addDefaultModeToHome(HomeEntity homeEntity, int homeId) {
-		Mode defaultMode = new Mode();
-		defaultMode.setName(DEFAULT_MODE);
-		int defaultModeId = addMode(homeId, defaultMode);
-		
 		ModeEntity defaultModeEntity = new ModeEntity();
-		defaultModeEntity.setId(defaultModeId);
+		defaultModeEntity.setName(DEFAULT_MODE);
+		defaultModeEntity.setHome(homeEntity);
+		
 		homeEntity.setCurrentMode(defaultModeEntity);
+		homeEntity.setModes(new ArrayList<>());
+		homeEntity.getModes().add(defaultModeEntity);
+		
+		homeDao.update(homeEntity);
 	}
 	
 	@Override
