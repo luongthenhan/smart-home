@@ -30,7 +30,7 @@ public class HomeEntity implements Serializable{
 	@Column(name="name", nullable = true , length = 45)
 	private String name;
 	
-	@Column(name="address", nullable = true , length = 100)
+	@Column(name="address", nullable = false , length = 100, unique=true)
 	private String address;
 	
 	@Column(name="description", nullable = true , length = 512)
