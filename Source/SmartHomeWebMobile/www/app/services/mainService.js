@@ -5,32 +5,31 @@ app.service('MainService', function($http, $location) {
     self.hostDomain = "https://localhost:8443/smarthome/api/";
     self.token = "";
 
-    self.userId = 2;
+    // All gpios
+    self.allGpios = [];
+
+    // All device types
+    self.allDeviceTypes = [];
+
+    // Nav bar controller
+    self.navBarCtrl = null;
 
     self.modes = [];
     self.selectedHome = null;
     self.selectedMode = null;
     self.selectedDeviceType = null;
 
-    // Nav bar controller
-    self.navBarCtrl = null;
-
-    // All gpios
-    self.allGpios = [];
-
+    // All devices
+    self.allDevices = [];
     // Current available gpios of selected mode
     self.selectedModeAvailableGpios = [];
+    // Condition-able (displayable) devices
+    self.selectedModeConditionableDevices = [];
 
-    // All devices of selected mode
-    self.devices = [];
-
-    // All devices of selected type
-    self.selectedTypeDevices = [];
-
-    // Current device list controller
-    self.deviceListCtrl = null;
-    // Current device panel controller list
-    self.devicePanelCtrlList = [];
+    // Keep controllers for updating UI
+    self.deviceListCtrl = null; // Device List Controller used when in Device List page
+    self.devicePanelCtrlList = []; // Device Panel Controller List used when in Device List page
+    self.deviceWhenThenCtrlList = []; // Device When Then Controller List used when in Device List page
 
     self.login = function(username, password, controller) {
         $http.get(self.hostDomain + "login", {
@@ -46,7 +45,6 @@ app.service('MainService', function($http, $location) {
                     'X-Auth-Token': self.token
                 }
             }).then(function(response) {
-                console.log(response.status);
                 self.allGpios = response.data;
                 controller.redirectToHome();
             })
@@ -56,7 +54,6 @@ app.service('MainService', function($http, $location) {
     }
 
     self.getHomes = function(controller) {
-        console.log("URL: " + self.hostDomain + "/homes");
         $http.get(self.hostDomain + "/homes", {
             headers: {
                 'X-Auth-Token': self.token
@@ -79,9 +76,64 @@ app.service('MainService', function($http, $location) {
                 }
             })
 
-            self.selectedModeAvailableGpios = self.allGpios;
-            self.getDeviceTypes(controller);
+            self.setUpForSelectedMode(controller);
+        })
+    }
 
+    self.setUpForSelectedMode = function(controller) {
+        self.allDevices = [];
+        self.selectedModeAvailableGpios = self.allGpios;
+        self.selectedModeConditionableDevices = [];
+
+        $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types", {
+            headers: {
+                'X-Auth-Token': self.token
+            }
+        }).then(function(response){
+            self.allDeviceTypes = response.data;
+            controller.deviceTypes = self.allDeviceTypes;
+
+            // Fetch conditions, actions and scripts
+            $.each(self.allDeviceTypes, function(dtIndex, dtVal){
+                $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + dtVal.id + "/devices", {
+                    headers: {
+                        'X-Auth-Token': self.token
+                    }
+                }).then(function(response){
+                    $.each(response.data, function(dIndex, dVal) {
+                        self.allDevices.push(dVal);
+                        dVal.refNum = 0;
+                        self.fetchConditionsAndActions(dtVal, dVal);
+                        self.getSelectedModeScripts(dVal);
+                    })
+                })
+            })
+
+            // Set up condition-able device list
+            setTimeout(function() {
+                self.selectedModeConditionableDevices = self.allDevices.slice();
+                $.each(self.allDevices, function (adIndex, adValue) {
+                    var isCDContainsADValue = typeof $.grep(self.selectedModeConditionableDevices, function (condDev) {
+                            return condDev.id == adValue.id;
+                        })[0] != "undefined";
+                    if (isCDContainsADValue && adValue.scripts.length > 0) {
+                        self.markDevice(adValue);
+                        $.each(adValue.scripts, function (scpIndex, scpValue) {
+                            adValue.refNum++;
+                            var scriptInfo = self.parseScriptInfo(scpValue);
+                            var conditionDevice = $.grep(self.allDevices, function (ad) {
+                                return ad.id == scriptInfo.conditionDeviceId;
+                            })[0];
+
+                            if (typeof conditionDevice != "undefined") {
+                                self.markDevice(conditionDevice);
+                                conditionDevice.refNum++;
+                            }
+                        })
+                    }
+                })
+
+            }, 500);
         })
     }
 
@@ -93,7 +145,7 @@ app.service('MainService', function($http, $location) {
             deviceCondition = {
                 hasParameter: condVal.name.indexOf("$V$") != -1,
                 name: condVal.name.replace("$DNAME$", "").replace("$V$", ""),
-                script: condVal.script.replace("$DID$", "'" + dVal.id + "'"),
+                script: condVal.script.replace("$DID$", "'" + dVal.id + "'").replace(/ /g, ""),
                 deviceId: dVal.id
             }
             dVal.conditions.push(deviceCondition);
@@ -102,64 +154,69 @@ app.service('MainService', function($http, $location) {
         $.each(dtVal.actions, function(actIndex, actVal){
             deviceAction = {
                 name: actVal.name.replace("$DNAME$", ""),
-                script: actVal.script.replace("$DID$", "'" + dVal.id + "'"),
+                script: actVal.script.replace("$DID$", "'" + dVal.id + "'").replace(/ /g, ""),
                 deviceId: dVal.id
             }
             dVal.actions.push(deviceAction);
         })
     }
 
-    self.getDeviceTypes = function(controller) {
-        self.devices = [];
-        self.conditions = [];
-        self.actions = [];
-        $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types", {
+    self.getSelectedModeScripts = function(device) {
+        $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts",{
             headers: {
                 'X-Auth-Token': self.token
             }
         }).then(function(response){
-            controller.deviceTypes = response.data;
-
-            // Fetch conditions and actions
-            $.each(controller.deviceTypes, function(dtIndex, dtVal){
-                $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + dtVal.id + "/devices", {
-                    headers: {
-                        'X-Auth-Token': self.token
-                    }
-                }).then(function(response){
-                    $.each(response.data, function(dIndex, dVal) {
-                        dVal.condRefNum = 0;
-                        self.fetchConditionsAndActions(dtVal, dVal);
-                        self.getSelectedModeScripts(dVal, self);
-                    })
-                })
+            var scripts = response.data;
+            $.each(scripts, function(scpIndex, scpValue) {
+                scpValue.content = scpValue.content.replace(/ /g, "");
             })
+            device.scripts = scripts;
         })
     }
 
-    self.getDevices = function(controller) {
-        self.deviceListCtrl = controller;
+    self.parseScriptInfo = function (script) {
+        var scriptInfo = {};
 
-        $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices",{
-            headers: {
-                'X-Auth-Token': self.token
-            }
-        }).then(function(response){
-            self.selectedTypeDevices = response.data;
+        if (script.type.id == 1) {
+            var scriptContent = script.content.replace(/ /g, "");
+            var scriptConditionContent = scriptContent.substring(scriptContent.split('[', 3).join('[').length + 1,
+                scriptContent.indexOf(']'));
+            var scriptActionContent = scriptContent.substring(scriptContent.split('[', 5).join('[').length + 1,
+                scriptContent.indexOf(']', scriptContent.indexOf(']') + 1));
 
-            controller.devices = [];
+            var scriptConditionInfo = scriptConditionContent.split(",");
+            scriptInfo.conditionDeviceId = parseInt(scriptConditionInfo[0].replace(/'/g, ""));
+            scriptInfo.conditionParam = parseFloat(scriptConditionInfo[2].replace(/'/g, ""));
+            scriptInfo.actionContent = scriptActionContent;
+        }
 
-            $.each(self.selectedTypeDevices, function(index, dVal) {
-                dVal.modes = [];
-                self.fetchConditionsAndActions(self.selectedDeviceType, dVal);
-                // Get device's scripts that belongs to selected mode and add it to device
-                self.getSelectedModeScripts(dVal, controller);
-
-                // Get all device's scripts and add it device's modes
-                self.getAllScripts(dVal);
-            })
-        })
+        return scriptInfo;
     }
+
+    // self.getDevices = function(controller) {
+    //     self.deviceListCtrl = controller;
+    //
+    //     $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices",{
+    //         headers: {
+    //             'X-Auth-Token': self.token
+    //         }
+    //     }).then(function(response){
+    //         self.selectedTypeDevices = response.data;
+    //
+    //         controller.devices = [];
+    //
+    //         $.each(self.selectedTypeDevices, function(index, dVal) {
+    //             dVal.modes = [];
+    //             self.fetchConditionsAndActions(self.selectedDeviceType, dVal);
+    //             // Get device's scripts that belongs to selected mode and add it to device
+    //             self.getSelectedModeScripts(dVal, controller);
+    //
+    //             // Get all device's scripts and add it device's modes
+    //             self.getAllScripts(dVal);
+    //         })
+    //     })
+    // }
 
     self.enableDevice = function(controller) {
         // TODO: Call web services /device/enable?deviceId=|n|
@@ -176,39 +233,43 @@ app.service('MainService', function($http, $location) {
         return true;
     }
 
-    self.addDevice = function(controller) {
-        // TODO: Call web services /device/add
-        return true;
-    }
-
-    self.getSelectedModeScripts = function(device, controller) {
-        $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts",{
+    self.addDevice = function(device) {
+        console.log(self.selectedDeviceType);
+        $http.post(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices"
+            , device, {
             headers: {
                 'X-Auth-Token': self.token
             }
         }).then(function(response){
-
-            device.scripts = response.data;
-            // check if device gpio is available or device is not gpio-need type or device is in-type (sensor)
-            if (device.gpio == null || device.gpio == 0 || device.gpiotype == 'in' || device.scripts.length != 0 ||
-                $.inArray(device.gpio, self.selectedModeAvailableGpios) != -1) {
-
-                // check whether there are any scripts of this device that belong to the selectedMode or device is in-type
-                if (device.scripts.length != 0 || device.gpiotype == 'in') {
-                    //if it does have, remove its gpio from available gpios
-                    self.selectedModeAvailableGpios = $.grep(self.selectedModeAvailableGpios, function (gpioId) {
-                        return gpioId != device.gpio;
-                    })
-
-                    // and filter: remove any devices that have same gpio with this device
-                    controller.devices = $.grep(controller.devices, function (dev) {
-                        return dev.id == device.id || dev.gpio != device.gpio;
-                    })
+            if (response.status == 201) {
+                console.log("Add device successfully");
+                device.id = response.data.id;
+                device.refNum = 0;
+                device.deviceType = {
+                    id: self.selectedDeviceType.id
                 }
+                device.scripts = [];
 
-                controller.devices.push(device);
+                self.fetchConditionsAndActions(self.selectedDeviceType, device);
+
+                self.allDevices.push(device);
+                self.selectedModeConditionableDevices.push(device);
+
+                // Reload Device List page
+                self.deviceListCtrl.initializeData();
+
+                // Reload each Device Panel
+                $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+                    panelCtrlVal.initializeData();
+                })
+
+                // Reload each When Then Script
+                $.each(self.deviceWhenThenCtrlList, function(whenThenCtrlIndex, whenThenCtrlVal) {
+                    whenThenCtrlVal.initializeData();
+                })
             }
         })
+        return true;
     }
 
     self.filterConditionReference = function() {
@@ -282,90 +343,68 @@ app.service('MainService', function($http, $location) {
 
     self.updateScript = function(device, script) {
         $http.put(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id
-            + "/scripts/" + script.id, script).then(function(response){
-
+            + "/scripts/" + script.id, script, {
+            headers: {
+                'X-Auth-Token': self.token
+            }
+        }).then(function(response){
+            if (response.status == 204) {
+                console.log("Update script successfully");
+            }
         })
         return true;
     }
 
-    self.deleteScript = function(device, scriptId, selectedOtherDevice) {
+    self.deleteScript = function(device, script, selectedOtherDevice, whenThenCtrl) {
         $http.delete(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id
-            + "/scripts/" + scriptId,{
+            + "/scripts/" + script.id,{
             headers: {
                 'X-Auth-Token': self.token
             }
         }).then(function(response) {
 
             if (response.status == 204) {
+                console.log("Delete script successfully");
                 // Remove deleted script from device's scripts
                 device.scripts = $.grep(device.scripts, function (scp) {
-                    return scp.id != scriptId;
+                    return scp.id != script.id;
                 })
 
-                // Minus 1 for condition reference of selected other device
-                if (selectedOtherDevice != null) {
-                    $.each(self.devices, function(dIndex, dVal) {
-                        if (dVal.id == selectedOtherDevice.id) {
-                            dVal.condRefNum--;
-                            // check if selected other device does not have any condition reference
-                            if (dVal.condRefNum == 0) {
-
-                                // Then re-available that device gpio
-                                self.selectedModeAvailableGpios.push(selectedOtherDevice.gpio);
-
-                                // re-available for when/then other devices with same gpio with selected other device in the displayed devices
-                                $.grep(self.selectedTypeDevices, function (dev) {
-                                    if (dev.id != selectedOtherDevice.id && dev.gpio == selectedOtherDevice.gpio) {
-                                        self.deviceListCtrl.devices.push(dev);
-                                    }
-                                })
-
-                                // re-available for when/then other devices with same gpio with this selected other device in conditions of other devices
-                                $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
-                                    $.grep(self.selectedTypeDevices, function (dev) {
-                                        if (dev.id != selectedOtherDevice.id && panelCtrlVal.device.gpio != selectedOtherDevice.gpio
-                                            && dev.gpio == selectedOtherDevice.gpio) {
-                                            panelCtrlVal.otherDevices.push(dev);
-                                        }
-                                    })
-                                })
-                            }
-                        }
-                    })
-
+                device.refNum--;
+                if (device.refNum == 0) {
+                    self.unmarkDevice(device);
                 }
 
-                // After script removed, check if device doesn't have any scripts left
-                if (device.scripts.length == 0) {
-
-                    // Then re-available that device gpio
-                    self.selectedModeAvailableGpios.push(device.gpio);
-
-                    // and re-available other devices with same gpio with this device in the displayed devices
-                    $.grep(self.selectedTypeDevices, function(dev) {
-                        if (dev.id != device.id && dev.gpio == device.gpio) {
-                            self.deviceListCtrl.devices.push(dev);
-                        }
+                if (script.type.id == 1 && selectedOtherDevice != null) {
+                    selectedOtherDevice.refNum--;
+                    if (selectedOtherDevice.refNum == 0) {
+                        self.unmarkDevice(selectedOtherDevice);
+                    }
+                    self.deviceWhenThenCtrlList = $.grep(self.deviceWhenThenCtrlList, function(wtCtrl) {
+                        return wtCtrl != whenThenCtrl;
                     })
-
-                    // and re-available other devices with same gpio with this device in conditions of other devices
-                    $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
-                        $.grep(self.selectedTypeDevices, function(dev) {
-                            if (dev.id != device.id && dev.gpio == device.gpio) {
-                                panelCtrlVal.otherDevices.push(dev);
-                            }
-                        })
-                    })
-
                 }
+
+                // Reload Device List page
+                self.deviceListCtrl.initializeData();
+
+                // Reload each Device Panel
+                $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+                    panelCtrlVal.initializeData();
+                })
+
+                // Reload each When Then Script
+                $.each(self.deviceWhenThenCtrlList, function(whenThenCtrlIndex, whenThenCtrlVal) {
+                    whenThenCtrlVal.initializeData();
+                })
+
             }
         })
         return true;
     }
 
     self.addScript = function (device, script, selectedOtherDevice) {
-        console.log(script);
-        var isDoesNotHaveAnyScriptBefore = (device.scripts.length == 0);
+        console.log("Add script: " + script.content);
         $http.post(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id
             + "/scripts", script,{
             headers: {
@@ -373,58 +412,38 @@ app.service('MainService', function($http, $location) {
             }
         }).then(function(response) {
             if (response.status == 201) {
+                console.log("Add script successfully");
+                // Set id for new script and add it to device
                 script.id = response.data.id;
                 device.scripts.push(script);
 
-                // filter for when/then: remove any devices that have same gpio with selected other device in the displayed devices
-                if (selectedOtherDevice != null) {
+                if (device.refNum == 0) {
+                    self.markDevice(device);
+                }
+                device.refNum++;
 
-                    // Count 1 for condition reference of selected other device
-                    $.each(self.devices, function(dIndex, dVal) {
-                        if (dVal.id == selectedOtherDevice.id) {
-                            dVal.condRefNum++;
-                            // check if selected other device does not have any condition reference before
-                            if (dVal.condRefNum == 1) {
-
-                                //remove selected other device gpio from available gpios
-                                self.selectedModeAvailableGpios = $.grep(self.selectedModeAvailableGpios, function (gpioId) {
-                                    return gpioId != selectedOtherDevice.gpio;
-                                })
-
-                                // filter: remove any devices have same gpio with selected other device in the displayed devices
-                                self.deviceListCtrl.devices = $.grep(self.deviceListCtrl.devices, function (dev) {
-                                    return dev.id == selectedOtherDevice.id || dev.gpio != selectedOtherDevice.gpio;
-                                })
-                                // filter: remove any devices have same gpio with selected other device in conditions of other devices
-                                $.each(self.devicePanelCtrlList, function (panelCtrlIndex, panelCtrlVal) {
-                                    panelCtrlVal.otherDevices = $.grep(panelCtrlVal.otherDevices, function (dev) {
-                                        return dev.id == selectedOtherDevice.id || dev.gpio != selectedOtherDevice.gpio;
-                                    })
-                                })
-                            }
-                        }
-                    })
+                if (script.type.id == 1 && selectedOtherDevice != null) {
+                    if (selectedOtherDevice.refNum == 0) {
+                        self.markDevice(selectedOtherDevice);
+                    }
+                    selectedOtherDevice.refNum++;
                 }
 
-                if (isDoesNotHaveAnyScriptBefore) {
-                    //if it does not have any script before adding, remove its gpio from available gpios
-                    self.selectedModeAvailableGpios = $.grep(self.selectedModeAvailableGpios, function (gpioId) {
-                        return gpioId != device.gpio;
-                    })
+                // Reload Device List page
+                self.deviceListCtrl.initializeData();
 
-                    // and filter: remove any devices that have same gpio with this device in the displayed devices
-                    self.deviceListCtrl.devices = $.grep(self.deviceListCtrl.devices, function (dev) {
-                        return dev.id == device.id || dev.gpio != device.gpio;
-                    })
+                // Reload each Device Panel
+                $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+                    panelCtrlVal.initializeData();
+                })
 
-                    // and filter: remove any devices that have same gpio with this device in conditions of other devices
-                    $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
-                        panelCtrlVal.otherDevices = $.grep(panelCtrlVal.otherDevices, function(dev){
-                            return dev.id == device.id || dev.gpio != device.gpio;
-                        })
-                    })
+                // Reload each When Then Script
+                $.each(self.deviceWhenThenCtrlList, function(whenThenCtrlIndex, whenThenCtrlVal) {
+                    whenThenCtrlVal.initializeData();
+                })
 
-                }
+            } else if (response.status == 400) {
+                window.alert("This script is conflicted with other script(s) !");
             }
         })
         return true;
@@ -452,5 +471,24 @@ app.service('MainService', function($http, $location) {
                 }
             });
 
+    }
+
+    self.markDevice = function (device) {
+        self.selectedModeAvailableGpios = $.grep(self.selectedModeAvailableGpios, function(gpio) {
+            return gpio != device.gpio;
+        })
+        self.selectedModeConditionableDevices = $.grep(self.selectedModeConditionableDevices, function(conditionableDev){
+            return conditionableDev.id == device.id || conditionableDev.gpio != device.gpio;
+        })
+    }
+
+    self.unmarkDevice = function (device) {
+        $.each(self.allDevices, function(devId, devVal) {
+            if (devVal.id != device.id && devVal.gpio == device.gpio) {
+                self.selectedModeConditionableDevices.push(devVal);
+            }
+        })
+        self.selectedModeAvailableGpios.push(device.gpio);
+        self.selectedModeAvailableGpios = $.unique(self.selectedModeAvailableGpios);
     }
 })

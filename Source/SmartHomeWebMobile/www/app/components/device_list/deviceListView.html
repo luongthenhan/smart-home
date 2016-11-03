@@ -11,4 +11,67 @@
     <device-panel ng-repeat="device in deviceListCtrl.devices"
                   device="device"
                   typeimg="{{deviceListCtrl.deviceType.imageURL}}"></device-panel>
+    <div class="row empty-message" ng-if="deviceListCtrl.devices.length == 0">Empty</div>
+
+    <button type="button"
+            data-toggle="modal"
+            data-target="#device-list-add-device-modal"
+            class="btn device-list-add-device-button">
+        <span class="glyphicon glyphicon-plus"></span>
+        Add Device
+    </button>
+
+    <!-- Add Device Modal -->
+    <div class="modal device-list-add-device-modal" id="device-list-add-device-modal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Device</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <div class="row form-row">
+                                <div class="col-xs-12">
+                                    <input type="text" class="form-control input-field" id="deviceListNewDeviceName"
+                                           ng-model="deviceListCtrl.newDeviceName"
+                                           placeholder="Device Name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-12">
+                    <textarea class="form-control input-field"
+                              ng-model="deviceListCtrl.newDeviceDescription"
+                              id="deviceListNewDeviceDescription" rows="3"
+                              placeholder="Device Description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <span>Device GPIO</span>
+                                    <select class="combobox"
+                                            ng-model="deviceListCtrl.selectedGpio"
+                                            ng-options="gpio for gpio in deviceListCtrl.selectedModeAvailableGpios"/>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            ng-click="deviceListCtrl.addDevice()"
+                            class="btn modal-confirm-btn add-script-btn"
+                            data-dismiss="modal">Add</button>
+                    <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>

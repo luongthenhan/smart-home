@@ -54,7 +54,10 @@
                     </div>
                 </div>
                 <div class="row">
-                    <button class="add-script-button pull-right" data-toggle="modal" data-target="#device-panel-add-script-modal{{device.id}}">
+                    <button class="add-script-button pull-right"
+                            ng-if="device.gpiotype != 'in'"
+                            data-toggle="modal"
+                            data-target="#device-panel-add-script-modal{{device.id}}">
                         <span class="glyphicon glyphicon-plus-sign"/>
                         Add script
                     </button>
