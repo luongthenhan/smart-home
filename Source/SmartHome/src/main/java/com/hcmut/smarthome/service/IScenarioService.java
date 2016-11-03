@@ -32,7 +32,7 @@ public interface IScenarioService {
 	 * @throws ConflictConditionException 
 	 * @throws NotSupportedException 
 	 */
-	Scenario JSONToScenario(String script) throws ParseException, NotSupportedException, ConflictConditionException;
+	Scenario JSONToScenario(int homeId, String script) throws ParseException, NotSupportedException, ConflictConditionException;
 	
 	/**
 	 * Check scenario whether it is validate or not <br/>
@@ -46,7 +46,7 @@ public interface IScenarioService {
 	 * @return
 	 * @throws Exception 
 	 */
-	boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws Exception;
+	boolean isValid(int homeId, int modeId, int deviceId, Script script, Scenario scenario) throws Exception;
 
 	void updateScenarioStatus(int scenarioId, ScenarioStatus status);
 

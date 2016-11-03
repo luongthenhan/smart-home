@@ -1027,10 +1027,10 @@ public class ScenarioValidatorTest {
 	}
 	
 	private Pair<Scenario,List<Scenario>> scriptToScenario(String inputScript, List<String> existedScripts) throws ParseException, NotSupportedException, ConflictConditionException{
-		Scenario inputScenario = scenarioService.JSONToScenario(inputScript);
+		Scenario inputScenario = scenarioService.JSONToScenario(ConstantUtil.HOME_ID, inputScript);
 		List<Scenario> existedScenarios = new ArrayList<>();
 		for (String existedScript : existedScripts) {
-			Scenario existedScenario = scenarioService.JSONToScenario(existedScript);
+			Scenario existedScenario = scenarioService.JSONToScenario(ConstantUtil.HOME_ID, existedScript);
 			if( scenarioConflictService.isNotConflicted(existedScenario, null) )
 				existedScenarios.add(existedScenario);
 		}

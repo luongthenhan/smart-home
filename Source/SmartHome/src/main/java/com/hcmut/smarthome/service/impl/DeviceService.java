@@ -51,6 +51,15 @@ public class DeviceService implements IDeviceService {
 	@PostConstruct
 	private void init(){
 		ScriptBuilder.setDeviceService(this);
+//		List<Script> scripts = ScriptConverter.toListModel(scriptDao.getAll());
+//		List<Mode> modes = ModeConverter.toListModel(modeDao.getAll());
+//		
+//		for (Script script : scripts) {
+//			for (Mode mode : modes) {
+//				if( mode == script.get )
+//			}
+//			Scenario scenario = scenarioService.sc
+//		}
 	}
 	
 	@Override
@@ -147,7 +156,7 @@ public class DeviceService implements IDeviceService {
 	public int addScript(Script script, int deviceId , int modeId, int homeId) throws Exception  {
 		
 		Scenario scenario = scenarioService.scriptToScenario(homeId, script);
-		boolean isValid = scenarioService.isValid(modeId, deviceId, script, scenario);
+		boolean isValid = scenarioService.isValid(homeId, modeId, deviceId, script, scenario);
 		
 		if( isValid ){
 			int scenarioId = saveScriptToDB(modeId, deviceId, script); 
@@ -175,7 +184,7 @@ public class DeviceService implements IDeviceService {
 		
 		Scenario updatedScenario = scenarioService.scriptToScenario(homeId, scriptToUpdate);
 		
-		boolean isValid = scenarioService.isValid(modeId, deviceId, scriptToUpdate, updatedScenario);
+		boolean isValid = scenarioService.isValid(homeId, modeId, deviceId, scriptToUpdate, updatedScenario);
 		if( isValid )
 			return handleWhenScriptIsValid(scriptId, scriptToUpdate, currentScriptEntity, updatedScenario);
 		

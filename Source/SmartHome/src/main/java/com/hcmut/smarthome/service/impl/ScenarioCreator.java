@@ -50,11 +50,12 @@ import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
-import com.hcmut.smarthome.utils.ConstantUtil;
 import com.hcmut.smarthome.utils.NotFoundException;
 
 @Service
 public class ScenarioCreator {
+	private static final String TIME = "TIME";
+
 	private final static Logger LOGGER = Logger.getLogger(ScenarioCreator.class);
 	
 	private final static List<Scenario> ITSELF = null;
@@ -72,17 +73,17 @@ public class ScenarioCreator {
 	private IDeviceService deviceService;
 	
 	@SuppressWarnings("unchecked")
-	public Scenario from(String script) throws ParseException, NotSupportedException, ConflictConditionException{
+	public Scenario from(int homeId, String script) throws ParseException, NotSupportedException, ConflictConditionException{
 		// Must do that because library can't parse the string with single quote
 		JSONArray listControlBlocksOrActions = (JSONArray) parser.parse(script.replace("'", "\""));
 
 		Scenario scenario = new Scenario();
 		scenario.setBlocks(new ArrayList<IBlock>());
-		listControlBlocksOrActions.forEach(block -> scenario.getBlocks().add(createBlock((JSONArray) block)));
+		listControlBlocksOrActions.forEach(block -> scenario.getBlocks().add(createBlock(homeId, (JSONArray) block)));
 
 		if( scenarioConflictValidator.isNotConflicted(scenario, ITSELF) )
 			return scenario;
-		else throw new ConflictConditionException("Can't create scenario because of self-conflicting");
+		else throw new ConflictConditionException("Can't create/update scenario because of self-conflicting");
 	}
 	
 	
@@ -92,11 +93,11 @@ public class ScenarioCreator {
 	 * @param object
 	 * @return
 	 */
-	private IBlock createBlock(JSONArray object) {
+	private IBlock createBlock(int homeId, JSONArray object) {
 		IBlock block = null;
 
 		if (isListOfActions(object))
-			return createBlocksInsideArray(object);
+			return createBlocksInsideArray(homeId, object);
 
 		String blockName = object.get(0).toString();
 
@@ -118,28 +119,26 @@ public class ScenarioCreator {
 
 			Range<LocalTime> r = Range.closed(t1, t2);
 			Condition<LocalTime> c = new Condition<>();
-			c.setName("TIME");
+			c.setName(TIME);
 			c.setRange(r);
 			c.setValueClassType(LocalTime.class);
 			conFromTo.setCondition(c);
-
-			conFromTo
-					.setAction((Action) createBlock((JSONArray) object.get(3)));
+			conFromTo.setAction((Action) createBlock(homeId, (JSONArray) object.get(3)));
 			block = conFromTo;
 			break;
 
 		case CONTROL_BLOCK_IF:
 			if (isBlockIfThen(object))
-				block = setupControlBlockIf(object);
+				block = setupControlBlockIf(homeId, object);
 			else if (isBlockIfThenElse(object))
-				block = setupControlBlockIfElse(object);
+				block = setupControlBlockIfElse(homeId, object);
 			break;
 
 		// deviceName = object.get(1).toString()
 		case TURN_ON:
 			Supplier<Void> turnOn = () -> {
 				try {
-					deviceController.turnOn(deviceService.getDevice(ConstantUtil.HOME_ID,Integer.valueOf(object.get(1).toString())));
+					deviceController.turnOn(deviceService.getDevice(homeId,Integer.valueOf(object.get(1).toString())));
 				} catch (Exception e) {
 					LOGGER.debug("Error: " + e.getMessage());
 				}
@@ -153,7 +152,7 @@ public class ScenarioCreator {
 			Supplier<Void> turnOff = () -> {
 				try {
 					deviceController.turnOff(deviceService.getDevice(
-							ConstantUtil.HOME_ID,
+							homeId,
 							Integer.valueOf(object.get(1).toString())));
 				} catch (Exception e) {
 					LOGGER.debug("Error: " + e.getMessage());
@@ -168,7 +167,7 @@ public class ScenarioCreator {
 			Supplier<Void> toggle = () -> {
 				try {
 					deviceController.toggle(deviceService.getDevice(
-							ConstantUtil.HOME_ID,
+							homeId,
 							Integer.valueOf(object.get(1).toString())));
 				} catch (Exception e) {
 					LOGGER.debug("Error: " + e.getMessage());
@@ -184,7 +183,7 @@ public class ScenarioCreator {
 				Object picture = null;
 				try {
 					picture = deviceController.takeAPhoto(deviceService
-							.getDevice(ConstantUtil.HOME_ID,
+							.getDevice(homeId,
 									Integer.valueOf(object.get(1).toString())));
 				} catch (Exception e) {
 					LOGGER.debug(e.getMessage());
@@ -198,7 +197,7 @@ public class ScenarioCreator {
 		// SETUP DEVICE CONDITION
 		default:
 			try {
-				block = setupCondition(object);
+				block = setupCondition(homeId, object);
 			} catch (NotFoundException e) {
 				LOGGER.error(e.getMessage());
 			}
@@ -235,12 +234,11 @@ public class ScenarioCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private IBlock createBlocksInsideArray(JSONArray objects) {
+	private IBlock createBlocksInsideArray(int homeId, JSONArray objects) {
 		Action action = new Action();
 		action.setName("LIST of ACTION | BLOCK");
 		action.setBlocks(new ArrayList<>());
-		objects.forEach(object -> action.getBlocks().add(
-				createBlock((JSONArray) object)));
+		objects.forEach(object -> action.getBlocks().add(createBlock(homeId, (JSONArray) object)));
 		return action;
 	}
 
@@ -278,10 +276,10 @@ public class ScenarioCreator {
 	 * @return
 	 * @throws NotFoundException 
 	 */
-	private IBlock setupCondition(JSONArray object) throws NotFoundException {
+	private IBlock setupCondition(int homeId, JSONArray object) throws NotFoundException {
 		IBlock block = null;
 		int deviceId = Integer.valueOf(object.get(0).toString());
-		Device device = deviceService.getDevice(ConstantUtil.HOME_ID, deviceId);
+		Device device = deviceService.getDevice(homeId, deviceId);
 		String deviceTypeName = device.getDeviceType().getName();
 		
 		Supplier<Object> LHSExpression = () -> null;
@@ -430,19 +428,19 @@ public class ScenarioCreator {
 		return condition;
 	}
 
-	private ControlBlockIf setupControlBlockIf(JSONArray object) {
+	private ControlBlockIf setupControlBlockIf(int homeId, JSONArray object) {
 		ControlBlockIf controlBlock = new ControlBlockIf();
-		controlBlock.setCondition((Condition) createBlock((JSONArray) object
+		controlBlock.setCondition((Condition) createBlock(homeId, (JSONArray) object
 				.get(1)));
-		controlBlock.setAction((Action) createBlock((JSONArray) object.get(2)));
+		controlBlock.setAction((Action) createBlock(homeId, (JSONArray) object.get(2)));
 		return controlBlock;
 	}
 
-	private ControlBlockIfElse setupControlBlockIfElse(JSONArray object) {
+	private ControlBlockIfElse setupControlBlockIfElse(int homeId, JSONArray object) {
 		ControlBlockIfElse controlBlockIfElse = new ControlBlockIfElse();
-		controlBlockIfElse.setCondition((Condition) createBlock((JSONArray) object.get(1)));
-		controlBlockIfElse.setAction((Action) createBlock((JSONArray) object.get(2)));
-		controlBlockIfElse.setElseAction((Action) createBlock((JSONArray) object.get(3)));
+		controlBlockIfElse.setCondition((Condition) createBlock(homeId, (JSONArray) object.get(1)));
+		controlBlockIfElse.setAction((Action) createBlock(homeId, (JSONArray) object.get(2)));
+		controlBlockIfElse.setElseAction((Action) createBlock(homeId, (JSONArray) object.get(3)));
 		return controlBlockIfElse;
 	}
 

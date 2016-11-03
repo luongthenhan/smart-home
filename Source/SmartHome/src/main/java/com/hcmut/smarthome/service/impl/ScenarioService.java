@@ -46,7 +46,7 @@ public class ScenarioService implements IScenarioService {
 	}
 
 	@Override
-	public boolean isValid(int modeId, int deviceId, Script script, Scenario scenario) throws Exception{
+	public boolean isValid(int homeId, int modeId, int deviceId, Script script, Scenario scenario) throws Exception{
 		List<Script> existedScripts = deviceService.getScripts(modeId,deviceId);
 		
 		List<Scenario> existedScenarios = new ArrayList<Scenario>();
@@ -68,7 +68,7 @@ public class ScenarioService implements IScenarioService {
 				throw new Exception(INPUT_SCRIPT_HAS_SAME_CONTENT_WITH_EXISTING_ONE);
 			}
 				
-			Scenario existedScenario = scriptToScenario(scenario.getHomeId(), existedScript);
+			Scenario existedScenario = scriptToScenario(homeId, existedScript);
 			existedScenarios.add(existedScenario);
 		}
 		
@@ -125,8 +125,8 @@ public class ScenarioService implements IScenarioService {
 	}
 	
 	@Override
-	public Scenario JSONToScenario(String script) throws ParseException, NotSupportedException, ConflictConditionException {
-		return scenarioCreator.from(script);
+	public Scenario JSONToScenario(int homeId, String script) throws ParseException, NotSupportedException, ConflictConditionException {
+		return scenarioCreator.from(homeId, script);
 	}
 
 	@Override
@@ -144,7 +144,7 @@ public class ScenarioService implements IScenarioService {
 					|| CUSTOM_SCRIPT_ID == script.getType().getId()	){
 				jsonScript = ScriptBuilder.parseFromCodeAsString(script.getContent(), homeId);
 			}
-			scenario = JSONToScenario(jsonScript);
+			scenario = JSONToScenario(homeId, jsonScript);
 		}
 		return scenario;
 	}
