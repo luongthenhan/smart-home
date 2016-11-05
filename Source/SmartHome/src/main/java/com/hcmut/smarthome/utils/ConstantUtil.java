@@ -73,7 +73,7 @@ public class ConstantUtil {
 	public static final boolean SUCCESSFULLY = true;
 	public static final boolean UNSUCCESSFULLY = false;
 	public static final String BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION = "Both block If and Else yield the same action";
-	public static final String SCRIPT_CONFLICT_ITSELF = "Script conflict itself";
+	public static final String SCRIPT_CONFLICT = "Script conflict";
 	public static final String INPUT_SCRIPT_HAS_SAME_NAME_WITH_EXISTING_ONE_IN_SAME_MODE = "Input script has same name with existing one in same mode";
 	public static final String INPUT_SCRIPT_HAS_SAME_CONTENT_WITH_EXISTING_ONE = "Input script has same content with existing one";
 

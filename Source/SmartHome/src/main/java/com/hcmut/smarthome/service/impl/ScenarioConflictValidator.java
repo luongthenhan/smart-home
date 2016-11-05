@@ -7,7 +7,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_THAN;
 import static com.hcmut.smarthome.utils.ConstantUtil.LESS_OR_EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
 import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
-import static com.hcmut.smarthome.utils.ConstantUtil.SCRIPT_CONFLICT_ITSELF;
+import static com.hcmut.smarthome.utils.ConstantUtil.SCRIPT_CONFLICT;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class ScenarioConflictValidator {
 					if (conditionToCompare == null
 							|| areNestedConditionsMatching(conditionToCompare,
 									existedScenario.getBlocks(), checkedRange))
-						throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
+						throw new ConflictConditionException(SCRIPT_CONFLICT);
 				}
 			}
 		}
@@ -106,30 +106,41 @@ public class ScenarioConflictValidator {
 	private void checkBothIfElseBlocksHaveSameAction(
 			List<Pair<Condition, SimpleAction>> listActionsAndConditionsToCompare)
 			throws NotSupportedException, ConflictConditionException {
-		if( !listActionsAndConditionsToCompare.isEmpty() ){
-			for(int i = 0 ; i < listActionsAndConditionsToCompare.size(); ++i)
-				for(int j = i ; j < listActionsAndConditionsToCompare.size() ; ++j){
-					
-					if( i == j )
-						continue;
-					
-					SimpleAction action1 = listActionsAndConditionsToCompare.get(i).getSecond();
-					SimpleAction action2 = listActionsAndConditionsToCompare.get(j).getSecond();
-					
-					if( action1.equals(action2)){
-						Condition condition1 = listActionsAndConditionsToCompare.get(i).getFirst();
-						Condition condition2 = listActionsAndConditionsToCompare.get(j).getFirst();
-						
-						if( condition1 != null && condition2 != null 
-								&& condition1.getValueClassType() != null
-								&& !condition1.getValueClassType().equals(LocalTime.class)
-								&& condition2.getValueClassType() != null
-								&& !condition2.getValueClassType().equals(LocalTime.class)
-								&& condition1.equals(getElseCondition(condition2)))
-							throw new ConflictConditionException(BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION);
-					}
-				}
+		if( listActionsAndConditionsToCompare.isEmpty() )
+			return;
+		
+		for(int i = 0 ; i < listActionsAndConditionsToCompare.size(); ++i)
+			for(int j = i ; j < listActionsAndConditionsToCompare.size() ; ++j){
+				
+				if( i == j )
+					continue;
+				
+				handleConflictIfAnyWhenTwoActionsAreEqualEachOther(listActionsAndConditionsToCompare, i, j);
+			}
+	}
+
+	private void handleConflictIfAnyWhenTwoActionsAreEqualEachOther(List<Pair<Condition, SimpleAction>> listActionsAndConditionsToCompare, 
+			int action1Index, int action2Index) throws NotSupportedException, ConflictConditionException{
+		SimpleAction action1 = listActionsAndConditionsToCompare.get(action1Index).getSecond();
+		SimpleAction action2 = listActionsAndConditionsToCompare.get(action2Index).getSecond();
+		
+		if( action1.equals(action2)){
+			Condition condition1 = listActionsAndConditionsToCompare.get(action1Index).getFirst();
+			Condition condition2 = listActionsAndConditionsToCompare.get(action2Index).getFirst();
+			
+			if( areTwoConditionsNotNullAndNotLocalTime(condition1, condition2)
+					&& condition1.equals(getElseCondition(condition2)))
+				throw new ConflictConditionException(BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION);
 		}
+	}
+	
+	private boolean areTwoConditionsNotNullAndNotLocalTime(
+			Condition condition1, Condition condition2) {
+		return condition1 != null && condition2 != null 
+				&& condition1.getValueClassType() != null
+				&& !condition1.getValueClassType().equals(LocalTime.class)
+				&& condition2.getValueClassType() != null
+				&& !condition2.getValueClassType().equals(LocalTime.class);
 	}
 
 	/**
@@ -154,48 +165,17 @@ public class ScenarioConflictValidator {
 		// then all below others, if any , will not find appropriate conditions to make pair  
 		for (IBlock block : blocks) {
 			if (block instanceof SimpleAction) {
-				Condition topOuterCondition = null;
-				if (stackOuterConditions != null && !stackOuterConditions.empty())
-					topOuterCondition = stackOuterConditions.peek();
-				
-				pair.add(new Pair<Condition, SimpleAction>(
-						topOuterCondition, (SimpleAction) block));
+				getPairActionsAndMergedConditionsInSimpleActionBlock(
+						stackOuterConditions, pair, block);
 			}
 			else if ( block instanceof ControlBlockFromTo ){
-				ControlBlockFromTo blocksFromTo = (ControlBlockFromTo) block;
-				Condition innerFromToCondition = blocksFromTo.getCondition();
-				mergeInnerWithOuterConditionFromToBlock(innerFromToCondition, stackOuterConditions);
-				stackOuterConditions.push(innerFromToCondition);
-				
-				pair.addAll(getPairActionsAndMergedConditions(
-						blocksFromTo.getAction().getBlocks(),
-						stackOuterConditions));
+				getPairActionsAndMergedConditionsInControlBlockFromTo(
+						stackOuterConditions, pair, block);
 			}
 			// Block If, IfElse
 			else if (block instanceof ControlBlock) {
-				// Push If condition to stack and continue finding out in block
-				// If actions
-				Condition innerIfCondition = ((ControlBlock) block).getCondition();
-				mergeInnerWithOuterConditions(innerIfCondition, stackOuterConditions);
-				stackOuterConditions.push(innerIfCondition);
-				
-				pair.addAll(getPairActionsAndMergedConditions(
-								((ControlBlock) block).getAction().getBlocks(),
-								stackOuterConditions));
-
-				if (block instanceof ControlBlockIfElse) {
-					ControlBlockIfElse blockIfElse = (ControlBlockIfElse) block;
-					// Push Else condition to stack and continue finding out in
-					// block Else actions
-
-					Condition innerElseCondition = getElseCondition(blockIfElse
-							.getCondition());
-					mergeInnerWithOuterConditions(innerElseCondition, stackOuterConditions);
-					stackOuterConditions.push(innerElseCondition);
-					pair.addAll(getPairActionsAndMergedConditions(
-									blockIfElse.getElseAction().getBlocks(),
-									stackOuterConditions));
-				}
+				getPairActionsAndMergedConditionsInOtherControlBlocks(
+						stackOuterConditions, pair, block);
 			}
 		}
 		if( !stackOuterConditions.isEmpty() )
@@ -204,7 +184,61 @@ public class ScenarioConflictValidator {
 		return pair;
 	}
 
-	private void mergeInnerWithOuterConditionFromToBlock(Condition innerCondition, Stack<Condition> stackOuterConditions)
+	private void getPairActionsAndMergedConditionsInOtherControlBlocks(
+			Stack<Condition> stackOuterConditions,
+			List<Pair<Condition, SimpleAction>> pair, IBlock block)
+			throws ConflictConditionException, NotSupportedException {
+		// Push If condition to stack and continue finding out in block
+		// If actions
+		Condition innerIfCondition = ((ControlBlock) block).getCondition();
+		mergeInnerWithOuterConditionsOtherControlBlocks(innerIfCondition, stackOuterConditions);
+		stackOuterConditions.push(innerIfCondition);
+		
+		pair.addAll(getPairActionsAndMergedConditions(
+						((ControlBlock) block).getAction().getBlocks(),
+						stackOuterConditions));
+
+		if (block instanceof ControlBlockIfElse) {
+			ControlBlockIfElse blockIfElse = (ControlBlockIfElse) block;
+			// Push Else condition to stack and continue finding out in
+			// block Else actions
+
+			Condition innerElseCondition = getElseCondition(blockIfElse
+					.getCondition());
+			mergeInnerWithOuterConditionsOtherControlBlocks(innerElseCondition, stackOuterConditions);
+			stackOuterConditions.push(innerElseCondition);
+			pair.addAll(getPairActionsAndMergedConditions(
+							blockIfElse.getElseAction().getBlocks(),
+							stackOuterConditions));
+		}
+	}
+
+	private void getPairActionsAndMergedConditionsInControlBlockFromTo(
+			Stack<Condition> stackOuterConditions,
+			List<Pair<Condition, SimpleAction>> pair, IBlock block)
+			throws ConflictConditionException, NotSupportedException {
+		ControlBlockFromTo blocksFromTo = (ControlBlockFromTo) block;
+		Condition innerFromToCondition = blocksFromTo.getCondition();
+		mergeInnerWithOuterConditionControlBlockFromTo(innerFromToCondition, stackOuterConditions);
+		stackOuterConditions.push(innerFromToCondition);
+		
+		pair.addAll(getPairActionsAndMergedConditions(
+				blocksFromTo.getAction().getBlocks(),
+				stackOuterConditions));
+	}
+
+	private void getPairActionsAndMergedConditionsInSimpleActionBlock(
+			Stack<Condition> stackOuterConditions,
+			List<Pair<Condition, SimpleAction>> pair, IBlock block) {
+		Condition topOuterCondition = null;
+		if (stackOuterConditions != null && !stackOuterConditions.empty())
+			topOuterCondition = stackOuterConditions.peek();
+		
+		pair.add(new Pair<Condition, SimpleAction>(
+				topOuterCondition, (SimpleAction) block));
+	}
+
+	private void mergeInnerWithOuterConditionControlBlockFromTo(Condition innerCondition, Stack<Condition> stackOuterConditions)
 			throws ConflictConditionException, NotSupportedException{
 		Condition outerCondition = 
 				stackOuterConditions.stream().filter(c -> c.getName().equals(innerCondition.getName())).findAny().orElse(null);
@@ -219,69 +253,79 @@ public class ScenarioConflictValidator {
 				intersectionRange = outerConditionRange.intersection(innerCondition.getRange());
 			}
 			catch(IllegalArgumentException e){
-				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
+				throw new ConflictConditionException(SCRIPT_CONFLICT);
 			}
 			
 			if( intersectionRange != null && intersectionRange.isEmpty() )
-				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
+				throw new ConflictConditionException(SCRIPT_CONFLICT);
 			
 			innerCondition.setRange(intersectionRange);
 			
 		}
 	}
 	
-	private void mergeInnerWithOuterConditions(Condition innerCondition, Stack<Condition> stackOuterConditions)
+	private void mergeInnerWithOuterConditionsOtherControlBlocks(Condition innerCondition, Stack<Condition> stackOuterConditions)
 			throws ConflictConditionException, NotSupportedException {
 		
 		// Find the outer condition belong to the same device with current inner one
 		Condition outerCondition = 
 				stackOuterConditions.stream().filter(c -> c.getName().equals(innerCondition.getName())).findAny().orElse(null);
 		
-		if( Boolean.class.equals(innerCondition.getValueClassType()) ){
-			if( outerCondition != null 
-					&& innerCondition != null 
-					&& !checkEqualBooleanConditions(innerCondition, outerCondition)){
-				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
+		if( Boolean.class.equals(innerCondition.getValueClassType()) )
+			mergeInnerWithOuterConditionsOtherControlBlocksCaseBooleanValueCondition(innerCondition, outerCondition);
+		
+		else if( Float.class.equals(innerCondition.getValueClassType()))
+			mergeInnerWithOuterConditionsOtherControlBlocksCaseFloatValueCondition(innerCondition, outerCondition);
+		
+		else throw new NotSupportedException("Have not supported this type of value yet");
+		
+	}
+
+	private void mergeInnerWithOuterConditionsOtherControlBlocksCaseFloatValueCondition(
+			Condition innerCondition, Condition outerCondition) throws ConflictConditionException {
+		
+		Range<Float> outerConditionRange = null;
+		if( outerCondition == null || outerCondition.getRange() == null)
+			outerConditionRange = Range.all();
+		else outerConditionRange = outerCondition.getRange();
+		
+		float value = (float) innerCondition.getValue();
+		Range<Float> intersectionRange = null;
+		
+		try{
+			switch (innerCondition.getOperator()) {
+			case GREATER_OR_EQUAL:
+				intersectionRange = outerConditionRange.intersection(Range.atLeast(value));
+				break;
+			case GREATER_THAN:
+				intersectionRange = outerConditionRange.intersection(Range.greaterThan(value));
+				break;
+			case LESS_OR_EQUAL:
+				intersectionRange = outerConditionRange.intersection(Range.atMost(value));
+				break;
+			case LESS_THAN:
+				intersectionRange = outerConditionRange.intersection(Range.lessThan(value));
+				break;
 			}
+		} // Exception when intersect mean that script is conflicted
+		catch(IllegalArgumentException e){
+			throw new ConflictConditionException(SCRIPT_CONFLICT);
 		}
-		else if( Float.class.equals(innerCondition.getValueClassType())){
-			
-			Range<Float> outerConditionRange = null;
-			if( outerCondition == null || outerCondition.getRange() == null)
-				outerConditionRange = Range.all();
-			else outerConditionRange = outerCondition.getRange();
-			
-			float value = (float) innerCondition.getValue();
-			Range<Float> intersectionRange = null;
-			
-			try{
-				switch (innerCondition.getOperator()) {
-				case GREATER_OR_EQUAL:
-					intersectionRange = outerConditionRange.intersection(Range.atLeast(value));
-					break;
-				case GREATER_THAN:
-					intersectionRange = outerConditionRange.intersection(Range.greaterThan(value));
-					break;
-				case LESS_OR_EQUAL:
-					intersectionRange = outerConditionRange.intersection(Range.atMost(value));
-					break;
-				case LESS_THAN:
-					intersectionRange = outerConditionRange.intersection(Range.lessThan(value));
-					break;
-				}
-			} // Exception when intersect mean that script is conflicted
-			catch(IllegalArgumentException e){
-				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
-			}
-			
-			// Special case : (30-35) ^ [35-40) = [35,35) so called empty range , also mean script is conflicted 
-			if( intersectionRange != null && intersectionRange.isEmpty() )
-				throw new ConflictConditionException(SCRIPT_CONFLICT_ITSELF);
-			
-			innerCondition.setRange(intersectionRange);
-		}
-		else {
-			throw new NotSupportedException("Have not supported this type of value yet");
+		
+		// Special case : (30-35) ^ [35-40) = [35,35) so called empty range , also mean script is conflicted 
+		if( intersectionRange != null && intersectionRange.isEmpty() )
+			throw new ConflictConditionException(SCRIPT_CONFLICT);
+		
+		innerCondition.setRange(intersectionRange);
+	}
+
+	private void mergeInnerWithOuterConditionsOtherControlBlocksCaseBooleanValueCondition(
+			Condition innerCondition, Condition outerCondition) throws ConflictConditionException {
+		
+		if( outerCondition != null 
+				&& innerCondition != null 
+				&& !checkEqualBooleanConditions(innerCondition, outerCondition)){
+			throw new ConflictConditionException(SCRIPT_CONFLICT);
 		}
 	}
 
@@ -397,11 +441,8 @@ public class ScenarioConflictValidator {
 			if (block instanceof ControlBlockIf) {
 				ControlBlockIf blockIf = (ControlBlockIf) block;
 
-				return
-						 areNestedConditionsMatching(conditionToCompare,
-								blockIf.getAction().getBlocks(),mapRange)
-						||  isConditionTheSameOrOverlap(conditionToCompare,
-								blockIf.getCondition(),mapRange);
+				return areNestedConditionsMatching(conditionToCompare, blockIf.getAction().getBlocks(),mapRange)
+						|| isConditionTheSameOrOverlap(conditionToCompare, blockIf.getCondition(),mapRange);
 			} else if (block instanceof ControlBlockIfElse) {
 				ControlBlockIfElse blockIfElse = (ControlBlockIfElse) block;
 				Condition ifCondition = blockIfElse.getCondition();
@@ -419,10 +460,9 @@ public class ScenarioConflictValidator {
 						|| isConditionTheSameOrOverlap(conditionToCompare, elseCondition,mapRangeElseBlock);
 			} else if (block instanceof ControlBlockFromTo) {
 				ControlBlockFromTo blockFromTo = (ControlBlockFromTo) block;
-				// TODO : check here
 				return areNestedConditionsMatching(conditionToCompare,
 						blockFromTo.getAction().getBlocks(),mapRange)
-						|| checkConditionRange(conditionToCompare, blockFromTo.getCondition()) ;
+						|| checkConditionRangeControlBlockFromTo(conditionToCompare, blockFromTo.getCondition()) ;
 			}
 
 		}
@@ -430,17 +470,14 @@ public class ScenarioConflictValidator {
 		return false;
 	}
 
-	private boolean checkConditionRange(Condition conditionToCompare, Condition existedCondition){
+	private boolean checkConditionRangeControlBlockFromTo(Condition conditionToCompare, Condition existedCondition){
 		// Basic case
 		if (conditionToCompare == null || existedCondition == null)
 			return false;
 		
 		Range conditionRange = conditionToCompare.getRange();
 		Range existedConditionRange = existedCondition.getRange();
-		if( conditionRange != null  && existedConditionRange != null
-				&& conditionToCompare.getValueClassType() != null
-				&& conditionToCompare.getValueClassType().equals(LocalTime.class)
-				&& conditionToCompare.getValueClassType().equals(existedCondition.getValueClassType())){
+		if( areTwoRangeValueEqualLocalTime(conditionToCompare, existedCondition,conditionRange, existedConditionRange)){
 			Range intersection = null;
 			try{
 			 intersection = conditionRange.intersection(existedConditionRange);
@@ -456,6 +493,15 @@ public class ScenarioConflictValidator {
 		}
 		
 		return false;
+	}
+
+	private boolean areTwoRangeValueEqualLocalTime(
+			Condition conditionToCompare, Condition existedCondition,
+			Range conditionRange, Range existedConditionRange) {
+		return conditionRange != null  && existedConditionRange != null
+				&& conditionToCompare.getValueClassType() != null
+				&& conditionToCompare.getValueClassType().equals(LocalTime.class)
+				&& conditionToCompare.getValueClassType().equals(existedCondition.getValueClassType());
 	}
 	
 	private Condition getElseCondition(Condition ifCondition)
@@ -514,12 +560,12 @@ public class ScenarioConflictValidator {
 			return false;
 
 		// Boolean value -> check equal : name , operator , value
-		if (conditionToCompare.getValue().getClass().equals(Boolean.class)) {
+		if (Boolean.class.equals(conditionToCompare.getValue().getClass())) {
 			return checkEqualBooleanConditions(conditionToCompare,
 					existedCondition);
 		}
 		// Float value -> check range
-		else if (conditionToCompare.getValue().getClass().equals(Float.class)) {
+		else if (Float.class.equals(conditionToCompare.getValue().getClass())) {
 			return checkOverlapRange(conditionToCompare, existedCondition,
 					mapRange);
 		}

@@ -63,6 +63,10 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase10_ManyExistingScripts() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5,GREATER_OR_EQUAL,35.5f)
@@ -261,6 +265,9 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase4() throws Exception{
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -363,6 +370,10 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase6() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -397,6 +408,10 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase6_3() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, EQUAL, 35.5f)
@@ -429,6 +444,10 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase6_4() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, EQUAL, 35.5f)
@@ -498,6 +517,10 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase6_9() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, LESS_THAN, 35.5f)
@@ -530,6 +553,10 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase6_1() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -564,6 +591,10 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase6_2() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
@@ -741,6 +772,10 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase7_1() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.action(TURN_OFF, LIGHT_3)
@@ -929,6 +964,10 @@ public class ScenarioValidatorTest {
 	
 	@Test
 	public void testCase12_1() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -952,6 +991,10 @@ public class ScenarioValidatorTest {
 	
 	@Test
 	public void testCase12_2() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -979,6 +1022,10 @@ public class ScenarioValidatorTest {
 	 */
 	@Test
 	public void testCase13() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -1014,6 +1061,31 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
+	// TODO: Maybe handle if have time
+	//@Test
+	public void test_counter_action_FromTo_clause_vs_If_clause_but_outer_condition_match() throws Exception {
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("12:01", "13:00")
+				.action(TURN_ON, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.FromTo("04:00", "12:00")
+				.If(TSENSOR_6, GREATER_OR_EQUAL, 30)
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endFromTo()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
 	private void runTestScriptValidation(String inputScript, List<String> existedScripts, boolean expectedResult) throws ParseException, NotSupportedException, ConflictConditionException{
 		
 		Pair<Scenario,List<Scenario>> pairInputAndExistedScenarios = scriptToScenario(inputScript,existedScripts);
@@ -1026,13 +1098,13 @@ public class ScenarioValidatorTest {
 		assertThat(isValidate, is(expectedResult));
 	}
 	
+	// TODO: Home constant 
 	private Pair<Scenario,List<Scenario>> scriptToScenario(String inputScript, List<String> existedScripts) throws ParseException, NotSupportedException, ConflictConditionException{
 		Scenario inputScenario = scenarioService.JSONToScenario(ConstantUtil.HOME_ID, inputScript);
 		List<Scenario> existedScenarios = new ArrayList<>();
 		for (String existedScript : existedScripts) {
 			Scenario existedScenario = scenarioService.JSONToScenario(ConstantUtil.HOME_ID, existedScript);
-			if( scenarioConflictService.isNotConflicted(existedScenario, null) )
-				existedScenarios.add(existedScenario);
+			existedScenarios.add(existedScenario);
 		}
 		
 		return new Pair<>(inputScenario, existedScenarios);
