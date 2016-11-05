@@ -25,13 +25,13 @@ public class DeviceTypeDaoImpl extends CommonDaoImpl<DeviceTypeEntity> implement
 				.append("device_type.main_action_id, ")
 				.append("device_type.image_url, ").append("device_type.name ")
 				.append("FROM ").append("device, ")
-				.append("device_type ")
-				.append("WHERE ")
+				.append("device_type ");
+				/*.append("WHERE ")
 				.append("device.home_id = :homeId AND ")
-				.append("device.device_type_id = device_type.id ;");
+				.append("device.device_type_id = device_type.id ;")*/
 		
 		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query.toString()).addEntity(DeviceTypeEntity.class);
-		sqlStatement.setParameter("homeId", homeId);
+		//sqlStatement.setParameter("homeId", homeId);
 		
 		return sqlStatement.list();
 	}

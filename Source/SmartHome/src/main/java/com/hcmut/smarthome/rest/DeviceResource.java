@@ -159,7 +159,7 @@ public class DeviceResource {
 		}
 		
 		return new ResponseEntity<List<DeviceType>>(deviceTypeService.getAll(
-				ConstantUtil.VALID_USER_ID, homeId), HttpStatus.OK);
+				authService.getCurrentUserId(), homeId), HttpStatus.OK);
 	}
 
 	/**
