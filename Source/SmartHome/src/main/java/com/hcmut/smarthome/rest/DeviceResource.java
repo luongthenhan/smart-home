@@ -21,7 +21,6 @@ import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IDeviceTypeService;
 import com.hcmut.smarthome.service.IScenarioService;
-import com.hcmut.smarthome.utils.ConstantUtil;
 import com.hcmut.smarthome.utils.NotFoundException;
 
 @CrossOrigin
