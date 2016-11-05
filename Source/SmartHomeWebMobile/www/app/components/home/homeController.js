@@ -7,7 +7,7 @@ app.controller('HomeController', ['MainService', '$routeParams', function (MainS
 
     self.init = function() {
         MainService.devicePanelCtrlList = [];
-        MainService.getHomes(self);
+        MainService.getHome(self);
     }
 
     self.updateModeChange = function() {

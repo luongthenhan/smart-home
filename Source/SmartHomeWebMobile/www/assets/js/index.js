@@ -23,6 +23,9 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when('/register_success', {
             templateUrl: 'app/components/register_success/register_success.html',
         })
+        .when('/homes', {
+            templateUrl: 'app/components/home_list/homeListView.html',
+        })
         .otherwise({
             redirectTo: "/login"
         })

@@ -1,0 +1,63 @@
+<navbar></navbar>
+<div class="wrapper-content" ng-controller="HomeListController as homeListCtrl" ng-init="homeListCtrl.init()">
+    <home-panel ng-repeat="home in homeListCtrl.homes" home="home"></home-panel>
+
+    <button type="button"
+            data-toggle="modal"
+            data-target="#add-home-modal"
+            class="btn device-list-add-device-button">
+        <span class="glyphicon glyphicon-plus"></span>
+        Add Home
+    </button>
+
+    <!-- Add home modal -->
+    <div class="modal device-list-add-device-modal" id="add-home-modal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add New Home</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <div class="row form-row">
+                                <div class="col-xs-12">
+                                    <input type="text" class="form-control input-field"
+                                           ng-model="homeListCtrl.newHomeName"
+                                           placeholder="Name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <textarea class="form-control input-field"
+                                              ng-model="homeListCtrl.newHomeAddress" rows="2"
+                                              placeholder="Address"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <textarea class="form-control input-field"
+                                              ng-model="homeListCtrl.newHomeDescription" rows="3"
+                                              placeholder="Description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            ng-click="homeListCtrl.addHome()"
+                            class="btn modal-confirm-btn add-script-btn"
+                            data-dismiss="modal">Add</button>
+                    <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

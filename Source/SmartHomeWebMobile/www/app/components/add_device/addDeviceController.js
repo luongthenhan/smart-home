@@ -7,6 +7,7 @@ app.controller('AddDeviceController', function($location) {
     self.description = "";
 
     self.addDevice = function() {
+
         $location.path("/home");
     }
 })

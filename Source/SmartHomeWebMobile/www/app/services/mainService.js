@@ -15,6 +15,7 @@ app.service('MainService', function($http, $location) {
     self.navBarCtrl = null;
 
     self.modes = [];
+    self.selectedHomeId = -1;
     self.selectedHome = null;
     self.selectedMode = null;
     self.selectedDeviceType = null;
@@ -53,8 +54,8 @@ app.service('MainService', function($http, $location) {
         });
     }
 
-    self.getHomes = function(controller) {
-        $http.get(self.hostDomain + "/homes", {
+    self.getHome = function(controller) {
+        $http.get(self.hostDomain + "/homes/" + self.selectedHomeId, {
             headers: {
                 'X-Auth-Token': self.token
             }
@@ -62,7 +63,7 @@ app.service('MainService', function($http, $location) {
             //TODO: Handle home lists
 
             //STUB: select first home and first mode in home lists and its device types
-            self.selectedHome = response.data[1];
+            self.selectedHome = response.data;
 
             self.modes = self.selectedHome.modes;
             controller.modes = self.modes;
@@ -75,8 +76,17 @@ app.service('MainService', function($http, $location) {
                     self.navBarCtrl.selectedMode = controller.selectedMode;
                 }
             })
-
             self.setUpForSelectedMode(controller);
+        })
+    }
+
+    self.getHomes = function(controller) {
+        $http.get(self.hostDomain + "/homes", {
+            headers: {
+                'X-Auth-Token': self.token
+            }
+        }).then(function(response){
+            controller.homes = response.data;
         })
     }
 
@@ -490,5 +500,21 @@ app.service('MainService', function($http, $location) {
         })
         self.selectedModeAvailableGpios.push(device.gpio);
         self.selectedModeAvailableGpios = $.unique(self.selectedModeAvailableGpios);
+    }
+
+    self.addHome = function (controller) {
+        var home = {"name" : controller.newHomeName, "address" : controller.newHomeAddress,
+        "description" : controller.newHomeDescription};
+        $http.post(self.hostDomain + "homes", home,{
+            headers: {
+                'X-Auth-Token': self.token
+            }
+        }).
+            success(function (data, status, header, config) {
+                controller.init();
+            })
+            .error(function (data, status, header, config) {
+
+            });
     }
 })
