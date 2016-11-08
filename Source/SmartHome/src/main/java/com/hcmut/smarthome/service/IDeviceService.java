@@ -31,11 +31,13 @@ public interface IDeviceService {
 	
 	int addDevice(int homeId, int deviceTypeId, Device device) throws Exception;
 	
-	boolean deleteDevice(int homeId, int deviceId) throws NotFoundException;
+	boolean deleteDevice(int homeId, int deviceId) throws Exception;
 
 	boolean updatePartialDevice(int homeId, int deviceId, int deviceTypeId, Device updatedDevice) throws Exception;
 
 	boolean isDeviceEnabled(int deviceId) throws Exception;
 
 	Integer getDeviceIdGivenNameAndHomeId(int homeId, String deviceName) throws NotFoundException;
+
+	List<Script> getAllScriptsGivenHome(int homeId) throws Exception;
 }

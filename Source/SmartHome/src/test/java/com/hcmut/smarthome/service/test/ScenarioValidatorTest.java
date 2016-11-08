@@ -1061,6 +1061,43 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
+	// TODO: Good to demo
+	@Test
+	public void test_disorder_conditions_with_counter_action() throws Exception {
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(TSENSOR_6, LESS_THAN, 40 )
+					.action(TURN_OFF, LIGHT_3)
+				.Else()
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_6, LESS_THAN, 40 )
+				.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+					.action(TURN_ON, LIGHT_3)
+				.Else()
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
 	// TODO: Maybe handle if have time
 	//@Test
 	public void test_counter_action_FromTo_clause_vs_If_clause_but_outer_condition_match() throws Exception {

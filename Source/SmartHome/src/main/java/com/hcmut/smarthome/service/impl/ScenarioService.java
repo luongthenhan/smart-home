@@ -1,6 +1,5 @@
 package com.hcmut.smarthome.service.impl;
 
-import static com.hcmut.smarthome.utils.ConstantUtil.INPUT_SCRIPT_HAS_SAME_CONTENT_WITH_EXISTING_ONE;
 import static com.hcmut.smarthome.utils.ConstantUtil.INPUT_SCRIPT_HAS_SAME_NAME_WITH_EXISTING_ONE_IN_SAME_MODE;
 
 import java.util.ArrayList;
@@ -63,26 +62,15 @@ public class ScenarioService implements IScenarioService {
 			if( scenario == null || script.getContent() == null )
 				continue;
 			
-			if( isScriptExisted(script.getContent(), existedScript.getContent()) ){
-				LOGGER.debug(INPUT_SCRIPT_HAS_SAME_CONTENT_WITH_EXISTING_ONE);
-				throw new Exception(INPUT_SCRIPT_HAS_SAME_CONTENT_WITH_EXISTING_ONE);
-			}
-				
 			Scenario existedScenario = scriptToScenario(homeId, existedScript);
 			existedScenarios.add(existedScenario);
 		}
 		
 		if( scenario != null )
-			return isNotConflicted(scenario, existedScenarios);
+			return isNotDuplicated(scenario, existedScenarios)
+					&& isNotConflicted(scenario, existedScenarios);
 		return true;
 	}
-	
-	private boolean isScriptExisted(String inputScriptContent, String existedScriptContent){
-		if( inputScriptContent.contains(existedScriptContent) || existedScriptContent.contains(inputScriptContent) )
-			return true;
-		return false;
-	}
-	
 	
 	private boolean checkExistingName(String inputScriptName, String existedScriptName) {
 		if( inputScriptName != null && existedScriptName != null){
@@ -92,6 +80,12 @@ public class ScenarioService implements IScenarioService {
 				return true;
 		}
 		return false;
+	}
+	
+	private boolean isNotDuplicated(Scenario inputScenario, List<Scenario> existedScenarios) 
+			throws NotSupportedException, ConflictConditionException{
+		
+		return scenarioConflictValidator.checkDuplicateScenario(inputScenario, existedScenarios);
 	}
 	
 	private boolean isNotConflicted(Scenario inputScenario,

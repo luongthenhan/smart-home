@@ -47,6 +47,7 @@ public class DeviceResource {
 	 * @param deviceId
 	 * @param updatedDevice
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(method = RequestMethod.DELETE, path = "/device-types/{deviceTypeId}/devices/{deviceId}")
 	public ResponseEntity<ResponeString> deleteDevice(@PathVariable int homeId,
@@ -58,8 +59,8 @@ public class DeviceResource {
 
 		try {
 			deviceService.deleteDevice(homeId, deviceId);
-		} catch (NotFoundException e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 	}
@@ -109,19 +110,7 @@ public class DeviceResource {
 			@PathVariable int deviceId, @PathVariable int deviceTypeId,
 			@RequestBody Device updatedDevice) {
 		
-		if(!authService.isAccessable(homeId)) {
-			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
-		}
-		
-		try {
-			if (deviceService.updateDevice(homeId, deviceId, deviceTypeId,
-					updatedDevice))
-				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
-			else
-				return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
-			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
-		}
+		return updatePartialDevice(homeId, deviceId, deviceTypeId, updatedDevice);
 	}
 
 	@RequestMapping(method = RequestMethod.PATCH, path = "/device-types/{deviceTypeId}/devices/{deviceId}")

@@ -5,7 +5,10 @@ import static com.hcmut.smarthome.utils.ConstantUtil.ADD_UNSUCCESSFULLY;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.script.ScriptException;
+import javax.transaction.NotSupportedException;
 
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +26,17 @@ import com.hcmut.smarthome.entity.ScriptEntity;
 import com.hcmut.smarthome.entity.ScriptTypeEntity;
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
+import com.hcmut.smarthome.scenario.model.Condition;
+import com.hcmut.smarthome.scenario.model.ControlBlock;
+import com.hcmut.smarthome.scenario.model.ControlBlockFromTo;
+import com.hcmut.smarthome.scenario.model.ControlBlockIfElse;
+import com.hcmut.smarthome.scenario.model.IBlock;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
+import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
+import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.NotFoundException;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 
@@ -95,29 +105,82 @@ public class DeviceService implements IDeviceService {
 		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
 		
 		if( deviceDao.update(deviceEntity) ){
-			updateScenarioStatusIfDeviceStatusChanged(deviceId, updatedDevice,
+			updateScenarioStatusIfDeviceStatusChanged(homeId, deviceId, updatedDevice.isEnabled(),
 					isDeviceStatusChanged);
 			return true;
 		}
 		return false;
 	}
 
-	private void updateScenarioStatusIfDeviceStatusChanged(int deviceId,
-			Device updatedDevice, boolean isDeviceStatusChanged) {
-		if( isDeviceStatusChanged ){
-			if( updatedDevice.isEnabled() )
-				scenarioService.updateAllScenarioStatusOfDevice(deviceId, ScenarioStatus.RUNNING);
-			else scenarioService.updateAllScenarioStatusOfDevice(deviceId, ScenarioStatus.STOPPING);
+	private void updateScenarioStatusIfDeviceStatusChanged(int homeId, int deviceId,
+			boolean isUpdatedDeviceEnabled, boolean isDeviceStatusChanged) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException, Exception {
+		if( !isDeviceStatusChanged )
+			return;
+			
+		List<Script> scripts = getAllScriptsGivenHome(homeId);
+		for (Script script : scripts) {
+			Scenario scenario = scenarioService.scriptToScenario(homeId, script);
+			
+			if( hasScenarioReferencedToDevice(deviceId, scenario.getBlocks()) ){
+				if( isUpdatedDeviceEnabled )
+					scenarioService.updateScenarioStatus(script.getId(), ScenarioStatus.RUNNING);
+				else scenarioService.updateScenarioStatus(script.getId(), ScenarioStatus.STOPPING);
+			}
 		}
+			
 	}
 	
 	@Override
-	public boolean deleteDevice(int homeId, int deviceId) throws NotFoundException {
-		if( deviceDao.delete(deviceId) ){
-			scenarioService.updateAllScenarioStatusOfDevice(deviceId, ScenarioStatus.STOP_FOREVER);
-			return true;
+	public boolean deleteDevice(int homeId, int deviceId) throws Exception {
+		scenarioService.updateAllScenarioStatusOfDevice(deviceId, ScenarioStatus.STOP_FOREVER);
+		
+		List<Script> scripts = getAllScriptsGivenHome(homeId);
+		for (Script script : scripts) {
+			Scenario scenario = scenarioService.scriptToScenario(homeId, script);
+			if( hasScenarioReferencedToDevice(deviceId, scenario.getBlocks()) ){
+				deleteScript(deviceId, script.getId());
+				scenarioService.updateScenarioStatus(script.getId(), ScenarioStatus.STOP_FOREVER);
+			}
 		}
+		
+		if ( deviceDao.delete(deviceId))
+			return true;	
 		throw new NotFoundException("Can't find device with id " + deviceId);
+	}
+	
+	private boolean hasScenarioReferencedToDevice(int deviceId, List<IBlock> blocks){
+		if (blocks == null)
+			return false;
+
+		for (IBlock block : blocks) {
+			if (block instanceof SimpleAction) {
+				SimpleAction simpleAction = (SimpleAction) block;
+				if( simpleAction.getDeviceId() == deviceId )
+					return true;
+			}
+			else if ( block instanceof ControlBlockFromTo ){
+				ControlBlockFromTo blockFromTo = (ControlBlockFromTo) block;
+				return hasScenarioReferencedToDevice(deviceId, blockFromTo.getAction().getBlocks());
+			}
+			// Block If, IfElse
+			else if (block instanceof ControlBlock) {
+				ControlBlock blockIf = (ControlBlock) block;
+				Condition innerIfCondition = blockIf.getCondition();
+				
+				if( Integer.parseInt(innerIfCondition.getName()) == deviceId )
+					return true;
+				
+				boolean needToDelete = hasScenarioReferencedToDevice(deviceId, blockIf.getAction().getBlocks());
+
+				if (block instanceof ControlBlockIfElse) {
+					ControlBlockIfElse blockIfElse = (ControlBlockIfElse) block;
+					needToDelete = hasScenarioReferencedToDevice(deviceId, blockIfElse.getAction().getBlocks());
+				}
+				
+				return needToDelete;
+			}
+		}
+		return false;
 	}
 	
 	@Override
@@ -345,5 +408,13 @@ public class DeviceService implements IDeviceService {
 	
 	private boolean isDeviceNameExisted(int homeId, String deviceName){
 		return deviceDao.isDeviceNameExisted(homeId, deviceName);
+	}
+	
+	@Override
+	public List<Script> getAllScriptsGivenHome(int homeId) throws Exception{
+		List<ScriptEntity> scripts = scriptDao.getAllScripts(homeId);
+		if( scripts != null )
+			return ScriptConverter.toListModel(scripts);
+		else throw new Exception("Can't get scripts with home id " + homeId);
 	}
 }

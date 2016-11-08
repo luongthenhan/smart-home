@@ -43,18 +43,9 @@ import com.hcmut.smarthome.utils.Pair;
 @Service
 public class ScenarioConflictValidator {
 	
+	private static final String THIS_SCENARIO_HAS_ALREADY_EXISTED_PLEASE_CONSIDER_WHEN_ADD_MORE = "This scenario has already existed! Please delete an old one before add new.";
 	private static final Boolean PASS_INNERMOST_CONDITION_RANGE = true;
 
-
-	// TODO:
-	/* FIX 
-	 * 1. range ( 34 - 65 ) and range ( -inf, 30 )
-	 * 2. Self conflict 
-	 * 3. Script contains another one or vice versa -> return false ( check by string compare )
-	 * 
-	 * New
-	 * 4. If else with same action
-	 */	
 	public boolean isNotConflicted(Scenario inputScenario,
 			List<Scenario> existedScenarios) throws NotSupportedException, ConflictConditionException {
 
@@ -143,6 +134,58 @@ public class ScenarioConflictValidator {
 				&& !condition2.getValueClassType().equals(LocalTime.class);
 	}
 
+	public List<Pair<List<Condition>, SimpleAction>> getPairActionAndFullConditions(
+			List<IBlock> blocks, Stack<Condition> stackOuterConditions)
+			throws NotSupportedException, ConflictConditionException {
+
+		List<Pair<List<Condition>, SimpleAction>> pairs = new ArrayList<>();
+
+		if (blocks == null)
+			return pairs;
+
+		// In case that one block has many actions , 
+		// if we pop stack ( to exclude the condition ) as soon as we encounter action
+		// then all below others, if any , will not find appropriate conditions to make pair  
+		for (IBlock block : blocks) {
+			if (block instanceof SimpleAction) {
+				pairs.add(new Pair<List<Condition>, SimpleAction>(
+						new ArrayList<>(stackOuterConditions) , (SimpleAction) block));
+			}
+			else if ( block instanceof ControlBlockFromTo ){
+				ControlBlockFromTo blocksFromTo = (ControlBlockFromTo) block;
+				Condition innerFromToCondition = blocksFromTo.getCondition();
+				stackOuterConditions.push(innerFromToCondition);
+				
+				pairs.addAll(getPairActionAndFullConditions(
+						blocksFromTo.getAction().getBlocks(),
+						stackOuterConditions));
+			}
+			// Block If, IfElse
+			else if (block instanceof ControlBlock) {
+				Condition innerIfCondition = ((ControlBlock) block).getCondition();
+				stackOuterConditions.push(innerIfCondition);
+				
+				pairs.addAll(getPairActionAndFullConditions(
+								((ControlBlock) block).getAction().getBlocks(),
+								stackOuterConditions));
+
+				if (block instanceof ControlBlockIfElse) {
+					ControlBlockIfElse blockIfElse = (ControlBlockIfElse) block;
+					Condition innerElseCondition = getElseCondition(blockIfElse
+							.getCondition());
+					stackOuterConditions.push(innerElseCondition);
+					pairs.addAll(getPairActionAndFullConditions(
+									blockIfElse.getElseAction().getBlocks(),
+									stackOuterConditions));
+				}
+			}
+		}
+		if( !stackOuterConditions.isEmpty() )
+			stackOuterConditions.pop();
+		
+		return pairs;
+	}
+	
 	/**
 	 * Find the list pair of simple actions and conditions of input scenario used to compare to existing list of scenario
 	 * @param blocks list blocks of input scenario
@@ -155,36 +198,36 @@ public class ScenarioConflictValidator {
 			List<IBlock> blocks, Stack<Condition> stackOuterConditions)
 			throws NotSupportedException, ConflictConditionException {
 
-		List<Pair<Condition, SimpleAction>> pair = new ArrayList<>();
+		List<Pair<Condition, SimpleAction>> pairs = new ArrayList<>();
 
 		if (blocks == null)
-			return pair;
+			return pairs;
 
 		// In case that one block has many actions , 
 		// if we pop stack ( to exclude the condition ) as soon as we encounter action
 		// then all below others, if any , will not find appropriate conditions to make pair  
 		for (IBlock block : blocks) {
 			if (block instanceof SimpleAction) {
-				getPairActionsAndMergedConditionsInSimpleActionBlock(
-						stackOuterConditions, pair, block);
+				getPairActionAndMergedConditionInSimpleActionBlock(
+						stackOuterConditions, pairs, block);
 			}
 			else if ( block instanceof ControlBlockFromTo ){
-				getPairActionsAndMergedConditionsInControlBlockFromTo(
-						stackOuterConditions, pair, block);
+				getPairActionAndMergedConditionInControlBlockFromTo(
+						stackOuterConditions, pairs, block);
 			}
 			// Block If, IfElse
 			else if (block instanceof ControlBlock) {
-				getPairActionsAndMergedConditionsInOtherControlBlocks(
-						stackOuterConditions, pair, block);
+				getPairActionAndMergedConditionInOtherControlBlocks(
+						stackOuterConditions, pairs, block);
 			}
 		}
 		if( !stackOuterConditions.isEmpty() )
 			stackOuterConditions.pop();
 		
-		return pair;
+		return pairs;
 	}
 
-	private void getPairActionsAndMergedConditionsInOtherControlBlocks(
+	private void getPairActionAndMergedConditionInOtherControlBlocks(
 			Stack<Condition> stackOuterConditions,
 			List<Pair<Condition, SimpleAction>> pair, IBlock block)
 			throws ConflictConditionException, NotSupportedException {
@@ -213,7 +256,7 @@ public class ScenarioConflictValidator {
 		}
 	}
 
-	private void getPairActionsAndMergedConditionsInControlBlockFromTo(
+	private void getPairActionAndMergedConditionInControlBlockFromTo(
 			Stack<Condition> stackOuterConditions,
 			List<Pair<Condition, SimpleAction>> pair, IBlock block)
 			throws ConflictConditionException, NotSupportedException {
@@ -227,15 +270,15 @@ public class ScenarioConflictValidator {
 				stackOuterConditions));
 	}
 
-	private void getPairActionsAndMergedConditionsInSimpleActionBlock(
+	private void getPairActionAndMergedConditionInSimpleActionBlock(
 			Stack<Condition> stackOuterConditions,
 			List<Pair<Condition, SimpleAction>> pair, IBlock block) {
-		Condition topOuterCondition = null;
+		Condition conditionNearestToCurrentAction = null;
 		if (stackOuterConditions != null && !stackOuterConditions.empty())
-			topOuterCondition = stackOuterConditions.peek();
+			conditionNearestToCurrentAction = stackOuterConditions.peek();
 		
 		pair.add(new Pair<Condition, SimpleAction>(
-				topOuterCondition, (SimpleAction) block));
+				conditionNearestToCurrentAction, (SimpleAction) block));
 	}
 
 	private void mergeInnerWithOuterConditionControlBlockFromTo(Condition innerCondition, Stack<Condition> stackOuterConditions)
@@ -653,5 +696,52 @@ public class ScenarioConflictValidator {
 			Condition conditionToCompare, Map<String, Boolean> mapRange) {
 		Boolean value = mapRange.get(conditionToCompare.getName());
 		return value != null && value.equals(PASS_INNERMOST_CONDITION_RANGE);
+	}
+	
+	public boolean checkDuplicateScenario(Scenario input, List<Scenario> existings) throws NotSupportedException, ConflictConditionException{
+		if( input == null || existings == null || existings.isEmpty())
+			return false;
+		
+		List<Pair<List<Condition>, SimpleAction>> pairActionAndFullConditionsInputScenario = 
+				getPairActionAndFullConditions(input.getBlocks(), new Stack<>());
+		
+		
+		for (Scenario existing : existings) {
+			List<Pair<List<Condition>, SimpleAction>> pairActionAndFullConditionsExistedScenario = 
+					getPairActionAndFullConditions(existing.getBlocks(), new Stack<>());
+			
+			boolean hasAllPairMatch = checkAllPairMatching(pairActionAndFullConditionsInputScenario, pairActionAndFullConditionsExistedScenario);
+			if( hasAllPairMatch )
+				throw new ConflictConditionException(THIS_SCENARIO_HAS_ALREADY_EXISTED_PLEASE_CONSIDER_WHEN_ADD_MORE);
+		}
+		
+		return false;
+		
+	}
+
+	private boolean checkAllPairMatching(
+			List<Pair<List<Condition>, SimpleAction>> pairActionAndFullConditionsInputScenario,
+			List<Pair<List<Condition>, SimpleAction>> pairActionAndFullConditionsExistedScenario) {
+		
+		boolean hasAllPairMatch = false;
+		for (Pair<List<Condition>, SimpleAction> pairInput: pairActionAndFullConditionsInputScenario) {
+			
+			boolean isAnyPairMatching = false;
+			for (Pair<List<Condition>, SimpleAction> pairExisting: pairActionAndFullConditionsExistedScenario) {
+				
+				if( !pairInput.getSecond().equals(pairExisting.getSecond()) )
+					continue;
+					
+				if( pairInput.getFirst().containsAll(pairExisting.getFirst())
+						|| pairExisting.getFirst().containsAll(pairInput.getFirst()) ){
+					isAnyPairMatching = true;
+					break;
+				}
+			}
+			hasAllPairMatch = isAnyPairMatching;
+			if( !isAnyPairMatching )
+				break;
+		}
+		return hasAllPairMatch;
 	}
 }

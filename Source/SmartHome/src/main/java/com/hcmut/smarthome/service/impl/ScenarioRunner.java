@@ -150,28 +150,36 @@ public class ScenarioRunner {
 	}
 	
 	public void updateScenarioStatus(int scenarioId, ScenarioStatus status){
-		if (mapScenarioController.containsKey(scenarioId))
+		if (mapScenarioController.containsKey(scenarioId)){
 			mapScenarioController.get(scenarioId).setStatus(status);
+			LOGGER.debug(String.format("Update scenario id %s status %s", scenarioId, status));
+		}
 	}
 	
 	public void updateAllScenarioStatusOfHome(int homeId, ScenarioStatus status){
 		mapScenarioController.forEach((key,scenario) -> {
-			if( scenario.getHomeId() == homeId ) 
+			if( scenario.getHomeId() == homeId ){ 
 				scenario.setStatus(status);
+				LOGGER.debug(String.format("Update scenario id %s status %s", scenario.getId(), status));
+			}
 		});
 	}
 
 	public void updateAllScenarioStatusOfDevice(int deviceId, ScenarioStatus status){
 		mapScenarioController.forEach((key,scenario) -> {
-			if( scenario.getDeviceId() == deviceId ) 
+			if( scenario.getDeviceId() == deviceId ) {
 				scenario.setStatus(status);
+				LOGGER.debug(String.format("Update scenario id %s status %s", scenario.getId(), status));
+			}
 		});
 	}
 
 	public void updateAllScenarioStatusOfMode(int modeId, ScenarioStatus status){
 		mapScenarioController.forEach((key,scenario) -> {
-			if( scenario.getModeId() == modeId ) 
+			if( scenario.getModeId() == modeId ) {
 				scenario.setStatus(status);
+				LOGGER.debug(String.format("Update scenario id %s status %s", scenario.getId(), status));
+			}
 		});
 	}
 
