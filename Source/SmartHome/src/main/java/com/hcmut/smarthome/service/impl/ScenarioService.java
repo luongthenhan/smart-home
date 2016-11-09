@@ -23,6 +23,7 @@ import com.hcmut.smarthome.utils.ScriptBuilder;
 @Service
 public class ScenarioService implements IScenarioService {
 
+	private static final String INPUT_SCRIPT_IS_NULL = "Input script is null";
 	private static final String REQUIRED_SCRIPT_TYPE_TO_UPDATE = "Required script type to update";
 	private static final Logger LOGGER = Logger.getLogger(ScenarioService.class);
 	private static final String CUSTOM_SCRIPT_TYPE = "Custom";
@@ -46,8 +47,11 @@ public class ScenarioService implements IScenarioService {
 
 	@Override
 	public boolean isValid(int homeId, int modeId, int deviceId, Script script, Scenario scenario) throws Exception{
-		List<Script> existedScripts = deviceService.getScripts(modeId,deviceId);
 		
+		if( hasScriptNotUpdatedNameAndContent(script) )
+			return true;
+		
+		List<Script> existedScripts = deviceService.getScripts(modeId,deviceId);		
 		List<Scenario> existedScenarios = new ArrayList<Scenario>();
 		for (Script existedScript : existedScripts) {
 			
@@ -59,17 +63,24 @@ public class ScenarioService implements IScenarioService {
 			
 			// Below code is used to check content of the script, if the script didn't have content
 			// so we just skip this step
-			if( scenario == null || script.getContent() == null )
+			if( script.getContent() == null )
 				continue;
 			
 			Scenario existedScenario = scriptToScenario(homeId, existedScript);
 			existedScenarios.add(existedScenario);
 		}
 		
-		if( scenario != null )
+		if( script.getContent() != null )
 			return isNotDuplicated(scenario, existedScenarios)
 					&& isNotConflicted(scenario, existedScenarios);
 		return true;
+	}
+
+	private boolean hasScriptNotUpdatedNameAndContent(Script script) throws Exception {
+		if( script == null )
+			throw new Exception(INPUT_SCRIPT_IS_NULL);
+		
+		return script.getName() == null && script.getContent() == null;
 	}
 	
 	private boolean checkExistingName(String inputScriptName, String existedScriptName) {

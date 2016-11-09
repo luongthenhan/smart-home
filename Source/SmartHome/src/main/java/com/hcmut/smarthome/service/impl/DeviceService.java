@@ -122,9 +122,14 @@ public class DeviceService implements IDeviceService {
 			Scenario scenario = scenarioService.scriptToScenario(homeId, script);
 			
 			if( hasScenarioReferencedToDevice(deviceId, scenario.getBlocks()) ){
-				if( isUpdatedDeviceEnabled )
+				if( isUpdatedDeviceEnabled ){
+					scriptDao.updateScriptStatusToEnable(script.getId());
 					scenarioService.updateScenarioStatus(script.getId(), ScenarioStatus.RUNNING);
-				else scenarioService.updateScenarioStatus(script.getId(), ScenarioStatus.STOPPING);
+				}
+				else {
+					scriptDao.updateScriptStatusToDisable(script.getId());
+					scenarioService.updateScenarioStatus(script.getId(), ScenarioStatus.STOPPING);
+				}
 			}
 		}
 	}

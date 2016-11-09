@@ -38,6 +38,26 @@ public class ScriptDaoImpl extends CommonDaoImpl<ScriptEntity> implements IScrip
 
 	@Override
 	@Transactional
+	public boolean updateScriptStatusToEnable(int scriptId){
+		String query = "update script set enabled = true where id = :scriptId ;";
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
+		sqlStatement.setParameter("scriptId", scriptId);
+		
+		return sqlStatement.executeUpdate() > 0;
+	}
+	
+	@Override
+	@Transactional	
+	public boolean updateScriptStatusToDisable(int scriptId){
+		String query = "update script set enabled = false where id = :scriptId ;";
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
+		sqlStatement.setParameter("scriptId", scriptId);
+		
+		return sqlStatement.executeUpdate() > 0;
+	}
+	
+	@Override
+	@Transactional
 	public void updateScript(int scriptId, ScriptEntity updatedScript) {
 //		updatedScript.setId(scriptId);
 //		try {
