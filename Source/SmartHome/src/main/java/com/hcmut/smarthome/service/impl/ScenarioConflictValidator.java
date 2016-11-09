@@ -59,7 +59,7 @@ public class ScenarioConflictValidator {
 		// Check stupid script here
 		checkBothIfElseBlocksHaveSameAction(listActionsAndConditionsToCompare);
 		
-		if( existedScenarios == null )
+		if( existedScenarios == null || existedScenarios.isEmpty())
 			return true;
 		
 		// Check for each pair

@@ -85,7 +85,7 @@ public class ScenarioService implements IScenarioService {
 	private boolean isNotDuplicated(Scenario inputScenario, List<Scenario> existedScenarios) 
 			throws NotSupportedException, ConflictConditionException{
 		
-		return scenarioConflictValidator.checkDuplicateScenario(inputScenario, existedScenarios);
+		return !scenarioConflictValidator.checkDuplicateScenario(inputScenario, existedScenarios);
 	}
 	
 	private boolean isNotConflicted(Scenario inputScenario,
