@@ -127,7 +127,6 @@ public class DeviceService implements IDeviceService {
 				else scenarioService.updateScenarioStatus(script.getId(), ScenarioStatus.STOPPING);
 			}
 		}
-			
 	}
 	
 	@Override
@@ -325,9 +324,11 @@ public class DeviceService implements IDeviceService {
 		scriptEntity.setName(scriptToSave.getName());
 		scriptEntity.setContent(scriptToSave.getContent());
 		
-		if( scriptToSave.isEnabled() == null )
+		if( scriptToSave.isEnabled() != null )
+			scriptEntity.setEnabled(scriptToSave.isEnabled());
+		else if( deviceDao.isEnabled(deviceId) )
 			scriptEntity.setEnabled(true);
-		else scriptEntity.setEnabled(scriptToSave.isEnabled());
+		else scriptEntity.setEnabled(false);
 		
 		ModeEntity mode = new ModeEntity();
 		mode.setId(modeId);
@@ -366,7 +367,9 @@ public class DeviceService implements IDeviceService {
 		
 		if( updatedDevice.isEnabled() != null )
 			deviceEntity.setEnabled(updatedDevice.isEnabled());
-		else deviceEntity.setEnabled(true);
+		else if( homeDao.isEnabled(homeId) ) 
+			deviceEntity.setEnabled(true);
+		else deviceEntity.setEnabled(false);
 		
 		// TODO: Not implement check valid GPIO yet, because client has checked it already
 		if( updatedDevice.getGPIO() != null && updatedDevice.getGPIO() > 0 )
