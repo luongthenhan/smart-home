@@ -8,7 +8,6 @@ app.controller('LoginController', ['MainService', '$location', function(MainServ
     self.login = function() {
 
         MainService.hostDomain = self.hostDomain;
-        //$location.path("/change_default_user");
         MainService.login(self.username, self.password, self);
     }
 

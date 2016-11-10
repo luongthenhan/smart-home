@@ -7,19 +7,22 @@
             ng-change="deviceListCtrl.updateModeChange()">
     </select>
     <p></p>-->
+
+    <div class="row">
+        <button type="button"
+                data-toggle="modal"
+                data-target="#device-list-add-device-modal"
+                class="btn device-list-add-device-button">
+            <span class="glyphicon glyphicon-plus"></span>
+            Add Device
+        </button>
+    </div>
+
     <div class="row form-row form-title">Devices</div>
     <device-panel ng-repeat="device in deviceListCtrl.devices"
                   device="device"
                   typeimg="{{deviceListCtrl.deviceType.imageURL}}"></device-panel>
     <div class="row empty-message" ng-if="deviceListCtrl.devices.length == 0">Empty</div>
-
-    <button type="button"
-            data-toggle="modal"
-            data-target="#device-list-add-device-modal"
-            class="btn device-list-add-device-button">
-        <span class="glyphicon glyphicon-plus"></span>
-        Add Device
-    </button>
 
     <!-- Add Device Modal -->
     <div class="modal device-list-add-device-modal" id="device-list-add-device-modal" role="dialog">
@@ -66,9 +69,13 @@
                 <div class="modal-footer">
                     <button type="button"
                             ng-click="deviceListCtrl.addDevice()"
+                            onclick="fixCloseModel();"
                             class="btn modal-confirm-btn add-script-btn"
                             data-dismiss="modal">Add</button>
-                    <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+                    <button type="button"
+                            onclick="fixCloseModel();"
+                            class="btn btn-default add-script-btn"
+                            data-dismiss="modal">Cancel</button>
                 </div>
             </div>
 

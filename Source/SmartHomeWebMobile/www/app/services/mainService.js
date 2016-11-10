@@ -30,7 +30,7 @@ app.service('MainService', function($http, $location) {
     // Keep controllers for updating UI
     self.deviceListCtrl = null; // Device List Controller used when in Device List page
     self.devicePanelCtrlList = []; // Device Panel Controller List used when in Device List page
-    self.deviceWhenThenCtrlList = []; // Device When Then Controller List used when in Device List page
+    self.deviceScriptCtrlList = []; // Device Script Controller List used when in Device List page
 
     self.login = function(username, password, controller) {
         $http.get(self.hostDomain + "login", {
@@ -54,29 +54,29 @@ app.service('MainService', function($http, $location) {
         });
     }
 
-    self.getHome = function(controller) {
-        $http.get(self.hostDomain + "/homes/" + self.selectedHomeId, {
-            headers: {
-                'X-Auth-Token': self.token
+    self.getHome = function() {
+        $.ajax({
+            url: self.hostDomain + "/homes/" + self.selectedHomeId,
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function(data, textStatus, xhr) {
+                console.log("get home successfully");
+                self.selectedHome = data;
+
+                self.modes = self.selectedHome.modes;
+
+                $.each(self.modes, function(index, val){
+                    if (val.id == self.selectedHome.currentMode.id) {
+                        self.selectedMode = val;
+                    }
+                })
+            },
+            error: function(data, textStatus, xhr) {
+                console.log("error get home");
             }
-        }).then(function(response){
-            //TODO: Handle home lists
-
-            //STUB: select first home and first mode in home lists and its device types
-            self.selectedHome = response.data;
-
-            self.modes = self.selectedHome.modes;
-            controller.modes = self.modes;
-            self.navBarCtrl.modes = self.modes;
-
-            $.each(controller.modes, function(index, val){
-                if (val.id == self.selectedHome.currentMode.id) {
-                    controller.selectedMode = val;
-                    self.selectedMode = controller.selectedMode;
-                    self.navBarCtrl.selectedMode = controller.selectedMode;
-                }
-            })
-            self.setUpForSelectedMode(controller);
         })
     }
 
@@ -91,36 +91,49 @@ app.service('MainService', function($http, $location) {
     }
 
     self.setUpForSelectedMode = function(controller) {
+
+        controller.modes = self.modes;
+        controller.selectedMode = self.selectedMode;
+
         self.allDevices = [];
         self.selectedModeAvailableGpios = self.allGpios;
         self.selectedModeConditionableDevices = [];
 
-        $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types", {
-            headers: {
-                'X-Auth-Token': self.token
-            }
-        }).then(function(response){
-            self.allDeviceTypes = response.data;
-            controller.deviceTypes = self.allDeviceTypes;
+        $.ajax({
+            url: self.hostDomain + "homes/" + self.selectedHome.id + "/device-types",
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function(data, textStatus, xhr) {
+                self.allDeviceTypes = data;
+                controller.deviceTypes = self.allDeviceTypes;
 
-            // Fetch conditions, actions and scripts
-            $.each(self.allDeviceTypes, function(dtIndex, dtVal){
-                $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + dtVal.id + "/devices", {
-                    headers: {
-                        'X-Auth-Token': self.token
-                    }
-                }).then(function(response){
-                    $.each(response.data, function(dIndex, dVal) {
-                        self.allDevices.push(dVal);
-                        dVal.refNum = 0;
-                        self.fetchConditionsAndActions(dtVal, dVal);
-                        self.getSelectedModeScripts(dVal);
+                // Fetch conditions, actions and scripts
+                $.each(self.allDeviceTypes, function(dtIndex, dtVal){
+                    $.ajax({
+                        url: self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + dtVal.id + "/devices",
+                        type: 'GET',
+                        beforeSend: function (request) {
+                            request.setRequestHeader("X-Auth-Token", self.token);
+                        },
+                        async: false,
+                        success: function (data, textStatus, xhr) {
+                            $.each(data, function(dIndex, dVal) {
+                                self.allDevices.push(dVal);
+                                dVal.refNum = 0;
+                                self.fetchConditionsAndActions(dtVal, dVal);
+                                self.getSelectedModeScripts(dVal);
+                            })
+                        },
+                        error: function (data, textStatus, xhr) {
+                            console.log("error get device types");
+                        }
                     })
                 })
-            })
 
-            // Set up condition-able device list
-            setTimeout(function() {
+                // Set up condition-able device list
                 self.selectedModeConditionableDevices = self.allDevices.slice();
                 $.each(self.allDevices, function (adIndex, adValue) {
                     var isCDContainsADValue = typeof $.grep(self.selectedModeConditionableDevices, function (condDev) {
@@ -142,8 +155,10 @@ app.service('MainService', function($http, $location) {
                         })
                     }
                 })
-
-            }, 500);
+            },
+            error: function(data, textStatus, xhr) {
+                console.log("error get devices");
+            }
         })
     }
 
@@ -172,79 +187,228 @@ app.service('MainService', function($http, $location) {
     }
 
     self.getSelectedModeScripts = function(device) {
-        $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts",{
-            headers: {
-                'X-Auth-Token': self.token
+        $.ajax({
+            url: self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts",
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                var scripts = data;
+                $.each(scripts, function(scpIndex, scpValue) {
+                    scpValue.content = scpValue.content.replace(/ /g, "");
+                })
+                device.scripts = scripts;
+            },
+            error: function (data, textStatus, xhr) {
+
             }
-        }).then(function(response){
-            var scripts = response.data;
-            $.each(scripts, function(scpIndex, scpValue) {
-                scpValue.content = scpValue.content.replace(/ /g, "");
-            })
-            device.scripts = scripts;
         })
     }
 
     self.parseScriptInfo = function (script) {
         var scriptInfo = {};
+        var scriptContent = script.content.replace(/ /g, "");
 
         if (script.type.id == 1) {
-            var scriptContent = script.content.replace(/ /g, "");
             var scriptConditionContent = scriptContent.substring(scriptContent.split('[', 3).join('[').length + 1,
                 scriptContent.indexOf(']'));
             var scriptActionContent = scriptContent.substring(scriptContent.split('[', 5).join('[').length + 1,
                 scriptContent.indexOf(']', scriptContent.indexOf(']') + 1));
 
             var scriptConditionInfo = scriptConditionContent.split(",");
+            var scriptActionInfo = scriptActionContent.split(",");
+
             scriptInfo.conditionDeviceId = parseInt(scriptConditionInfo[0].replace(/'/g, ""));
             scriptInfo.conditionParam = parseFloat(scriptConditionInfo[2].replace(/'/g, ""));
+            scriptInfo.actionDeviceId = parseInt(scriptActionInfo[1].replace(/'/g, ""));
+            scriptInfo.actionContent = scriptActionContent;
+        } else if (script.type.id == 2) {
+            var scriptTimeContent = scriptContent.substring(scriptContent.indexOf(',') + 1, scriptContent.split(',', 3).join(',').length);
+            var scriptActionContent = scriptContent.substring(scriptContent.split('[', 4).join(',').length + 1, scriptContent.indexOf(']'));
+
+            var scriptTimeInfo = scriptTimeContent.split(",");
+            var scriptActionInfo = scriptActionContent.split(",");
+
+            scriptInfo.fromTime = scriptTimeInfo[0].replace(/'/g, "");
+            scriptInfo.toTime = scriptTimeInfo[1].replace(/'/g, "");
+            scriptInfo.actionDeviceId = parseInt(scriptActionInfo[1].replace(/'/g, ""));
             scriptInfo.actionContent = scriptActionContent;
         }
 
         return scriptInfo;
     }
 
-    // self.getDevices = function(controller) {
-    //     self.deviceListCtrl = controller;
-    //
-    //     $http.get(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices",{
-    //         headers: {
-    //             'X-Auth-Token': self.token
-    //         }
-    //     }).then(function(response){
-    //         self.selectedTypeDevices = response.data;
-    //
-    //         controller.devices = [];
-    //
-    //         $.each(self.selectedTypeDevices, function(index, dVal) {
-    //             dVal.modes = [];
-    //             self.fetchConditionsAndActions(self.selectedDeviceType, dVal);
-    //             // Get device's scripts that belongs to selected mode and add it to device
-    //             self.getSelectedModeScripts(dVal, controller);
-    //
-    //             // Get all device's scripts and add it device's modes
-    //             self.getAllScripts(dVal);
-    //         })
-    //     })
-    // }
-
     self.enableDevice = function(controller) {
         // TODO: Call web services /device/enable?deviceId=|n|
         return true;
     }
 
-    self.disableDevice = function(controller) {
-        // TODO: Call web services /device/disable?deviceId=|n|
+    self.disableDevice = function(device) {
+
+        if (device.refNum > 0) {
+            if (device.scripts.length > 0) {
+                $.each(device.scripts, function(scpIndex, scpValue) {
+                    self.disableScript(scpValue);
+                })
+            }
+
+            $.each(self.selectedModeConditionableDevices, function (devIndex, devValue) {
+                if (devValue.id != device.id) {
+                    if (devValue.scripts.length > 0) {
+                        $.each(devValue.scripts, function (scpIndex, scpValue) {
+                            var scriptInfo = self.parseScriptInfo(scpValue);
+                            if (scriptInfo.conditionDeviceId == device.id) {
+                                self.disableScript(scpValue);
+                            }
+                        })
+                    }
+                }
+            })
+        }
+
+        device.enabled = false;
+        $http.patch(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id
+            + "/devices/" + device.id, device, {
+            headers: {
+                'X-Auth-Token': self.token
+            }
+        }).then(function(response) {
+            if (response.status == 204) {
+
+                console.log("disable device successfully");
+
+                // Reload Device List page
+                self.deviceListCtrl.initializeData();
+
+                // Reload each Device Panel
+                $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+                    panelCtrlVal.initializeData();
+                })
+
+                // Reload each When Then Script
+                $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
+                    scpCtrlVal.initializeData();
+                })
+            }
+        })
         return true;
     }
 
-    self.deleteDevice = function(controller) {
-        // TODO: Call web services /device/delete?deviceId=|n|
+    self.enableDevice = function(device) {
+
+        if (device.refNum > 0) {
+            if (device.scripts.length > 0) {
+                $.each(device.scripts, function(scpIndex, scpValue) {
+                    self.enableScript(scpValue);
+                })
+            }
+
+            $.each(self.selectedModeConditionableDevices, function (devIndex, devValue) {
+                if (devValue.id != device.id) {
+                    if (devValue.scripts.length > 0) {
+                        $.each(devValue.scripts, function (scpIndex, scpValue) {
+                            var scriptInfo = self.parseScriptInfo(scpValue);
+                            if (scriptInfo.conditionDeviceId == device.id) {
+                                self.enableScript(scpValue);
+                            }
+                        })
+                    }
+                }
+            })
+        }
+
+        device.enabled = true;
+        $http.patch(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id
+            + "/devices/" + device.id, device, {
+            headers: {
+                'X-Auth-Token': self.token
+            }
+        }).then(function(response) {
+            if (response.status == 204) {
+
+                console.log("enable device successfully");
+
+                // Reload Device List page
+                self.deviceListCtrl.initializeData();
+
+                // Reload each Device Panel
+                $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+                    panelCtrlVal.initializeData();
+                })
+
+                // Reload each When Then Script
+                $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
+                    scpCtrlVal.initializeData();
+                })
+            }
+        })
+        return true;
+    }
+
+    self.deleteDevice = function(device) {
+        if (device.refNum > 0) {
+            if (device.scripts.length > 0) {
+                $.each(device.scripts, function(scpIndex, scpValue) {
+                    self.deleteScript(scpValue);
+                })
+            }
+
+            $.each(self.selectedModeConditionableDevices, function (devIndex, devValue) {
+                if (devValue.id != device.id) {
+                    if (devValue.scripts.length > 0) {
+                        $.each(devValue.scripts, function (scpIndex, scpValue) {
+                            var scriptInfo = self.parseScriptInfo(scpValue);
+                            if (scriptInfo.conditionDeviceId == device.id) {
+                                self.deleteScript(scpValue);
+                            }
+                        })
+                    }
+                }
+            })
+        }
+
+        $http.delete(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices/" + device.id, {
+            headers: {
+                'X-Auth-Token': self.token
+            }
+        }).then(function(response) {
+            if (response.status == 204) {
+                // Remove device from conditionable device list
+                self.selectedModeConditionableDevices = $.grep(self.selectedModeConditionableDevices, function(dev) {
+                    return dev.id != device.id;
+                })
+
+                // Remove device from all devices
+                self.allDevices = $.grep(self.allDevices, function(dev) {
+                    return dev.id != device.id;
+                })
+
+                // Remove device's panel ctrl from devicePanelCtrlList to prevent updating
+                self.devicePanelCtrlList = $.grep(self.devicePanelCtrlList, function(pCtrl) {
+                    return pCtrl.device.id != device.id;
+                })
+
+                // Reload Device List page
+                self.deviceListCtrl.initializeData();
+
+                // Reload each Device Panel
+                $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+                    panelCtrlVal.initializeData();
+                })
+
+                // Reload each When Then Script
+                $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
+                    scpCtrlVal.initializeData();
+                })
+            }
+        })
+
         return true;
     }
 
     self.addDevice = function(device) {
-        console.log(self.selectedDeviceType);
         $http.post(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices"
             , device, {
             headers: {
@@ -274,65 +438,12 @@ app.service('MainService', function($http, $location) {
                 })
 
                 // Reload each When Then Script
-                $.each(self.deviceWhenThenCtrlList, function(whenThenCtrlIndex, whenThenCtrlVal) {
-                    whenThenCtrlVal.initializeData();
+                $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
+                    scpCtrlVal.initializeData();
                 })
             }
         })
         return true;
-    }
-
-    self.filterConditionReference = function() {
-        $.each(self.devices, function(deviceIndex,device)
-        {
-            $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts", {
-                headers: {
-                    'X-Auth-Token': self.token
-                }
-            }).then(function (response) {
-                $.each(response.data, function (scriptIndex, scriptVal) {
-                    if (scriptVal.type.id == 1) {
-                        var scriptContent = scriptVal.content.replace(/ /g, "");
-                        var scriptCondInfo = scriptContent.substring(scriptContent.split('[', 3).join('[').length + 1,
-                            scriptContent.indexOf(']')).split(",");
-                        console.log("script device id: " + scriptCondInfo[0].replace(/'/g, "") + " - " + scriptContent);
-                        var selectedOtherDevice = $.grep(self.devices, function (dev) {
-                            return dev.id == parseInt(scriptCondInfo[0].replace(/'/g, ""));
-                        })[0];
-                        if (selectedOtherDevice != null) {
-                            console.log("filter out: " + device.id + " - " + selectedOtherDevice.id);
-
-                            $.each(self.devices, function (dIndex, dVal) {
-                                if (dVal.id == selectedOtherDevice.id) {
-                                    dVal.condRefNum++;
-                                    // check if selected other device does not have any condition reference before
-                                    if (dVal.condRefNum == 1) {
-
-                                        //remove selected other device gpio from available gpios
-                                        self.selectedModeAvailableGpios = $.grep(self.selectedModeAvailableGpios, function (gpioId) {
-                                            return gpioId != selectedOtherDevice.gpio;
-                                        })
-
-                                        // filter: remove any devices have same gpio with selected other device in the displayed devices
-                                        self.deviceListCtrl.devices = $.grep(self.deviceListCtrl.devices, function (dev) {
-                                            return dev.id == selectedOtherDevice.id || dev.gpio != selectedOtherDevice.gpio;
-                                        })
-                                        // filter: remove any devices have same gpio with selected other device in conditions of other devices
-                                        $.each(self.devicePanelCtrlList, function (panelCtrlIndex, panelCtrlVal) {
-                                            panelCtrlVal.otherDevices = $.grep(panelCtrlVal.otherDevices, function (dev) {
-                                                return dev.id == selectedOtherDevice.id || dev.gpio != selectedOtherDevice.gpio;
-                                            })
-                                        })
-                                    }
-                                }
-                            })
-                        }
-
-                    }
-                })
-            })
-        })
-
     }
 
     self.getAllScripts = function(device) {
@@ -365,56 +476,179 @@ app.service('MainService', function($http, $location) {
         return true;
     }
 
-    self.deleteScript = function(device, script, selectedOtherDevice, whenThenCtrl) {
-        $http.delete(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id
-            + "/scripts/" + script.id,{
-            headers: {
-                'X-Auth-Token': self.token
-            }
-        }).then(function(response) {
+    self.disableScript = function(script) {
+        script.enabled = false;
 
-            if (response.status == 204) {
-                console.log("Delete script successfully");
-                // Remove deleted script from device's scripts
-                device.scripts = $.grep(device.scripts, function (scp) {
-                    return scp.id != script.id;
-                })
+        // Parse script info
+        scriptInfo = self.parseScriptInfo(script);
 
-                device.refNum--;
-                if (device.refNum == 0) {
-                    self.unmarkDevice(device);
-                }
+        // Get the device that script belong to
+        device = $.grep(self.selectedModeConditionableDevices, function(dev) {
+            return dev.id == scriptInfo.actionDeviceId;
+        })[0];
 
-                if (script.type.id == 1 && selectedOtherDevice != null) {
-                    selectedOtherDevice.refNum--;
-                    if (selectedOtherDevice.refNum == 0) {
-                        self.unmarkDevice(selectedOtherDevice);
-                    }
-                    self.deviceWhenThenCtrlList = $.grep(self.deviceWhenThenCtrlList, function(wtCtrl) {
-                        return wtCtrl != whenThenCtrl;
+        $.ajax({
+            url: self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id,
+            type: 'PATCH',
+            data: JSON.stringify(script),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request)
+            {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function(data, textStatus, xhr) {
+                if (xhr.status == 204) {
+                    console.log("Disable script successfully");
+
+                    // Reload Device List page
+                    self.deviceListCtrl.initializeData();
+
+                    // Reload each Device Panel
+                    $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+                        panelCtrlVal.initializeData();
+                    })
+
+                    // Reload each When Then Script
+                    $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
+                        scpCtrlVal.initializeData();
                     })
                 }
-
-                // Reload Device List page
-                self.deviceListCtrl.initializeData();
-
-                // Reload each Device Panel
-                $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
-                    panelCtrlVal.initializeData();
-                })
-
-                // Reload each When Then Script
-                $.each(self.deviceWhenThenCtrlList, function(whenThenCtrlIndex, whenThenCtrlVal) {
-                    whenThenCtrlVal.initializeData();
-                })
-
+            },
+            error: function(data, textStatus, xhr) {
+                console.log("error disable script: ");
+                console.log(data);
             }
         })
-        return true;
     }
 
-    self.addScript = function (device, script, selectedOtherDevice) {
+    self.enableScript = function(script) {
+        script.enabled = true;
+
+        // Parse script info
+        scriptInfo = self.parseScriptInfo(script);
+
+        // Get the device that script belong to
+        device = $.grep(self.selectedModeConditionableDevices, function(dev) {
+            return dev.id == scriptInfo.actionDeviceId;
+        })[0];
+
+        $.ajax({
+            url: self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id,
+            type: 'PATCH',
+            data: JSON.stringify(script),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request)
+            {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function(data, textStatus, xhr) {
+                if (xhr.status == 204) {
+                    console.log("Enable script successfully");
+
+                    // Reload Device List page
+                    self.deviceListCtrl.initializeData();
+
+                    // Reload each Device Panel
+                    $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+                        panelCtrlVal.initializeData();
+                    })
+
+                    // Reload each When Then Script
+                    $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
+                        scpCtrlVal.initializeData();
+                    })
+                }
+            },
+            error: function(data, textStatus, xhr) {
+                console.log("error enable script: ");
+                console.log(data);
+            }
+        })
+    }
+
+    self.deleteScript = function(script) {
+        // Parse script info
+        scriptInfo = self.parseScriptInfo(script);
+
+        // Get the device that script belong to
+        device = $.grep(self.selectedModeConditionableDevices, function(dev) {
+            return dev.id == scriptInfo.actionDeviceId;
+        })[0];
+
+        $.ajax({
+            url: self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id,
+            type: 'DELETE',
+            beforeSend: function (request)
+            {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function(data, textStatus, xhr) {
+                if (xhr.status == 204) {
+                    console.log("Delete script successfully");
+                    // Remove deleted script from device's scripts
+                    device.scripts = $.grep(device.scripts, function (scp) {
+                        return scp.id != script.id;
+                    })
+
+                    device.refNum--;
+                    if (device.refNum == 0) {
+                        self.unmarkDevice(device);
+                    }
+
+                    if (script.type.id == 1) {
+                        scriptInfo = self.parseScriptInfo(script);
+                        selectedOtherDevice = $.grep(self.selectedModeConditionableDevices, function (dev) {
+                            return dev.id == scriptInfo.conditionDeviceId;
+                        })[0];
+
+                        selectedOtherDevice.refNum--;
+                        if (selectedOtherDevice.refNum == 0) {
+                            self.unmarkDevice(selectedOtherDevice);
+                        }
+
+                        // Remove script's when then ctrl from deviceScriptCtrlList to prevent updating
+                        self.deviceScriptCtrlList = $.grep(self.deviceScriptCtrlList, function(wtCtrl) {
+                            return wtCtrl.currentDevice.id != device.id;
+                        })
+                    }
+
+                    // Reload Device List page
+                    self.deviceListCtrl.initializeData();
+
+                    // Reload each Device Panel
+                    $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+                        panelCtrlVal.initializeData();
+                    })
+
+                    // Reload each When Then Script
+                    $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
+                        scpCtrlVal.initializeData();
+                    })
+                }
+            },
+            error: function(data, textStatus, xhr) {
+                console.log("error delete script");
+            }
+        })
+
+    }
+
+    self.addScript = function (script) {
         console.log("Add script: " + script.content);
+
+        // Parse script info
+        scriptInfo = self.parseScriptInfo(script);
+
+        // Get the device that script belong to
+        device = $.grep(self.selectedModeConditionableDevices, function(dev) {
+            return dev.id == scriptInfo.actionDeviceId;
+        })[0];
+
         $http.post(self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id
             + "/scripts", script,{
             headers: {
@@ -432,7 +666,11 @@ app.service('MainService', function($http, $location) {
                 }
                 device.refNum++;
 
-                if (script.type.id == 1 && selectedOtherDevice != null) {
+                if (script.type.id == 1) {
+                    selectedOtherDevice = $.grep(self.selectedModeConditionableDevices, function (dev) {
+                        return dev.id == scriptInfo.conditionDeviceId;
+                    })[0];
+
                     if (selectedOtherDevice.refNum == 0) {
                         self.markDevice(selectedOtherDevice);
                     }
@@ -448,8 +686,8 @@ app.service('MainService', function($http, $location) {
                 })
 
                 // Reload each When Then Script
-                $.each(self.deviceWhenThenCtrlList, function(whenThenCtrlIndex, whenThenCtrlVal) {
-                    whenThenCtrlVal.initializeData();
+                $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
+                    scpCtrlVal.initializeData();
                 })
 
             } else if (response.status == 400) {

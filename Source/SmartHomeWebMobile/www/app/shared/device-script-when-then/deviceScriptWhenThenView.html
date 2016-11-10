@@ -1,5 +1,5 @@
-<div class="row device-script-when-then-row"
-     ng-init="deviceScriptWhenThenCtrl.init()">
+<div class="row device-script-when-then-row" ng-init="deviceScriptWhenThenCtrl.init()"
+     ng-class="{'disabled-script': deviceScriptWhenThenCtrl.script.enabled == false}">
     <button class="delete-script-button"
             data-toggle="modal"
             data-target="#device-script-when-then-delete-script-modal-{{deviceScriptWhenThenCtrl.scriptId}}">
@@ -7,22 +7,26 @@
     </button>
     <span>When</span>
     <select class="combobox script-condition-modify-input"
+            ng-class="{'disabled-script': deviceScriptWhenThenCtrl.script.enabled == false}"
             ng-model="deviceScriptWhenThenCtrl.selectedOtherDevice"
             ng-options="device.name for device in deviceScriptWhenThenCtrl.otherDevices"
             ng-change="deviceScriptWhenThenCtrl.updateDeviceChange()">
     </select>
     <select class="combobox script-condition-modify-input"
+            ng-class="{'disabled-script': deviceScriptWhenThenCtrl.script.enabled == false}"
             ng-model="deviceScriptWhenThenCtrl.selectedCondition"
             ng-options="condition.name for condition in deviceScriptWhenThenCtrl.selectedOtherDevice.conditions"
             ng-change="deviceScriptWhenThenCtrl.updateConditionChange()">
     </select>
     <input class="script-condition-modify-input script-condition-modify-input-number"
+           ng-class="{'disabled-script': deviceScriptWhenThenCtrl.script.enabled == false}"
            ng-if="deviceScriptWhenThenCtrl.selectedCondition.hasParameter"
            ng-model="deviceScriptWhenThenCtrl.selectedConditionParam"
            ng-change="deviceScriptWhenThenCtrl.updateConditionParamChange()"
            type="number" step="0.1">
     <span>Then</span>
     <select class="script-condition-modify-input combobox"
+            ng-class="{'disabled-script': deviceScriptWhenThenCtrl.script.enabled == false}"
             ng-model="deviceScriptWhenThenCtrl.selectedAction"
             ng-options="action.name for action in deviceScriptWhenThenCtrl.currentDevice.actions"
             ng-change="deviceScriptWhenThenCtrl.updateActionChange()">
@@ -51,9 +55,13 @@
             <div class="modal-footer">
                 <button type="button"
                         ng-click="deviceScriptWhenThenCtrl.deleteScript()"
+                        onclick="fixCloseModel();"
                         class="btn modal-confirm-btn add-script-btn"
                         data-dismiss="modal">Yes</button>
-                <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+                <button type="button"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">Cancel</button>
             </div>
         </div>
 

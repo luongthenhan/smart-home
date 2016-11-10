@@ -3,7 +3,7 @@ app.directive("navbar", ['MainService', function(MainService) {
         restrict: "E",
         templateUrl: "app/shared/navbar/navbarView.html",
         controllerAs: 'navBarCtrl',
-        controller: function() {
+        controller: function($scope, $location) {
             var self = this;
 
             self.modes = [];
@@ -13,8 +13,12 @@ app.directive("navbar", ['MainService', function(MainService) {
                 MainService.navBarCtrl = self;
             }
 
-            self.changeMode = function(mode) {
+            self.toHomeList = function() {
+                $location.path("/homes");
+            }
 
+            self.changeMode = function(mode) {
+                $location.path("/home");
             }
         }
     }

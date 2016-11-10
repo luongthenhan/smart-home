@@ -6,3 +6,7 @@
 .device-script-when-then-row {
     margin-bottom: 5px;
 }
+
+.disabled-script {
+    text-decoration: line-through;
+}

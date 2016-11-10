@@ -10,6 +10,7 @@ app.directive("homePanel", ['MainService', function(MainService) {
             var self = this;
             self.toHome = function() {
                 MainService.selectedHomeId = $scope.home.id;
+                MainService.getHome(self);
                 $location.path("/home");
             }
         }

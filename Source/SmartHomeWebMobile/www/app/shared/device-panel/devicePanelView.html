@@ -1,8 +1,9 @@
-<div class="panel-group device-panel-group" ng-init="devicePanelCtrl.init()">
+<div id="device-panel-group{{device.id}}" class="panel-group device-panel-group" ng-init="devicePanelCtrl.init()">
     <div class="panel panel-default device-panel">
         <div class="panel-heading device-panel-heading">
             <h4 class="panel-title device-panel-title">
-                <button data-toggle="collapse" data-target="#deviceCollapse{{device.id}}" type="button" class="device-button">
+                <button data-toggle="collapse" data-target="#deviceCollapse{{device.id}}" type="button" class="device-button"
+                ng-class="{'disabled-device': devicePanelCtrl.currentDevice.enabled == false}">
                     <div class="row device-type-button-row">
                         <div class="device-type-indicator"></div>
                         <div class="col-xs-offset-2 col-xs-3">
@@ -17,10 +18,17 @@
                             </div>
                         </div>
                         <div class="col-xs-3">
-                            <span class="glyphicon glyphicon-off device-panel-disable-button"></span>
-                            <span class="glyphicon glyphicon-trash device-panel-remove-button"></span>
+                            <span role="button"
+                                  onclick="event.stopPropagation();"
+                                  ng-click="devicePanelCtrl.toggleEnableDisableDevice()"
+                                  class="glyphicon glyphicon-off device-panel-disable-button"></span>
+                            <span role="button"
+                                  onclick="event.stopPropagation();"
+                                  ng-click="devicePanelCtrl.showRemoveDeviceModal()"
+                                  class="glyphicon glyphicon-trash device-panel-remove-button"></span>
                         </div>
-                        <button data-toggle="collapse" data-target="#deviceCollapse{{device.id}}" class="device-panel-toggle-button">
+                        <button data-toggle="collapse" data-target="#deviceCollapse{{device.id}}" class="device-panel-toggle-button"
+                                ng-class="{'disabled-device': devicePanelCtrl.currentDevice.enabled == false}">
                             <span id="devicePanelToggleIcon{{device.id}}" class="glyphicon glyphicon-menu-right device-panel-toggle-icon"/>
                         </button>
                     </div>
@@ -109,37 +117,102 @@
                     </div>
                     <span>From</span>
                     <span class="clockpicker">
-                        <input type="text">
+                        <input type="text" ng-model="devicePanelCtrl.fromTime">
                     </span>
                     <span>To</span>
                     <span class="clockpicker">
-                        <input type="text">
+                        <input type="text" ng-model="devicePanelCtrl.toTime">
                     </span>
                     <span>,</span>
-                    <select class="script-condition-modify-input combobox">
+                    <select class="script-condition-modify-input combobox"
+                            ng-model="devicePanelCtrl.selectedAction"
+                            ng-options="action.name for action in devicePanelCtrl.currentDevice.actions"
+                            ng-change="devicePanelCtrl.updateActionChange()">
                     </select>
 
-                    <div class="radio disabled">
-                        <label><input type="radio"
-                                      ng-model="devicePanelCtrl.selectedScriptTypeToAdd"
-                                      value="Custom">Custom</label>
-                    </div>
-                    <input type="text"
-                           ng-model="devicePanelCtrl.customScriptNameForAdd"
-                           class="form-control input-field"
-                           placeholder="Custom Script Name">
-                    <textarea class="form-control input-field device-panel-custom-script-input"
-                              ng-model="devicePanelCtrl.customScriptContentForAdd"
-                              rows="3"
-                              placeholder="Custom Script Input"></textarea>
+                    <!--<div class="radio disabled">-->
+                        <!--<label><input type="radio"-->
+                                      <!--ng-model="devicePanelCtrl.selectedScriptTypeToAdd"-->
+                                      <!--value="Custom">Custom</label>-->
+                    <!--</div>-->
+                    <!--<input type="text"-->
+                           <!--ng-model="devicePanelCtrl.customScriptNameForAdd"-->
+                           <!--class="form-control input-field"-->
+                           <!--placeholder="Custom Script Name">-->
+                    <!--<textarea class="form-control input-field device-panel-custom-script-input"-->
+                              <!--ng-model="devicePanelCtrl.customScriptContentForAdd"-->
+                              <!--rows="3"-->
+                              <!--placeholder="Custom Script Input"></textarea>-->
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button"
                         ng-click="devicePanelCtrl.addScript()"
+                        onclick="fixCloseModel();"
                         class="btn modal-confirm-btn add-script-btn"
                         data-dismiss="modal">Save</button>
-                <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+                <button type="button"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Remove device modal -->
+<div class="modal device-panel-remove-device-modal" id="device-panel-remove-device-modal{{device.id}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Remove device {{device.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <div>Are you sure to delete device {{device.name}} ?</div>
+                <div>(All scripts related to this device will also be deleted)</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="devicePanelCtrl.deleteDevice()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Yes</button>
+                <button type="button"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">No</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Disable device modal -->
+<div class="modal device-panel-disable-device-modal" id="device-panel-disable-device-modal{{device.id}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Disable device {{device.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <div>Are you sure to disable device {{device.name}} ?</div>
+                <div>(All scripts related to this device will also be disabled)</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="devicePanelCtrl.disableDevice()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Yes</button>
+                <button type="button"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">No</button>
             </div>
         </div>
 

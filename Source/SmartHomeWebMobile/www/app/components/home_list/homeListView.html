@@ -1,6 +1,5 @@
 <navbar></navbar>
 <div class="wrapper-content" ng-controller="HomeListController as homeListCtrl" ng-init="homeListCtrl.init()">
-    <home-panel ng-repeat="home in homeListCtrl.homes" home="home"></home-panel>
 
     <button type="button"
             data-toggle="modal"
@@ -9,6 +8,8 @@
         <span class="glyphicon glyphicon-plus"></span>
         Add Home
     </button>
+
+    <home-panel ng-repeat="home in homeListCtrl.homes" home="home"></home-panel>
 
     <!-- Add home modal -->
     <div class="modal device-list-add-device-modal" id="add-home-modal" role="dialog">
@@ -53,9 +54,13 @@
                 <div class="modal-footer">
                     <button type="button"
                             ng-click="homeListCtrl.addHome()"
+                            onclick="fixCloseModel();"
                             class="btn modal-confirm-btn add-script-btn"
                             data-dismiss="modal">Add</button>
-                    <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+                    <button type="button"
+                            onclick="fixCloseModel();"
+                            class="btn btn-default add-script-btn"
+                            data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>

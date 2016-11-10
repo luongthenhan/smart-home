@@ -29,9 +29,13 @@
             <div class="modal-footer">
                 <button type="button"
                         ng-click="deviceScriptCustomCtrl.updateScript()"
+                        onclick="fixCloseModel();"
                         class="btn modal-confirm-btn add-script-btn"
                         data-dismiss="modal">Save</button>
-                <button type="button" class="btn btn-default add-script-btn" data-dismiss="modal">Cancel</button>
+                <button type="button"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">Cancel</button>
             </div>
         </div>
 

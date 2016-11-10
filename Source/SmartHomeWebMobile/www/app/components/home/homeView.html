@@ -7,7 +7,7 @@
             ng-change="homeCtrl.updateModeChange()">
     </select>
     <br>
-    <span class="mode-label">Activated: </span><span>{{homeCtrl.selectedMode.name}}</span>
+    <span class="mode-label">Activated: </span><span>{{homeCtrl.activatedMode.name}}</span>
     <p></p>
     <div class="row form-row form-title">Device Categories</div>
     <device-type-button ng-repeat="deviceType in homeCtrl.deviceTypes" devicetype="deviceType"></device-type-button>

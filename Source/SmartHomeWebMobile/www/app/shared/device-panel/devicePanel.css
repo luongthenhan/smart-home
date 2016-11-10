@@ -108,3 +108,7 @@
     padding-left: 10px;
     margin-bottom: 10px;
 }
+
+.disabled-device {
+    background: #E0E0E0;
+}
