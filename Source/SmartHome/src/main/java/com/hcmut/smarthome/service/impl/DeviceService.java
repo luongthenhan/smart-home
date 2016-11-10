@@ -245,6 +245,7 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script scriptToUpdate) throws Exception {
 		ScriptEntity currentScriptEntity = scriptDao.getById(scriptId);
+		scriptToUpdate.setId(currentScriptEntity.getId());
 		
 		if( currentScriptEntity == null )
 			throw new NotFoundException(String.format("Script id %d not found", scriptId ));

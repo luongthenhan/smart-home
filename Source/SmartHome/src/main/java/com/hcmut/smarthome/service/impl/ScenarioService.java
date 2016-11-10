@@ -55,6 +55,10 @@ public class ScenarioService implements IScenarioService {
 		List<Scenario> existedScenarios = new ArrayList<Scenario>();
 		for (Script existedScript : existedScripts) {
 			
+			// Don't compare with itself
+			if( script.getId() == existedScript.getId() )
+				continue;
+			
 			// Check existing name in mode level , because existed scripts is get by mode
 			if( checkExistingName(script.getName(), existedScript.getName()) ){
 				LOGGER.debug(INPUT_SCRIPT_HAS_SAME_NAME_WITH_EXISTING_ONE_IN_SAME_MODE);

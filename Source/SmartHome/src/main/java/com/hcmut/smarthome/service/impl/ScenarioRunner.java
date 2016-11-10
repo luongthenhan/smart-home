@@ -29,6 +29,8 @@ import com.hcmut.smarthome.utils.NotFoundException;
 
 @Service
 public class ScenarioRunner {
+	private static final String NOT_FOUND_OLD_SCENARIO_WITH_ID_TO_UPDATE_STATUS = "Not found old scenario with id %s to update status";
+
 	private static final String NOT_ENOUGH_INFORMATION_OF_SCRIPT_TO_RUN = "Not enough information of script to run";
 
 	private final static Logger LOGGER = Logger.getLogger(ScenarioRunner.class);
@@ -79,7 +81,6 @@ public class ScenarioRunner {
 					ScenarioStatus status) throws Exception {
 				switch (status) {
 					case RUNNING:
-						// TODO: Improve performance
 						// Only do action when home is enabled || device is enabled
 						if( canScenarioRunInCurrentMode(scenario) 
 							&& homeService.isEnabled(scenario.getHomeId()) 
@@ -186,8 +187,10 @@ public class ScenarioRunner {
 	public boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario) throws Exception{
 		Scenario oldScenario = mapScenarioController.get(scenarioId);
 		if( oldScenario == null )
-			throw new NotFoundException(String.format("Found no script with id %s to update", scenarioId));
-		
+			// TODO: Uncomment when finish start all scripts at first time run
+			//throw new NotFoundException(String.format(NOT_FOUND_OLD_SCENARIO_WITH_ID_TO_UPDATE_STATUS, scenarioId));
+			LOGGER.error(String.format(NOT_FOUND_OLD_SCENARIO_WITH_ID_TO_UPDATE_STATUS, scenarioId));
+			
 		newScenario.setId(oldScenario.getId());
 		newScenario.setHomeId(oldScenario.getHomeId());
 		newScenario.setDeviceId(oldScenario.getDeviceId());
