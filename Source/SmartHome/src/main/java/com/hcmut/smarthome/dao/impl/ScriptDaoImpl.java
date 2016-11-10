@@ -27,6 +27,17 @@ public class ScriptDaoImpl extends CommonDaoImpl<ScriptEntity> implements IScrip
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
+	public List<ScriptEntity> getAllScriptsGivenMode(int modeId) {
+		String query = "SELECT * FROM public.script WHERE script.mode_id = :modeId ;";
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query).addEntity(ScriptEntity.class);
+		sqlStatement.setParameter("modeId", modeId);
+		
+		return sqlStatement.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional
 	public List<ScriptEntity> getAllScripts(int modeId, int deviceId) {
 		String query = "SELECT * FROM public.script WHERE script.mode_id = :modeId AND script.device_id = :deviceId ;";
 		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query).addEntity(ScriptEntity.class);

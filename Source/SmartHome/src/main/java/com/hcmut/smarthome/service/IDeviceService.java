@@ -1,6 +1,7 @@
 package com.hcmut.smarthome.service;
 
 import java.util.List;
+import java.util.Set;
 
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
@@ -40,4 +41,23 @@ public interface IDeviceService {
 	Integer getDeviceIdGivenNameAndHomeId(int homeId, String deviceName) throws NotFoundException;
 
 	List<Script> getAllScriptsGivenHome(int homeId) throws Exception;
+
+	boolean deleteCustomScript(int scriptId) throws NotFoundException;
+
+	boolean updatePartialCustomScript(int homeId, int modeId, int scriptId,
+			Script scriptToUpdate) throws Exception;
+
+	int addCustomScript(int homeId, int modeId, Script scriptToAdd)
+			throws Exception;
+
+	boolean updateCustomScript(int homeId, int modeId, int scriptId,
+			Script scriptToUpdate) throws Exception;
+
+	List<Script> getScriptsGivenMode(int modeId);
+
+	Set<Integer> getListDeviceIdInScript(int homeId, Script script)
+			throws Exception;
+
+	Set<Integer> getListDeviceIdInScript(int homeId, int scriptId)
+			throws Exception;
 }

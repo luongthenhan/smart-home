@@ -2,7 +2,9 @@ package com.hcmut.smarthome.service.impl;
 
 import static com.hcmut.smarthome.utils.ConstantUtil.ADD_UNSUCCESSFULLY;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.script.ScriptException;
@@ -42,6 +44,10 @@ import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @Service
 public class DeviceService implements IDeviceService {
+
+	private static final String DEVICE_ID_NOT_FOUND = "Device id %d not found";
+
+	private static final String SCRIPT_ID_NOT_FOUND = "Script id %d not found";
 
 	@Autowired
 	private IScenarioService scenarioService;
@@ -97,7 +103,7 @@ public class DeviceService implements IDeviceService {
 		DeviceEntity deviceEntity = deviceDao.getById(deviceId);
 		
 		if( deviceEntity == null )
-			throw new NotFoundException(String.format("Device id %d not found", deviceId));
+			throw new NotFoundException(String.format(DEVICE_ID_NOT_FOUND, deviceId));
 		
 		boolean isDeviceStatusChanged = updatedDevice.isEnabled() != null
 				&& updatedDevice.isEnabled() != deviceEntity.isEnabled();
@@ -245,10 +251,9 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public boolean updatePartialScript(int homeId, int modeId, int deviceId, int scriptId, Script scriptToUpdate) throws Exception {
 		ScriptEntity currentScriptEntity = scriptDao.getById(scriptId);
-		scriptToUpdate.setId(currentScriptEntity.getId());
-		
 		if( currentScriptEntity == null )
-			throw new NotFoundException(String.format("Script id %d not found", scriptId ));
+			throw new NotFoundException(String.format(SCRIPT_ID_NOT_FOUND, scriptId ));
+		else scriptToUpdate.setId(currentScriptEntity.getId());
 		
 		Scenario updatedScenario = scenarioService.scriptToScenario(homeId, scriptToUpdate);
 		
@@ -353,6 +358,11 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	@Override
+	public List<Script> getScriptsGivenMode(int modeId){
+		return ScriptConverter.toListModel(scriptDao.getAllScriptsGivenMode(modeId));
+	}
+	
+	@Override
 	public Script getScript(int scriptId){
 		return ScriptConverter.toModel(scriptDao.getById(scriptId));
 	}
@@ -425,5 +435,47 @@ public class DeviceService implements IDeviceService {
 		if( scripts != null )
 			return ScriptConverter.toListModel(scripts);
 		else throw new Exception("Can't get scripts with home id " + homeId);
+	}
+	
+	@Override
+	public Set<Integer> getListDeviceIdInScript(int homeId, Script script) throws Exception{
+		Scenario scenario = scenarioService.scriptToScenario(homeId, script);
+		if( scenario == null )
+			return Collections.emptySet();
+		return scenarioService.getListDeviceIdInScenario(scenario);
+	}
+	
+	@Override
+	public Set<Integer> getListDeviceIdInScript(int homeId, int scriptId) throws Exception{
+		ScriptEntity scriptEntity = scriptDao.getById(scriptId);
+		if( scriptEntity == null )
+			throw new NotFoundException(String.format(SCRIPT_ID_NOT_FOUND, scriptId ));
+		Script script = ScriptConverter.toModel(scriptEntity);
+		
+		return getListDeviceIdInScript(homeId, script);
+	}
+	
+	@Override
+	public boolean deleteCustomScript(int scriptId) throws NotFoundException {
+		return false;
+		
+	}
+	
+	@Override
+	public boolean updatePartialCustomScript(int homeId, int modeId, int scriptId, Script scriptToUpdate) throws Exception {
+		return false;
+		
+	}
+	
+	@Override
+	public int addCustomScript(int homeId, int modeId, Script scriptToAdd) throws Exception  {
+		return modeId;
+		
+	}
+	
+	@Override
+	public boolean updateCustomScript(int homeId, int modeId, int scriptId, Script scriptToUpdate) throws Exception {
+		return false;
+		
 	}
 }

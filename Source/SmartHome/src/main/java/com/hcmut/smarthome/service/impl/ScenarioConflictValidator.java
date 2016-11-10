@@ -135,8 +135,7 @@ public class ScenarioConflictValidator {
 	}
 
 	public List<Pair<List<Condition>, SimpleAction>> getPairActionAndFullConditions(
-			List<IBlock> blocks, Stack<Condition> stackOuterConditions)
-			throws NotSupportedException, ConflictConditionException {
+			List<IBlock> blocks, Stack<Condition> stackOuterConditions) throws NotSupportedException{
 
 		List<Pair<List<Condition>, SimpleAction>> pairs = new ArrayList<>();
 

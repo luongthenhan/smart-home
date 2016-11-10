@@ -11,4 +11,5 @@ public interface IScriptDao extends ICommonDao<ScriptEntity>{
 	List<ScriptEntity> getAllScripts(int homeId);
 	boolean updateScriptStatusToDisable(int scriptId);
 	boolean updateScriptStatusToEnable(int scriptId);
+	List<ScriptEntity> getAllScriptsGivenMode(int modeId);
 }

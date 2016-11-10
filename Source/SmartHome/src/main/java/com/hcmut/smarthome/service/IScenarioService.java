@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.service;
 
+import java.util.Set;
+
 import javax.script.ScriptException;
 import javax.transaction.NotSupportedException;
 
@@ -66,4 +68,9 @@ public interface IScenarioService {
 	Scenario scriptToScenario(int homeId, Script script) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException, Exception;
 	
 	boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario) throws Exception;
+
+	boolean isValid(int homeId, int modeId, Script script, Scenario scenario)
+			throws Exception;
+
+	Set<Integer> getListDeviceIdInScenario(Scenario scenario) throws Exception;
 }

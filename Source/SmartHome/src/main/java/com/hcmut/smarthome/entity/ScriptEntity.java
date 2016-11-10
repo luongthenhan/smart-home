@@ -30,7 +30,7 @@ public class ScriptEntity implements Serializable{
 	private boolean enabled; 
 	
 	@ManyToOne
-	@JoinColumn(name="device_id", nullable =false)
+	@JoinColumn(name="device_id")
 	private DeviceEntity device;
 	
 	@ManyToOne

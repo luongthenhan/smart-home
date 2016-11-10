@@ -1,6 +1,7 @@
 package com.hcmut.smarthome.rest;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,6 @@ import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
 import com.hcmut.smarthome.service.IScenarioService;
-import com.hcmut.smarthome.utils.NotFoundException;
 @RestController
 @RequestMapping("devices/{deviceId}/modes/{modeId}/scripts")
 @CrossOrigin
@@ -50,11 +50,12 @@ public class ScriptResource {
 		}
 		
 		try {
+			Set<Integer> setDeviceIdsInScript = deviceService.getListDeviceIdInScript(homeId, scriptId);
 			deviceService.deleteScript(deviceId, scriptId);
-		} catch (NotFoundException e) {
+			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, "", setDeviceIdsInScript), HttpStatus.OK);
+		} catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 	}
 	
 	/**
@@ -92,13 +93,12 @@ public class ScriptResource {
 			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		
 		try {
 			deviceService.updateScript(homeId, modeId, deviceId, scriptId,script);
+			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, "", deviceService.getListDeviceIdInScript(homeId, scriptId)), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 	}
 	
 	@RequestMapping(method = RequestMethod.PATCH, path="/{scriptId}")
@@ -111,10 +111,10 @@ public class ScriptResource {
 		
 		try {
 			deviceService.updatePartialScript(homeId, modeId, deviceId, scriptId, script);
+			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, "", deviceService.getListDeviceIdInScript(homeId, scriptId)), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 	}
 	
 	/**
@@ -136,15 +136,15 @@ public class ScriptResource {
 		int addedScriptId;
 		try {
 			addedScriptId = deviceService.addScript(script, deviceId, modeId , homeId);
+			if (addedScriptId > 0) {
+				String URINewAddedObject = String.format( "devices/%s/modes/%s/scripts/%s", deviceId, modeId, addedScriptId);
+				return new ResponseEntity<ResponeString>(new ResponeString(addedScriptId, URINewAddedObject, deviceService.getListDeviceIdInScript(homeId, script)),HttpStatus.CREATED);
+			}
 		} catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
-		if (addedScriptId > 0) {
-			String URINewAddedObject = String.format( "devices/%s/modes/%s/scripts/%s", deviceId, modeId, addedScriptId);
-			return new ResponseEntity<ResponeString>(new ResponeString(addedScriptId,URINewAddedObject),HttpStatus.CREATED);
-		}
-
-		return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
+		
+		return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
 	}
 
 }

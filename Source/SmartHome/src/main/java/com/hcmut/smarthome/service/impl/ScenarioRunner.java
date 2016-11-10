@@ -25,7 +25,6 @@ import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
-import com.hcmut.smarthome.utils.NotFoundException;
 
 @Service
 public class ScenarioRunner {
@@ -186,10 +185,12 @@ public class ScenarioRunner {
 
 	public boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario) throws Exception{
 		Scenario oldScenario = mapScenarioController.get(scenarioId);
-		if( oldScenario == null )
+		if( oldScenario == null ){
 			// TODO: Uncomment when finish start all scripts at first time run
 			//throw new NotFoundException(String.format(NOT_FOUND_OLD_SCENARIO_WITH_ID_TO_UPDATE_STATUS, scenarioId));
 			LOGGER.error(String.format(NOT_FOUND_OLD_SCENARIO_WITH_ID_TO_UPDATE_STATUS, scenarioId));
+			return false;
+		}
 			
 		newScenario.setId(oldScenario.getId());
 		newScenario.setHomeId(oldScenario.getHomeId());
