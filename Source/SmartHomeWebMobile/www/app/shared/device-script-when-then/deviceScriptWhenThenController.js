@@ -11,6 +11,7 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
             var self = this;
 
             self.currentDevice = null;
+            self.script = $scope.script;
             self.scriptId = $scope.script.id;
             self.scriptInfo = MainService.parseScriptInfo($scope.script);
             // self.scriptContent = $scope.script.content.replace(/ /g, "");
@@ -20,8 +21,6 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
             //     self.scriptContent.indexOf(']', self.scriptContent.indexOf(']') + 1));
 
             self.otherDevices = [];
-            self.conditions = [];
-            self.actions = [];
 
             self.selectedOtherDevice = null;
             self.selectedCondition = null;
@@ -29,7 +28,7 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
             self.selectedAction = null;
 
             self.init = function() {
-                MainService.deviceWhenThenCtrlList.push(self);
+                MainService.deviceScriptCtrlList.push(self);
                 self.initializeData();
             }
 
@@ -41,8 +40,8 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
 
                 // check whether the device that contains this script is existed on the UI
                 if (typeof self.currentDevice == 'undefined') {
-                    // if not existed, then remove itself from devicteWhenThenCtrlList of MainService to prevent updating this controller
-                    MainService.deviceWhenThenCtrlList = $.grep(MainService.deviceWhenThenCtrlList, function(whenThenCtrl) {
+                    // if not existed, then remove itself from deviceScriptCtrlList of MainService to prevent updating this controller
+                    MainService.deviceScriptCtrlList = $.grep(MainService.deviceScriptCtrlList, function(whenThenCtrl) {
                         return whenThenCtrl != self;
                     })
                 } else {
@@ -144,7 +143,7 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
             }
 
             self.deleteScript = function() {
-                MainService.deleteScript($scope.device, $scope.script, self.selectedOtherDevice);
+                MainService.deleteScript($scope.script);
             }
 
             self.parseInfoFromScript = function() {

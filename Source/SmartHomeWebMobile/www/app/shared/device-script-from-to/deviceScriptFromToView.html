@@ -1,18 +1,61 @@
-<div class="row device-script-from-to-row" ng-init="deviceScriptFromToCtrl.setUpTimePicker()">
-    <button class="delete-script-button">
+<div class="row device-script-from-to-row" ng-init="deviceScriptFromToCtrl.init()"
+     ng-class="{'disabled-script': deviceScriptFromToCtrl.script.enabled == false}">
+    <button class="delete-script-button"
+            data-toggle="modal"
+            data-target="#device-script-from-to-delete-script-modal-{{deviceScriptFromToCtrl.scriptId}}">
         <span class="glyphicon glyphicon-minus-sign"/>
     </button>
     <span>From</span>
     <span class="clockpicker">
-        <input type="text" value="09:30">
+        <input type="text"
+               ng-class="{'disabled-script': deviceScriptFromToCtrl.script.enabled == false}"
+               ng-model="deviceScriptFromToCtrl.fromTime">
     </span>
     <span>To</span>
     <span class="clockpicker">
-        <input type="text" value="09:30">
+        <input type="text"
+               ng-class="{'disabled-script': deviceScriptFromToCtrl.script.enabled == false}"
+               ng-model="deviceScriptFromToCtrl.toTime">
     </span>
     <span>,</span>
-    <select class="script-condition-modify-input combobox">
-        <option value="PA">Turn on</option>
-        <option value="CT">Turn off</option>
+    <select class="script-condition-modify-input combobox"
+            ng-class="{'disabled-script': deviceScriptFromToCtrl.script.enabled == false}"
+            ng-model="deviceScriptFromToCtrl.selectedAction"
+            ng-options="action.name for action in deviceScriptFromToCtrl.currentDevice.actions"
+            ng-change="deviceScriptFromToCtrl.updateActionChange()">
     </select>
+</div>
+
+<!-- Delete Script Modal -->
+<div class="modal device-panel-edit-script-modal" id="device-script-from-to-delete-script-modal-{{deviceScriptFromToCtrl.scriptId}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete Script</h4>
+            </div>
+            <div class="modal-body">
+                <span>Do you want to delete "From </span>
+                <span>{{deviceScriptFromToCtrl.fromTime}}</span>
+                <span> To</span>
+                <span>{{deviceScriptFromToCtrl.toTime}}</span>
+                <span>, </span>
+                <span>{{deviceScriptFromToCtrl.selectedAction.name}}</span>
+                <span> " script ?</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="deviceScriptFromToCtrl.deleteScript()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Yes</button>
+                <button type="button"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+
+    </div>
 </div>

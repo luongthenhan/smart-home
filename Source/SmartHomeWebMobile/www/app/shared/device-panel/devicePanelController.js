@@ -19,6 +19,9 @@ app.directive("devicePanel", ['MainService', function(MainService) {
 
             self.otherDevices = [];
 
+            self.fromTime = null;
+            self.toTime = null;
+
             self.toggleShowDetails = function() {
                 self.isShowDetails = !self.isShowDetails;
             }
@@ -104,14 +107,29 @@ app.directive("devicePanel", ['MainService', function(MainService) {
                     if (self.selectedCondition.hasParameter) {
                         newScriptContent = newScriptContent.replace("$V$", "'" + self.selectedConditionParam + "'");
                     }
-                    newScript.name = "Name";
                     newScript.content = newScriptContent;
                     newScript.type = {
                         id: 1,
                         name: "IfThen",
                         template: "['If',C, A]"
                     }
-                    MainService.addScript($scope.device, newScript, self.selectedOtherDevice);
+                    if (self.selectedOtherDevice.enabled == false || $scope.device.enabled == false) {
+                        newScript.enabled = false;
+                    }
+                    MainService.addScript(newScript);
+                } else if (self.selectedScriptTypeToAdd == "From/To") {
+                    newScriptContent = "[['FromTo','" + self.fromTime + "','" + self.toTime + "',[";
+                    newScriptContent = newScriptContent + self.selectedAction.script
+                            .replace(/ /g, "")
+                            .replace("$DID$", "'" + $scope.device.id + "'") + "]]]";
+                    newScript.content = newScriptContent;
+                    console.log("FromToScript: " + newScriptContent);
+                    newScript.type = {
+                        id: 2,
+                        name: "FromTo",
+                        template: ""
+                    }
+                    MainService.addScript(newScript);
                 } else if (self.selectedScriptTypeToAdd == "Custom") {
                     newScript.name = self.customScriptNameForAdd;
                     newScript.content = self.customScriptContentForAdd;
@@ -120,11 +138,39 @@ app.directive("devicePanel", ['MainService', function(MainService) {
                         name: "Custom",
                         template: ""
                     }
-                    MainService.addScript($scope.device, newScript, self.selectedOtherDevice);
+                    MainService.addScript(newScript);
                 }
 
             }
 
+            self.toggleEnableDisableDevice = function() {
+                if ($scope.device.enabled == false) {
+                    self.enableDevice();
+                } else {
+                    self.showDisableDeviceModal();
+                }
+            }
+
+            self.deleteDevice = function() {
+                MainService.deleteDevice($scope.device);
+            }
+
+            self.disableDevice = function() {
+                MainService.disableDevice($scope.device);
+            }
+
+            self.enableDevice = function() {
+                MainService.enableDevice($scope.device);
+            }
+
+            // for UI handling
+            self.showRemoveDeviceModal = function() {
+                $("#device-panel-remove-device-modal" + $scope.device.id).modal('show');
+            }
+
+            self.showDisableDeviceModal = function() {
+                $("#device-panel-disable-device-modal" + $scope.device.id).modal('show');
+            }
         }
     }
 }])

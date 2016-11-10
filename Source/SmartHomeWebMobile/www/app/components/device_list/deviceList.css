@@ -4,11 +4,8 @@
 }
 
 .device-list-add-device-button {
-    right: 0;
-    position: absolute;
-    margin-top: 10px;
     background: #FF7F00;
-    border: 0;
-    margin-right: 10px;
     color: white;
+    margin-left: 25px;
+    margin-bottom: 12px;
 }
