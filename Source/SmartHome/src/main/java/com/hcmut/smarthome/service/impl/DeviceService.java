@@ -130,7 +130,9 @@ public class DeviceService implements IDeviceService {
 		for (Script customScript : customScriptsInHome) {
 			String contentCustomScript = customScript.getContent(); 
 			if( contentCustomScript != null ){
-				String newContent = contentCustomScript.replaceAll(oldDeviceName, newDeviceName);
+				String findRegex = String.format("'%s'", oldDeviceName);
+				String replacementRegex = String.format("'%s'", newDeviceName);
+				String newContent = contentCustomScript.replaceAll(findRegex, replacementRegex);
 				if ( !scriptDao.updateCustomScriptContent(customScript.getId(), newContent) )
 					throw new Exception("Cannot update content custom script " + customScript.getId());
 			}
