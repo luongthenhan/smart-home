@@ -23,7 +23,8 @@ public class ConstantUtil {
 	public static final String TOGGLE = "Toggle";
 
 	// Camera
-	public static final String TAKE_PICTURE = "TakePicture";
+	public static final String TAKE_PICTURE = "Capture";
+	public static final List<String> ALL_DEVICE_ACTIONS = Arrays.asList(TURN_ON, TURN_OFF, TOGGLE, TAKE_PICTURE);
 
 	// General
 	public static final String SEND_EMAIL = "SendEmail";
@@ -83,7 +84,13 @@ public class ConstantUtil {
 	public static final int VALID_USER_ID = 2;
 	public static final int CONDITION_CHECKING_PERIOD = 5000;
 	public static final int DELAY = 100;
+	public static final String CUSTOM_SCRIPT_TYPE = "Custom";
+	public static final int CUSTOM_SCRIPT_ID = 3;
 	public static final ZoneId DEFAULT_ZONE_ID = ZoneOffset.of("+07:00");
+	public static final int NO_GPIO_PIN = -1;
+	public static final String NO_GPIO = "No GPIO";
+	public static final String HIDDEN_DEVICE = "<!Hidden Device!>";
+	public static final String DEFAULT_MODE = "default";
 
 	// List gpio
 	public static List<Integer> ALL_GPIO = Arrays.asList(3, 5, 7, 8, 10, 11,
@@ -93,9 +100,9 @@ public class ConstantUtil {
 	public static List<Integer> ALWAYS_AVAILABLE_GPIO = Arrays.asList(7);
 	
 	// sign up
-	public static int ERROR_WHEN_ADD_USER = -1;
-	public static int USERNAME_ALREADY_EXISTS = -2;
-	public static int EMAIL_ALREADY_EXISTS = -3;
+	public static final int ERROR_WHEN_ADD_USER = -1;
+	public static final int USERNAME_ALREADY_EXISTS = -2;
+	public static final int EMAIL_ALREADY_EXISTS = -3;
 	
 	// not login request
 	public static List<String> NO_LOGIN_REQUESTS = Arrays.asList("signup", "activation");

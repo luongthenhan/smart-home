@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name="mode")
@@ -59,7 +60,7 @@ public class ModeEntity implements Serializable {
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = StringUtils.trimWhitespace(description);
 	}
 
 	public String getName() {
@@ -67,7 +68,7 @@ public class ModeEntity implements Serializable {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = StringUtils.trimWhitespace(name);
 	}
 
 	public HomeEntity getHome() {

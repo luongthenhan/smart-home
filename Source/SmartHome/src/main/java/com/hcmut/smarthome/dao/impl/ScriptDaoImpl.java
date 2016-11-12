@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.hcmut.smarthome.dao.IScriptDao;
 import com.hcmut.smarthome.entity.ScriptEntity;
+import com.hcmut.smarthome.utils.ConstantUtil;
 
 @Repository
 public class ScriptDaoImpl extends CommonDaoImpl<ScriptEntity> implements IScriptDao{
@@ -18,6 +19,17 @@ public class ScriptDaoImpl extends CommonDaoImpl<ScriptEntity> implements IScrip
 	@Transactional
 	public List<ScriptEntity> getAllScripts(int homeId) {
 		String query = "select * from script s, mode m where s.mode_id = m.id and m.home_id = :homeId ;";
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query).addEntity(ScriptEntity.class);
+		sqlStatement.setParameter("homeId", homeId);
+		
+		return sqlStatement.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional
+	public List<ScriptEntity> getAllCustomScripts(int homeId) {
+		String query = String.format( "select * from script s, mode m where s.script_type_id = %s and s.mode_id = m.id and m.home_id = :homeId ;", ConstantUtil.CUSTOM_SCRIPT_ID );
 		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query).addEntity(ScriptEntity.class);
 		sqlStatement.setParameter("homeId", homeId);
 		
@@ -46,7 +58,7 @@ public class ScriptDaoImpl extends CommonDaoImpl<ScriptEntity> implements IScrip
 		
 		return sqlStatement.list();
 	}
-
+	
 	@Override
 	@Transactional
 	public boolean updateScriptStatusToEnable(int scriptId){
@@ -56,6 +68,30 @@ public class ScriptDaoImpl extends CommonDaoImpl<ScriptEntity> implements IScrip
 		
 		return sqlStatement.executeUpdate() > 0;
 	}
+	
+	@Override
+	@Transactional
+	public boolean updateCustomScriptContent(int scriptId, String content){
+		String query = "update script set content = :content where id = :scriptId ;";
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query);
+		sqlStatement.setParameter("scriptId", scriptId);
+		sqlStatement.setParameter("content", content);
+		
+		return sqlStatement.executeUpdate() > 0;
+	}
+	
+//	@Override
+//	@Transactional
+//	public boolean updatePartialDevice(int deviceId, Device device) {
+//		String hqlUpdateEnabled = "Update DeviceEntity d set d.enabled = :enabled where d.id = :deviceId";
+//		Query hqlUpdateEnabledQuery = getCurrentSession().createQuery(hqlUpdateEnabled);
+//		hqlUpdateEnabledQuery.setParameter("enabled", device.isEnabled());
+//		hqlUpdateEnabledQuery.setParameter("deviceId", deviceId);
+//		
+//		int updatedEntities = hqlUpdateEnabledQuery.executeUpdate();
+//		
+//		return updatedEntities > 0;
+//	}
 	
 	@Override
 	@Transactional	

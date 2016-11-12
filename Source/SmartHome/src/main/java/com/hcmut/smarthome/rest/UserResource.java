@@ -43,8 +43,16 @@ public class UserResource {
 	@RequestMapping( path = "/signup", method = RequestMethod.POST)
 	public ResponseEntity<JSONObject> signUp(@RequestBody User user) {
 		
-		int id = userService.addUser(user);
+		int id = -1;
 		JSONObject jsonObject = new JSONObject();
+		
+		try {
+			id = userService.addUser(user);
+		} catch (Exception e) {
+			jsonObject.put("errorMessage", e.getMessage());
+			return new ResponseEntity<JSONObject>(jsonObject, HttpStatus.BAD_REQUEST);
+		}
+		
 		jsonObject.put("returnCode", new Integer(id));
 		if(id > 0) {
 			mailService.sendActivationMail(user.getEmail(), id);

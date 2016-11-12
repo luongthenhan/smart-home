@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.springframework.util.StringUtils;
+
 @Entity
 @Table(name="script")
 public class ScriptEntity implements Serializable{
@@ -54,7 +56,7 @@ public class ScriptEntity implements Serializable{
 		return name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.name = StringUtils.trimWhitespace(name);
 	}
 
 	public DeviceEntity getDevice() {
@@ -73,7 +75,7 @@ public class ScriptEntity implements Serializable{
 		return content;
 	}
 	public void setContent(String content) {
-		this.content = content;
+		this.content = StringUtils.trimWhitespace(content);
 	}
 	public ModeEntity getMode() {
 		return mode;

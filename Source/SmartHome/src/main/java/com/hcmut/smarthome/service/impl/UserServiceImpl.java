@@ -16,7 +16,7 @@ public class UserServiceImpl implements IUserService {
 	private IUserDao userDao;
 
 	@Override
-	public int addUser(User user) {
+	public int addUser(User user) throws Exception {
 
 		UserEntity userEntity = new UserEntity(user.getUsrName(),
 				user.getPassword(), user.getName(), user.getEmail());

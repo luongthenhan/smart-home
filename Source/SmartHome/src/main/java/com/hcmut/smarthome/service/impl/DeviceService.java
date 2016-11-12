@@ -39,6 +39,7 @@ import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
+import com.hcmut.smarthome.utils.ConstantUtil;
 import com.hcmut.smarthome.utils.NotFoundException;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 
@@ -107,22 +108,38 @@ public class DeviceService implements IDeviceService {
 		
 		boolean isDeviceStatusChanged = updatedDevice.isEnabled() != null
 				&& updatedDevice.isEnabled() != deviceEntity.isEnabled();
+		boolean isDeviceNameChanged = updatedDevice.getName() != null 
+				&& !updatedDevice.getName().equals(deviceEntity.getName());
+		String oldDeviceName = deviceEntity.getName();
+		String newDeviceName = updatedDevice.getName();
 		
 		initDeviceEntityBeforeSaveOrUpdate(homeId, deviceTypeId, updatedDevice, deviceEntity);
 		
 		if( deviceDao.update(deviceEntity) ){
-			updateScenarioStatusIfDeviceStatusChanged(homeId, deviceId, updatedDevice.isEnabled(),
-					isDeviceStatusChanged);
+			if( isDeviceStatusChanged )
+				updateScenarioStatus(homeId, deviceId, updatedDevice.isEnabled());
+			if( isDeviceNameChanged )
+				updateContentCustomScripts(homeId, oldDeviceName, newDeviceName);
 			return true;
 		}
 		return false;
 	}
 
-	private void updateScenarioStatusIfDeviceStatusChanged(int homeId, int deviceId,
-			boolean isUpdatedDeviceEnabled, boolean isDeviceStatusChanged) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException, Exception {
-		if( !isDeviceStatusChanged )
-			return;
-			
+	private void updateContentCustomScripts(int homeId, String oldDeviceName, String newDeviceName) throws Exception {
+		List<Script> customScriptsInHome = ScriptConverter.toListModel(scriptDao.getAllCustomScripts(homeId)); 
+		for (Script customScript : customScriptsInHome) {
+			String contentCustomScript = customScript.getContent(); 
+			if( contentCustomScript != null ){
+				String newContent = contentCustomScript.replaceAll(oldDeviceName, newDeviceName);
+				if ( !scriptDao.updateCustomScriptContent(customScript.getId(), newContent) )
+					throw new Exception("Cannot update content custom script " + customScript.getId());
+			}
+		}
+	}
+
+	private void updateScenarioStatus(int homeId, int deviceId,
+			boolean isUpdatedDeviceEnabled) throws ParseException, ScriptException, NotSupportedException, ConflictConditionException, Exception {
+	
 		List<Script> scripts = getAllScriptsGivenHome(homeId);
 		for (Script script : scripts) {
 			Scenario scenario = scenarioService.scriptToScenario(homeId, script);
@@ -229,7 +246,7 @@ public class DeviceService implements IDeviceService {
 	public int addScript(Script script, int deviceId , int modeId, int homeId) throws Exception  {
 		
 		Scenario scenario = scenarioService.scriptToScenario(homeId, script);
-		boolean isValid = scenarioService.isValid(homeId, modeId, deviceId, script, scenario);
+		boolean isValid = scenarioService.isValid(homeId, modeId, script, scenario);
 		
 		if( isValid ){
 			int scenarioId = saveScriptToDB(modeId, deviceId, script); 
@@ -257,7 +274,7 @@ public class DeviceService implements IDeviceService {
 		
 		Scenario updatedScenario = scenarioService.scriptToScenario(homeId, scriptToUpdate);
 		
-		boolean isValid = scenarioService.isValid(homeId, modeId, deviceId, scriptToUpdate, updatedScenario);
+		boolean isValid = scenarioService.isValid(homeId, modeId, scriptToUpdate, updatedScenario);
 		if( isValid )
 			return handleWhenScriptIsValid(scriptId, scriptToUpdate, currentScriptEntity, updatedScenario);
 		
@@ -298,7 +315,7 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	// TODO: Now don't allow to edit mode of script
-	private boolean updateScriptToDB(Script scriptToUpdate, ScriptEntity currentScriptEntity){
+	private boolean updateScriptToDB(Script scriptToUpdate, ScriptEntity currentScriptEntity) throws Exception{
 		if( scriptToUpdate.getContent() != null )
 			currentScriptEntity.setContent(scriptToUpdate.getContent());
 		
@@ -330,7 +347,7 @@ public class DeviceService implements IDeviceService {
 		}
 	}
 	
-	private int saveScriptToDB(int modeId, int deviceId, Script scriptToSave){
+	private int saveScriptToDB(int modeId, int deviceId, Script scriptToSave) throws Exception{
 		ScriptEntity scriptEntity = new ScriptEntity();
 		scriptEntity.setName(scriptToSave.getName());
 		scriptEntity.setContent(scriptToSave.getContent());
@@ -374,7 +391,7 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	private void initDeviceEntityBeforeSaveOrUpdate(int homeId, int deviceTypeId, Device updatedDevice,
-			DeviceEntity deviceEntity) {
+			DeviceEntity deviceEntity) throws Exception {
 		if( updatedDevice.getCode() != null )
 			deviceEntity.setCode(updatedDevice.getCode());
 		
@@ -397,8 +414,9 @@ public class DeviceService implements IDeviceService {
 		if( updatedDevice.getLocation() != null )
 			deviceEntity.setLocation(updatedDevice.getLocation());
 		
-		if( updatedDevice.getName() != null 
-				&& !isDeviceNameExisted(homeId, updatedDevice.getName())){
+		if( updatedDevice.getName() != null
+				&& isValidDeviceName(updatedDevice.getName())
+				&& !isDeviceNameExisted(homeId, deviceEntity.getId() , updatedDevice.getName())){
 			deviceEntity.setName(updatedDevice.getName());
 		}
 		
@@ -415,6 +433,16 @@ public class DeviceService implements IDeviceService {
 		deviceEntity.setDeviceType(deviceType);
 	}
 
+	private boolean isValidDeviceName(String name) throws Exception {
+		if( name == null )
+			return false;
+		
+		String newDeviceName = name.trim();
+		if( ConstantUtil.ALL_DEVICE_ACTIONS.contains(newDeviceName) )
+			throw new Exception("Device name can't be one of the followings " + ConstantUtil.ALL_DEVICE_ACTIONS);
+		return true;
+	}
+
 	@Override
 	public boolean isDeviceEnabled(int deviceId){
 		return deviceDao.isEnabled(deviceId);
@@ -425,8 +453,32 @@ public class DeviceService implements IDeviceService {
 		return deviceDao.getDeviceIdGivenNameAndHomeId(homeId, deviceName);
 	}
 	
-	private boolean isDeviceNameExisted(int homeId, String deviceName){
-		return deviceDao.isDeviceNameExisted(homeId, deviceName);
+	private boolean isDeviceNameExisted(int homeId, int deviceId, String deviceName) throws Exception{
+		// Case update
+		if( deviceId > 0 ){
+			try{
+				int idOfDeviceHasSameName =  deviceDao.getDeviceIdGivenNameAndHomeId(homeId, deviceName);
+				if( idOfDeviceHasSameName > 0 && idOfDeviceHasSameName == deviceId){
+					return false;
+				}
+				else throw new Exception(deviceName + " has already existed!");
+			}catch(NotFoundException e){
+				// Device name not found
+				return false;
+			}
+		}
+		// Case save
+		else if( deviceDao.isDeviceNameExisted(homeId, deviceName) )
+			throw new Exception(deviceName + " has already existed!");
+		return false;
+	}
+	
+	@Override
+	public List<Script> getAllScriptsGivenMode(int modeId) throws Exception{
+		List<ScriptEntity> scripts = scriptDao.getAllScriptsGivenMode(modeId);
+		if( scripts != null )
+			return ScriptConverter.toListModel(scripts);
+		else throw new Exception("Can't get scripts with mode id " + modeId);
 	}
 	
 	@Override

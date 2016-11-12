@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.utils.test;
 
+import static org.junit.Assert.*;
+
 import java.time.LocalTime;
 
 import org.junit.Test;
@@ -8,6 +10,7 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 import com.hcmut.smarthome.scenario.model.Condition;
+import com.hcmut.smarthome.utils.ConstantUtil;
 
 public class RangeTest {
 	@Test
@@ -127,5 +130,15 @@ public class RangeTest {
 	private String BaseAdd(String c, int d, String e, int f) {
 	    Long a = Long.valueOf(c, d), b = Long.valueOf(e, f);
 	    return a.toString(a+b, a>b?d:f);
+	}
+	
+	@Test
+	public void testName() throws Exception {
+		String content = "FromTo('09:00','10:00').action('TurnOn','light 7').endFromTo()";
+		String regex = String.format("'%s'", "TurnOn");
+		String replacementRegex = String.format("'%s'", "light 3");
+		String replace = content.replaceAll(regex, replacementRegex);
+		System.out.println(replace);
+		System.out.println(ConstantUtil.ALL_DEVICE_ACTIONS);
 	}
 }

@@ -15,6 +15,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "account_user")
@@ -76,7 +77,7 @@ public class UserEntity implements Serializable {
 	}
 
 	public void setUsrName(String usrName) {
-		this.usrName = usrName;
+		this.usrName = StringUtils.trimWhitespace(usrName);
 	}
 
 	public String getName() {
@@ -84,7 +85,7 @@ public class UserEntity implements Serializable {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = StringUtils.trimWhitespace(name);
 	}
 
 	public String getPassword() {
@@ -92,7 +93,7 @@ public class UserEntity implements Serializable {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = StringUtils.trimWhitespace(password);
 	}
 
 	public boolean isActivated() {
@@ -108,7 +109,7 @@ public class UserEntity implements Serializable {
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = StringUtils.trimWhitespace(description);
 	}
 
 	public List<HomeEntity> getHomes() {
@@ -124,7 +125,7 @@ public class UserEntity implements Serializable {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.email = StringUtils.trimWhitespace(email);
 	}
 
 	@Override

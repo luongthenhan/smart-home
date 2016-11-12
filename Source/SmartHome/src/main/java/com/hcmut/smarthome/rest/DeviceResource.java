@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.transaction.NotSupportedException;
 
+import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,22 +81,26 @@ public class DeviceResource {
 			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 			
-		int addedDeviceId;
 		try {
-			addedDeviceId = deviceService.addDevice(homeId, deviceTypeId,
+			int addedDeviceId = deviceService.addDevice(homeId, deviceTypeId,
 					device);
-		} catch (Exception e) {
+			if (addedDeviceId > 0) {
+				String URINewAddedObject = String.format(
+						"homes/%s/device-types/%s/devices/%s", homeId,
+						deviceTypeId, addedDeviceId);
+				return new ResponseEntity<ResponeString>(new ResponeString(addedDeviceId, URINewAddedObject),
+						HttpStatus.CREATED);
+			} 
+		} 
+		catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),
 					HttpStatus.BAD_REQUEST);
 		}
-		if (addedDeviceId > 0) {
-			String URINewAddedObject = String.format(
-					"homes/%s/device-types/%s/devices/%s", homeId,
-					deviceTypeId, addedDeviceId);
-			return new ResponseEntity<ResponeString>(new ResponeString(addedDeviceId, URINewAddedObject),
-					HttpStatus.CREATED);
-		} else
-			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
+		
+		return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
 	}
 
 	/**
@@ -125,10 +130,12 @@ public class DeviceResource {
 			if (deviceService.updatePartialDevice(homeId, deviceId, deviceTypeId,
 					updatedDevice))
 				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
-			else
-				return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
+			
+			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
+		} catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -160,8 +167,7 @@ public class DeviceResource {
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "/device-types/{deviceTypeId}/devices")
 	public ResponseEntity<List<Device>> getAllDevicesGivenHomeAndDeviceType(
-			@PathVariable int deviceTypeId, @PathVariable int homeId)
-			throws NotSupportedException {
+			@PathVariable int deviceTypeId, @PathVariable int homeId) {
 		
 		if(!authService.isAccessable(homeId)) {
 			return new ResponseEntity<List<Device>>(HttpStatus.UNAUTHORIZED);
@@ -172,7 +178,7 @@ public class DeviceResource {
 					deviceService.getAllGivenHomeAndDeviceType(homeId, deviceTypeId),
 					HttpStatus.OK);
 		} catch (NotFoundException e) {
-			return new ResponseEntity<List<Device>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<List<Device>>(HttpStatus.NOT_FOUND);
 		}
 	}
 

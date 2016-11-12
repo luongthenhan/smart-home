@@ -1,8 +1,8 @@
 package com.hcmut.smarthome.rest;
 
 import java.util.List;
-import java.util.Set;
 
+import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,9 +50,10 @@ public class ScriptResource {
 		}
 		
 		try {
-			Set<Integer> setDeviceIdsInScript = deviceService.getListDeviceIdInScript(homeId, scriptId);
 			deviceService.deleteScript(deviceId, scriptId);
-			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, "", setDeviceIdsInScript), HttpStatus.OK);
+			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, ""), HttpStatus.OK);
+		} catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
 		}
@@ -95,7 +96,9 @@ public class ScriptResource {
 		
 		try {
 			deviceService.updateScript(homeId, modeId, deviceId, scriptId,script);
-			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, "", deviceService.getListDeviceIdInScript(homeId, scriptId)), HttpStatus.OK);
+			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, ""), HttpStatus.OK);
+		} catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.BAD_REQUEST);
 		}
@@ -111,7 +114,9 @@ public class ScriptResource {
 		
 		try {
 			deviceService.updatePartialScript(homeId, modeId, deviceId, scriptId, script);
-			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, "", deviceService.getListDeviceIdInScript(homeId, scriptId)), HttpStatus.OK);
+			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, ""), HttpStatus.OK);
+		} catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.BAD_REQUEST);
 		}
@@ -138,8 +143,10 @@ public class ScriptResource {
 			addedScriptId = deviceService.addScript(script, deviceId, modeId , homeId);
 			if (addedScriptId > 0) {
 				String URINewAddedObject = String.format( "devices/%s/modes/%s/scripts/%s", deviceId, modeId, addedScriptId);
-				return new ResponseEntity<ResponeString>(new ResponeString(addedScriptId, URINewAddedObject, deviceService.getListDeviceIdInScript(homeId, script)),HttpStatus.CREATED);
+				return new ResponseEntity<ResponeString>(new ResponeString(addedScriptId, URINewAddedObject),HttpStatus.CREATED);
 			}
+		} catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}

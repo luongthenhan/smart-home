@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.entity;
 
+import static org.springframework.util.StringUtils.trimWhitespace;
+
 import java.io.Serializable;
 import java.util.Set;
 
@@ -77,19 +79,19 @@ public class DeviceEntity implements Serializable{
 		return name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.name = trimWhitespace(name);
 	}
 	public String getDescription() {
 		return description;
 	}
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = trimWhitespace(description);
 	}
 	public String getLocation() {
 		return location;
 	}
 	public void setLocation(String location) {
-		this.location = location;
+		this.location = trimWhitespace(location);
 	}
 	public boolean isEnabled() {
 		return enabled;
@@ -113,7 +115,7 @@ public class DeviceEntity implements Serializable{
 		return code;
 	}
 	public void setCode(String code) {
-		this.code = code;
+		this.code = trimWhitespace(code);
 	}
 	public int getGPIOPin() {
 		return GPIOPin;
@@ -125,7 +127,7 @@ public class DeviceEntity implements Serializable{
 		return GPIOType;
 	}
 	public void setGPIOType(String gPIOType) {
-		GPIOType = gPIOType;
+		GPIOType = trimWhitespace(gPIOType);
 	}
 	public Set<ScriptEntity> getScripts() {
 		return scripts;

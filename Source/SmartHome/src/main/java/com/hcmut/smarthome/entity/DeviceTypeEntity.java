@@ -17,6 +17,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.springframework.util.StringUtils;
+
 @Entity
 @Table(name="device_type")
 public class DeviceTypeEntity implements Serializable{
@@ -66,7 +68,7 @@ public class DeviceTypeEntity implements Serializable{
 	}
 
 	public void setTypeName(String typeName) {
-		this.typeName = typeName;
+		this.typeName = StringUtils.trimWhitespace(typeName);
 	}
 
 	public String getDescription() {
@@ -74,7 +76,7 @@ public class DeviceTypeEntity implements Serializable{
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = StringUtils.trimWhitespace(description);
 	}
 
 	public String getImageURL() {
@@ -82,7 +84,7 @@ public class DeviceTypeEntity implements Serializable{
 	}
 
 	public void setImageURL(String imageURL) {
-		this.imageURL = imageURL;
+		this.imageURL = StringUtils.trimWhitespace(imageURL);
 	}
 
 	public List<ConditionEntity> getConditions() {

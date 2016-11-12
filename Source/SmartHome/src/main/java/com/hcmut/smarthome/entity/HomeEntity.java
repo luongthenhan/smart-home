@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "home")
@@ -68,19 +69,19 @@ public class HomeEntity implements Serializable{
 		return name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.name = StringUtils.trimWhitespace(name);
 	}
 	public String getAddress() {
 		return address;
 	}
 	public void setAddress(String address) {
-		this.address = address;
+		this.address = StringUtils.trimWhitespace(address);
 	}
 	public String getDescription() {
 		return description;
 	}
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = StringUtils.trimWhitespace(description);
 	}
 	public UserEntity getUser() {
 		return user;

@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.util.StringUtils;
+
 @Entity
 @Table(name="script_type")
 public class ScriptTypeEntity implements Serializable{
@@ -42,7 +44,7 @@ public class ScriptTypeEntity implements Serializable{
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = StringUtils.trimWhitespace(name);
 	}
 
 	public String getTemplate() {
@@ -50,6 +52,6 @@ public class ScriptTypeEntity implements Serializable{
 	}
 
 	public void setTemplate(String template) {
-		this.template = template;
+		this.template = StringUtils.trimWhitespace(template);
 	}
 }

@@ -36,20 +36,6 @@ public interface IScenarioService {
 	 */
 	Scenario JSONToScenario(int homeId, String script) throws ParseException, NotSupportedException, ConflictConditionException;
 	
-	/**
-	 * Check scenario whether it is validate or not <br/>
-	 * Validate: name <br/>
-	 * Check conflict: scenario
-	 * 
-	 * @param modeId
-	 * @param deviceId
-	 * @param script script used to check name valid or not
-	 * @param scenario if it is null , just check valid name or not. Otherwise, also check scenario conflict
-	 * @return
-	 * @throws Exception 
-	 */
-	boolean isValid(int homeId, int modeId, int deviceId, Script script, Scenario scenario) throws Exception;
-
 	void updateScenarioStatus(int scenarioId, ScenarioStatus status);
 
 	void updateAllScenarioStatusOfHome(int homeId, ScenarioStatus status);
@@ -69,6 +55,17 @@ public interface IScenarioService {
 	
 	boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario) throws Exception;
 
+	/**
+	 * Check scenario whether it is validate or not <br/>
+	 * Validate: name <br/>
+	 * Check conflict: scenario
+	 * 
+	 * @param modeId
+	 * @param script script used to check name valid or not
+	 * @param scenario if it is null , just check valid name or not. Otherwise, also check scenario conflict
+	 * @return
+	 * @throws Exception 
+	 */
 	boolean isValid(int homeId, int modeId, Script script, Scenario scenario)
 			throws Exception;
 

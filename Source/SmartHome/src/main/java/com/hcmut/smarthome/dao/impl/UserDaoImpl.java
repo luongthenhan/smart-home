@@ -25,7 +25,7 @@ public class UserDaoImpl extends CommonDaoImpl<UserEntity> implements IUserDao {
 	}
 
 	@Override
-	public int addUser(UserEntity userEntity) {
+	public int addUser(UserEntity userEntity) throws Exception {
 
 		if(!isValidUsername(userEntity.getUsrName())) {
 			return USERNAME_ALREADY_EXISTS;

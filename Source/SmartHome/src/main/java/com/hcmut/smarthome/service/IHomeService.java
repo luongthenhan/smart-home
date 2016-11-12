@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.hcmut.smarthome.model.Home;
 import com.hcmut.smarthome.model.Mode;
-import com.hcmut.smarthome.utils.NotFoundException;
 
 public interface IHomeService {
 	
@@ -16,17 +15,17 @@ public interface IHomeService {
 
 	Home getHome(int userId, int homeId);
 	
-	int addHome(int userId, Home home);
+	int addHome(int userId, Home home) throws Exception;
 
-	boolean updateHome(int userId, int homeId, Home home) throws NotFoundException;
+	boolean updateHome(int userId, int homeId, Home home) throws Exception;
 	
-	boolean updatePartialHome(int userId, int homeId, Home home) throws NotFoundException;
+	boolean updatePartialHome(int userId, int homeId, Home home) throws Exception;
 
 	boolean deleteHome(int userId, int homeId);
 
-	int addMode(int homeId, Mode mode);
+	int addMode(int homeId, Mode mode) throws Exception;
 
-	boolean updateMode(int homeId, int modeId, Mode mode);
+	boolean updateMode(int homeId, int modeId, Mode mode) throws Exception;
 
 	boolean deleteMode(int homeId, int modeId);
 

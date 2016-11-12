@@ -1,6 +1,10 @@
 package com.hcmut.smarthome.service.impl;
 
 import static com.hcmut.smarthome.utils.ConstantUtil.ADD_UNSUCCESSFULLY;
+import static com.hcmut.smarthome.utils.ConstantUtil.DEFAULT_MODE;
+import static com.hcmut.smarthome.utils.ConstantUtil.HIDDEN_DEVICE;
+import static com.hcmut.smarthome.utils.ConstantUtil.NO_GPIO;
+import static com.hcmut.smarthome.utils.ConstantUtil.NO_GPIO_PIN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +16,8 @@ import com.hcmut.smarthome.converter.HomeConverter;
 import com.hcmut.smarthome.converter.ModeConverter;
 import com.hcmut.smarthome.dao.IHomeDao;
 import com.hcmut.smarthome.dao.IModeDao;
+import com.hcmut.smarthome.entity.DeviceEntity;
+import com.hcmut.smarthome.entity.DeviceTypeEntity;
 import com.hcmut.smarthome.entity.HomeEntity;
 import com.hcmut.smarthome.entity.ModeEntity;
 import com.hcmut.smarthome.entity.UserEntity;
@@ -24,8 +30,6 @@ import com.hcmut.smarthome.utils.NotFoundException;
 
 @Service
 public class HomeService implements IHomeService{
-
-	private static final String DEFAULT_MODE = "default";
 
 	@Autowired
 	private IHomeDao homeDao;
@@ -58,7 +62,7 @@ public class HomeService implements IHomeService{
 	}
 	
 	@Override
-	public int addHome(int userId, Home home){
+	public int addHome(int userId, Home home) throws Exception{
 		HomeEntity homeEntity = new HomeEntity();
 		homeEntity.setAddress(home.getAddress());
 		homeEntity.setDescription(home.getDescription());
@@ -73,12 +77,37 @@ public class HomeService implements IHomeService{
 		int homeId = homeDao.save(homeEntity).intValue(); 
 		if( homeId > 0 ){
 			addDefaultModeToHome(homeEntity, homeId);
+			addHiddenDeviceToHome(homeEntity, homeId);
+			homeDao.update(homeEntity);
 			return homeId;
 		}
 		
 		return ADD_UNSUCCESSFULLY;
 	}
 
+	/**
+	 * Hidden device used to manage all custom script of this home. 
+	 * One home has only one hidden device
+	 * Its device type is naming <!Custom Device Type!>
+	 * @param homeEntity
+	 * @param homeId
+	 */
+	private void addHiddenDeviceToHome(HomeEntity homeEntity, int homeId){
+		DeviceTypeEntity customDeviceType = new DeviceTypeEntity();
+		customDeviceType.setId(8);
+		
+		DeviceEntity hiddenDevice = new DeviceEntity();
+		hiddenDevice.setName(HIDDEN_DEVICE);
+		hiddenDevice.setHome(homeEntity);
+		hiddenDevice.setEnabled(true);
+		hiddenDevice.setGPIOType(NO_GPIO);
+		hiddenDevice.setGPIOPin(NO_GPIO_PIN);
+		hiddenDevice.setDeviceType(customDeviceType);
+		
+		homeEntity.setDevices(new ArrayList<>());
+		homeEntity.getDevices().add(hiddenDevice);
+	}
+	
 	private void addDefaultModeToHome(HomeEntity homeEntity, int homeId) {
 		ModeEntity defaultModeEntity = new ModeEntity();
 		defaultModeEntity.setName(DEFAULT_MODE);
@@ -87,17 +116,15 @@ public class HomeService implements IHomeService{
 		homeEntity.setCurrentMode(defaultModeEntity);
 		homeEntity.setModes(new ArrayList<>());
 		homeEntity.getModes().add(defaultModeEntity);
-		
-		homeDao.update(homeEntity);
 	}
 	
 	@Override
-	public boolean updateHome(int userId, int homeId, Home home) throws NotFoundException{
+	public boolean updateHome(int userId, int homeId, Home home) throws Exception{
 		return updatePartialHome(userId, homeId, home);
 	}
 
 	@Override
-	public boolean updatePartialHome(int userId, int homeId, Home homeToUpdate) throws NotFoundException {
+	public boolean updatePartialHome(int userId, int homeId, Home homeToUpdate) throws Exception {
 		HomeEntity homeEntity = homeDao.getById(homeId);
 		
 		if( homeEntity == null )
@@ -140,7 +167,7 @@ public class HomeService implements IHomeService{
 		}
 	}
 
-	private boolean updateHomeToDB(Home homeToUpdate, HomeEntity homeEntity) {
+	private boolean updateHomeToDB(Home homeToUpdate, HomeEntity homeEntity) throws Exception {
 		if( homeToUpdate.getAddress() != null )
 			homeEntity.setAddress(homeToUpdate.getAddress());
 		
@@ -174,7 +201,7 @@ public class HomeService implements IHomeService{
 	}
 	
 	@Override
-	public int addMode(int homeId, Mode mode){
+	public int addMode(int homeId, Mode mode) throws Exception{
 		ModeEntity modeEntity = new ModeEntity();
 		modeEntity.setName(mode.getName());
 		
@@ -186,7 +213,7 @@ public class HomeService implements IHomeService{
 	}
 	
 	@Override
-	public boolean updateMode(int homeId, int modeId, Mode mode){
+	public boolean updateMode(int homeId, int modeId, Mode mode) throws Exception{
 		ModeEntity modeEntity = modeDao.getById(modeId);
 		
 		if( mode.getName() != null )

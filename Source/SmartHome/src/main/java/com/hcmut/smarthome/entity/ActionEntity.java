@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.util.StringUtils;
+
 @Entity
 @Table(name="action")
 public class ActionEntity implements Serializable{
@@ -42,7 +44,7 @@ public class ActionEntity implements Serializable{
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = StringUtils.trimWhitespace(name);
 	}
 
 	public String getScript() {
@@ -50,6 +52,6 @@ public class ActionEntity implements Serializable{
 	}
 
 	public void setScript(String script) {
-		this.script = script;
+		this.script = StringUtils.trimWhitespace(script);
 	}
 }

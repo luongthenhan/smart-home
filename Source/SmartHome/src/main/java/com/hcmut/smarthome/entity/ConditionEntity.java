@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.springframework.util.StringUtils;
+
 @Entity
 @Table(name="condition")
 public class ConditionEntity implements Serializable{
@@ -51,7 +53,7 @@ public class ConditionEntity implements Serializable{
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = StringUtils.trimWhitespace(name);
 	}
 
 	public String getScript() {
@@ -59,7 +61,7 @@ public class ConditionEntity implements Serializable{
 	}
 
 	public void setScript(String script) {
-		this.script = script;
+		this.script = StringUtils.trimWhitespace(script);
 	}
 
 	public DeviceTypeEntity getDeviceType() {

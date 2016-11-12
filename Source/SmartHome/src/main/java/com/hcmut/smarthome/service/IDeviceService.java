@@ -60,4 +60,6 @@ public interface IDeviceService {
 
 	Set<Integer> getListDeviceIdInScript(int homeId, int scriptId)
 			throws Exception;
+
+	List<Script> getAllScriptsGivenMode(int modeId) throws Exception;
 }

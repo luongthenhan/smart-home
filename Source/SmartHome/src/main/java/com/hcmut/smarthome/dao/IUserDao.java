@@ -6,7 +6,7 @@ public interface IUserDao extends ICommonDao<UserEntity> {
 	
 	public UserEntity getByUsername(String username);
 	
-	public int addUser(UserEntity userEntity);
+	public int addUser(UserEntity userEntity) throws Exception;
 	
 	public boolean activateUser(int userId);
 }

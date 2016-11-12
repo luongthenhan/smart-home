@@ -12,8 +12,9 @@ public interface ICommonDao<T extends Object> {
 	 * 
 	 * @param t
 	 * @return id of object after be created
+	 * @throws Exception 
 	 */
-	Integer save(T t);
+	Integer save(T t) throws Exception;
 
 	/**
 	 * function for getting object from database base on object' id
@@ -35,8 +36,9 @@ public interface ICommonDao<T extends Object> {
 	 * 
 	 * @param t
 	 * @return true if update success and false if otherwise
+	 * @throws Exception 
 	 */
-	boolean update(T t);
+	boolean update(T t) throws Exception;
 
 	/**
 	 * function for updating object into database

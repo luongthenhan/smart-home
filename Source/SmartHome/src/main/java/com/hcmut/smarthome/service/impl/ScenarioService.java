@@ -1,5 +1,7 @@
 package com.hcmut.smarthome.service.impl;
 
+import static com.hcmut.smarthome.utils.ConstantUtil.CUSTOM_SCRIPT_ID;
+import static com.hcmut.smarthome.utils.ConstantUtil.CUSTOM_SCRIPT_TYPE;
 import static com.hcmut.smarthome.utils.ConstantUtil.INPUT_SCRIPT_HAS_SAME_NAME_WITH_EXISTING_ONE_IN_SAME_MODE;
 
 import java.util.ArrayList;
@@ -34,8 +36,6 @@ public class ScenarioService implements IScenarioService {
 	private static final String INPUT_SCRIPT_IS_NULL = "Input script is null";
 	private static final String REQUIRED_SCRIPT_TYPE_TO_UPDATE = "Required script type to update";
 	private static final Logger LOGGER = Logger.getLogger(ScenarioService.class);
-	private static final String CUSTOM_SCRIPT_TYPE = "Custom";
-	private static final int CUSTOM_SCRIPT_ID = 3;
 
 	@Autowired
 	private ScenarioCreator scenarioCreator;
@@ -58,18 +58,7 @@ public class ScenarioService implements IScenarioService {
 		if( hasScriptNotUpdatedNameAndContent(script) )
 			return true;
 		
-		List<Script> existedScripts = deviceService.getAllScriptsGivenHome(modeId);
-		return checkValidWithExistingScripts(homeId, script, scenario,
-				existedScripts);
-	}
-	
-	@Override
-	public boolean isValid(int homeId, int modeId, int deviceId, Script script, Scenario scenario) throws Exception{
-		
-		if( hasScriptNotUpdatedNameAndContent(script) )
-			return true;
-		
-		List<Script> existedScripts = deviceService.getScripts(modeId,deviceId);		
+		List<Script> existedScripts = deviceService.getAllScriptsGivenMode(modeId);
 		return checkValidWithExistingScripts(homeId, script, scenario,
 				existedScripts);
 	}

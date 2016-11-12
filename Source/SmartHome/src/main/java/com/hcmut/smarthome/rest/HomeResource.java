@@ -4,6 +4,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.ALL_GPIO;
 
 import java.util.List;
 
+import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,6 @@ import com.hcmut.smarthome.model.Mode;
 import com.hcmut.smarthome.model.ResponeString;
 import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.service.IHomeService;
-import com.hcmut.smarthome.utils.NotFoundException;
 
 @RestController
 @RequestMapping(path = "/homes")
@@ -73,10 +73,14 @@ public class HomeResource {
 			if (homeService.updatePartialHome(authService.getCurrentUserId(),
 					homeId, home))
 				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
-			else
-				return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
-		} catch (NotFoundException e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
+			
+			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
+		}
+		catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		catch (Exception e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -91,25 +95,37 @@ public class HomeResource {
 		try {
 			if (homeService.updateHome(authService.getCurrentUserId(), homeId, home))
 				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
-			else
-				return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
-		} catch (NotFoundException e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
+			
+			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
+		} 
+		catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		catch (Exception e) {
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getCause().getMessage()),HttpStatus.BAD_REQUEST);
 		}
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<ResponeString> addHome(@RequestBody Home home) {
-
-		int addedHomeId = homeService.addHome(authService.getCurrentUserId(),
-				home);
+		int addedHomeId = -1;
+		try{
+			addedHomeId = homeService.addHome(authService.getCurrentUserId(), home);
+		}
+		catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		catch(Exception e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		
 		if (addedHomeId > 0) {
 			String URINewAddedObject = String.format("homes/%s", addedHomeId);
 			return new ResponseEntity<ResponeString>(new ResponeString(addedHomeId,URINewAddedObject),
 					HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
-		}
+		} 
+		
+		return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);	
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -135,17 +151,24 @@ public class HomeResource {
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, path = "/{homeId}/modes/{modeId}")
-	public ResponseEntity<Void> updateMode(@PathVariable int homeId,
+	public ResponseEntity<ResponeString> updateMode(@PathVariable int homeId,
 			@PathVariable int modeId, @RequestBody Mode mode) {
 		
 		if(!authService.isAccessable(homeId)) {
-			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		if (homeService.updateMode(homeId, modeId, mode))
-			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-		else
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		try {
+			if (homeService.updateMode(homeId, modeId, mode))
+				return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
+		} 
+		catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		catch (Exception e) {
+			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@RequestMapping(method = RequestMethod.POST, path = "/{homeId}/modes")
@@ -156,14 +179,24 @@ public class HomeResource {
 			return new ResponseEntity<ResponeString>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		int addedModeId = homeService.addMode(homeId, mode);
-		if (addedModeId > 0) {
-			String URINewAddedObject = String.format("homes/%s/modes/%s",
-					homeId, addedModeId);
-			return new ResponseEntity<ResponeString>(new ResponeString(addedModeId,URINewAddedObject),
-					HttpStatus.CREATED);
-		} else
+		try {
+			int addedModeId = homeService.addMode(homeId, mode);
+			if (addedModeId > 0) {
+				String URINewAddedObject = String.format("homes/%s/modes/%s",
+						homeId, addedModeId);
+				return new ResponseEntity<ResponeString>(new ResponeString(addedModeId,URINewAddedObject),
+						HttpStatus.CREATED);
+			} 
 			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
+		} 
+		catch(JDBCException e){
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		catch (Exception e) {
+			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
+		}
+		
+		
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/{homeId}/modes")
@@ -186,5 +219,4 @@ public class HomeResource {
 	public ResponseEntity<List<Integer>> getAllGpio() {
 		return new ResponseEntity<List<Integer>>(ALL_GPIO, HttpStatus.OK);
 	}
-
 }

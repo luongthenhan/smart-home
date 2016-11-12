@@ -4,7 +4,7 @@ import com.hcmut.smarthome.model.User;
 
 public interface IUserService {
 	
-	public int addUser(User user);
+	public int addUser(User user) throws Exception;
 	
 	public boolean activateUser(int userId);
 	
