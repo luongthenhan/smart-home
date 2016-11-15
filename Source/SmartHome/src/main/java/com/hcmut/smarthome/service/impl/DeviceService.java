@@ -48,7 +48,6 @@ import com.hcmut.smarthome.utils.ScriptBuilder;
 public class DeviceService implements IDeviceService {
 
 	private static final String DEVICE_ID_NOT_FOUND = "Device id %d not found";
-
 	private static final String SCRIPT_ID_NOT_FOUND = "Script id %d not found";
 
 	@Autowired
@@ -69,15 +68,6 @@ public class DeviceService implements IDeviceService {
 	@PostConstruct
 	private void init(){
 		ScriptBuilder.setDeviceService(this);
-//		List<Script> scripts = ScriptConverter.toListModel(scriptDao.getAll());
-//		List<Mode> modes = ModeConverter.toListModel(modeDao.getAll());
-//		
-//		for (Script script : scripts) {
-//			for (Mode mode : modes) {
-//				if( mode == script.get )
-//			}
-//			Scenario scenario = scenarioService.sc
-//		}
 	}
 	
 	@Override
@@ -502,18 +492,9 @@ public class DeviceService implements IDeviceService {
 	
 	@Override
 	public List<ScriptMoreDetail> getAllScripts() throws Exception{
-		List<ScriptEntity> scriptEntities = scriptDao.getAll();
+		List<ScriptEntity> scriptEntities = scriptDao.getAllScripts();
 		if( scriptEntities != null )
 			return ScriptConverter.toListModelWithMoreDetail(scriptEntities);
 		throw new Exception("Something wrong with DB");
-	}
-	
-	@PostConstruct
-	public void runAllScriptsAtFirstTimeStartApplication() throws Exception{
-		List<ScriptMoreDetail> scripts = getAllScripts();
-		for (ScriptMoreDetail script : scripts) {
-			Scenario scenario = scenarioService.scriptToScenario(script.getHomeId(), script);
-			scenarioService.runScenario(script.getId(), script.getHomeId(), script.getDeviceId(), script.getModeId(), scenario);
-		}
 	}
 }
