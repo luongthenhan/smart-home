@@ -55,7 +55,7 @@ public class HomeService implements IHomeService{
 	
 	@Override
 	public Home getHome(int userId, int homeId)  {
-		HomeEntity home = homeDao.getById(homeId);
+		HomeEntity home = homeDao.getBy(userId, homeId);
 		if( home == null )
 			return null;
 		return HomeConverter.toModel(home);

@@ -119,4 +119,18 @@ public class HomeDaoImpl extends CommonDaoImpl<HomeEntity> implements IHomeDao {
 			return (Integer) result; 
 		return null;
 	}
+
+	@Override
+	public HomeEntity getBy(int userId, int homeId) {
+		
+		String query = "SELECT * FROM public.home WHERE home.user_id = :userId AND home.id = :homeId ;";
+		SQLQuery sqlStatement = getCurrentSession().createSQLQuery(query)
+				.addEntity(HomeEntity.class);
+		sqlStatement.setParameter("userId", userId);
+		sqlStatement.setParameter("homeId", homeId);
+
+		return (HomeEntity) sqlStatement.uniqueResult();
+	}
+	
+	
 }

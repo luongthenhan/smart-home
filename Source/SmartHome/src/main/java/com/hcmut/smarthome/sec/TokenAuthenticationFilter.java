@@ -11,6 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
@@ -73,6 +74,8 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 		String authorization = httpRequest.getHeader("Authorization");
 		String username = httpRequest.getHeader(HEADER_USERNAME);
 		String password = httpRequest.getHeader(HEADER_PASSWORD);
+		
+		
 
 		if (authorization != null) {
 			checkBasicAuthorization(authorization, httpResponse);
@@ -107,6 +110,10 @@ public final class TokenAuthenticationFilter extends GenericFilterBean {
 
 	private void checkUsernameAndPassword(String username, String password,
 			HttpServletResponse httpResponse) throws IOException {
+		
+		// Encrypt password
+		password = DigestUtils.sha1Hex(password);
+				
 		TokenInfo tokenInfo = authenticationService.authenticate(username,
 				password);
 		if (tokenInfo != null) {

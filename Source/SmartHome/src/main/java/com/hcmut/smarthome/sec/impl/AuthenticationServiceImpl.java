@@ -16,34 +16,43 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 import com.hcmut.smarthome.entity.HomeEntity;
+import com.hcmut.smarthome.model.Home;
 import com.hcmut.smarthome.sec.IAuthenticationService;
 import com.hcmut.smarthome.sec.ITokenManager;
 import com.hcmut.smarthome.sec.TokenInfo;
+import com.hcmut.smarthome.service.IHomeService;
 
 /**
- * Service responsible for all around authentication, token checks, etc.
- * This class does not care about HTTP protocol at all.
+ * Service responsible for all around authentication, token checks, etc. This
+ * class does not care about HTTP protocol at all.
  */
 public class AuthenticationServiceImpl implements IAuthenticationService {
-	
-	private static Logger LOGGER = Logger.getLogger(AuthenticationServiceImpl.class);
+
+	private static Logger LOGGER = Logger
+			.getLogger(AuthenticationServiceImpl.class);
 
 	private static final int USER_CANNOT_BE_FOUND = -1;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	@Autowired
+	private IHomeService homeService;
+
 	private final AuthenticationManager authenticationManager;
 	private final ITokenManager tokenManager;
 
-	public AuthenticationServiceImpl(AuthenticationManager authenticationManager, ITokenManager tokenManager) {
+	public AuthenticationServiceImpl(
+			AuthenticationManager authenticationManager,
+			ITokenManager tokenManager) {
 		this.authenticationManager = authenticationManager;
 		this.tokenManager = tokenManager;
 	}
 
 	@PostConstruct
 	public void init() {
-		LOGGER.debug(" *** AuthenticationServiceImpl.init with: " + applicationContext);
+		LOGGER.debug(" *** AuthenticationServiceImpl.init with: "
+				+ applicationContext);
 	}
 
 	@Override
@@ -51,14 +60,18 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 		LOGGER.debug(" *** AuthenticationServiceImpl.authenticate");
 
 		// Here principal=username, credentials=password
-		Authentication authentication = new UsernamePasswordAuthenticationToken(login, password);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+				login, password);
 		try {
 			authentication = authenticationManager.authenticate(authentication);
-			// Here principal=UserDetails (UserContext in our case), credentials=null (security reasons)
-			SecurityContextHolder.getContext().setAuthentication(authentication);
+			// Here principal=UserDetails (UserContext in our case),
+			// credentials=null (security reasons)
+			SecurityContextHolder.getContext()
+					.setAuthentication(authentication);
 
 			if (authentication.getPrincipal() != null) {
-				UserDetails userContext = (UserDetails) authentication.getPrincipal();
+				UserDetails userContext = (UserDetails) authentication
+						.getPrincipal();
 				TokenInfo newToken = tokenManager.createNewToken(userContext);
 				if (newToken == null) {
 					return null;
@@ -66,7 +79,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 				return newToken;
 			}
 		} catch (AuthenticationException e) {
-			LOGGER.debug(" *** AuthenticationServiceImpl.authenticate - FAILED: " + e.toString());
+			LOGGER.debug(" *** AuthenticationServiceImpl.authenticate - FAILED: "
+					+ e.toString());
 		}
 		return null;
 	}
@@ -81,7 +95,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 		}
 
 		Authentication securityToken = new PreAuthenticatedAuthenticationToken(
-			userDetails, null, userDetails.getAuthorities());
+				userDetails, null, userDetails.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(securityToken);
 
 		return true;
@@ -96,7 +110,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
 	@Override
 	public UserDetails getCurrentUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Authentication authentication = SecurityContextHolder.getContext()
+				.getAuthentication();
 		if (authentication == null) {
 			return null;
 		}
@@ -106,29 +121,31 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	@Override
 	public boolean isAccessable(int selectedHomeId) {
 		UserDetails currentUser = getCurrentUser();
-		
-		if(currentUser == null) {
+
+		if (currentUser == null) {
 			return false;
 		}
-		
-		if(currentUser instanceof CustomUserDetails) {
+
+		if (currentUser instanceof CustomUserDetails) {
 			return isAccessable((CustomUserDetails) currentUser, selectedHomeId);
 		}
-		
+
 		return false;
 	}
-	
+
 	private boolean isAccessable(CustomUserDetails user, int selectedHomeId) {
-		
-		List<HomeEntity> userHomes = user.getUserEntity().getHomes();
-		if(userHomes == null || userHomes.isEmpty()) {
-			return false;
-		}
-		
-		for(HomeEntity home : userHomes) {
-			if(selectedHomeId == home.getId()) {
-				return true;
-			}
+		/*
+		 * List<HomeEntity> userHomes = user.getUserEntity().getHomes();
+		 * if(userHomes == null || userHomes.isEmpty()) { return false; }
+		 * 
+		 * for(HomeEntity home : userHomes) { if(selectedHomeId == home.getId())
+		 * { return true; } }
+		 */
+		Home userHome = homeService.getHome(user.getUserEntity().getId(),
+				selectedHomeId);
+
+		if (userHome != null) {
+			return true;
 		}
 		
 		return false;
@@ -136,12 +153,12 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
 	@Override
 	public int getCurrentUserId() {
-		
+
 		CustomUserDetails currentUser = (CustomUserDetails) getCurrentUser();
-		if(currentUser == null) {
+		if (currentUser == null) {
 			return USER_CANNOT_BE_FOUND;
 		}
-		
+
 		return currentUser.getUserEntity().getId();
 	}
 }

@@ -213,6 +213,12 @@
 			<version>1.5.6</version>
 		</dependency>
 
+		<!-- Common codec -->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
+		</dependency>
 
 	</dependencies>
 	<build>

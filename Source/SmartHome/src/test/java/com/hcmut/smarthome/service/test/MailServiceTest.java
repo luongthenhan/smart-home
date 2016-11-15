@@ -17,7 +17,7 @@ public class MailServiceTest {
 
 	@Test
 	public void should_send_email_successfully() throws Exception {
-		mailService.sendMail("51204401@hcmut.edu.vn", "Test 4", "<b>Test 4</b>");
+		mailService.sendMail("tung.cs.1994@gmail.com", "Test 4", "<b>Test 4</b>");
 		
 	}
 

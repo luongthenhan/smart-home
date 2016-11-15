@@ -21,4 +21,6 @@ public interface IHomeDao extends ICommonDao<HomeEntity>{
 	Integer getHomeIdGivenMode(int modeId);
 
 	Integer getCurrentModeIdGivenHome(int homeId);
+	
+	HomeEntity getBy(int userId, int homeId);
 }
