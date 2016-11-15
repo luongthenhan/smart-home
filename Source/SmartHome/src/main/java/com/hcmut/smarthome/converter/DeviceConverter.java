@@ -4,6 +4,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.BUZZER;
 import static com.hcmut.smarthome.utils.ConstantUtil.CAMERA;
 import static com.hcmut.smarthome.utils.ConstantUtil.CANNOT_CONVERT_ENTITY_TO_MODEL;
 import static com.hcmut.smarthome.utils.ConstantUtil.GAS_SENSOR;
+import static com.hcmut.smarthome.utils.ConstantUtil.HIDDEN_DEVICE;
 import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT;
 import static com.hcmut.smarthome.utils.ConstantUtil.LIGHT_SENSOR;
 import static com.hcmut.smarthome.utils.ConstantUtil.MOTION_SENSOR;
@@ -67,6 +68,10 @@ public class DeviceConverter {
 		
 		case MOTION_SENSOR:
 			model = convertToMotionSensorModel(deviceEntity);
+			break;
+			
+		case HIDDEN_DEVICE:
+			model = new Device(deviceEntity);
 			break;
 
 		default:

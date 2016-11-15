@@ -20,13 +20,6 @@ public interface IScenarioService {
 	String JSONToString();
 	
 	/**
-	 * Run a given scenario 
-	 * @param scenario
-	 * @throws Exception 
-	 */
-	void runScenario(Scenario scenario) throws Exception;
-	
-	/**
 	 * Convert one JSONArray object to Scenario
 	 * @param script
 	 * @return
@@ -70,4 +63,16 @@ public interface IScenarioService {
 			throws Exception;
 
 	Set<Integer> getListDeviceIdInScenario(Scenario scenario) throws Exception;
+
+	/**
+	 * Run a given scenario 
+	 * @param scenarioId
+	 * @param homeId
+	 * @param deviceId
+	 * @param modeId
+	 * @param scenario
+	 * @throws Exception
+	 */
+	void runScenario(int scenarioId, int homeId, int deviceId, int modeId,
+			Scenario scenario) throws Exception;
 }

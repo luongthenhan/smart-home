@@ -123,11 +123,6 @@ public class ScenarioService implements IScenarioService {
 	}
 	
 	@Override
-	public void runScenario(Scenario scenario) throws Exception {
-		scenarioRunner.runScenario(scenario);
-	}
-	
-	@Override
 	public void updateScenarioStatus(int scenarioId, ScenarioStatus status){
 		scenarioRunner.updateScenarioStatus(scenarioId, status);
 	}
@@ -201,7 +196,7 @@ public class ScenarioService implements IScenarioService {
 			}
 			// Block If, IfElse
 			else if (block instanceof ControlBlock) {
-				ControlBlock blockIf = (ControlBlock) block;
+				ControlBlock<?> blockIf = (ControlBlock<?>) block;
 				set.add(Integer.valueOf(blockIf.getCondition().getName()));
 				set.addAll(getListDeviceIdInScenario( blockIf.getAction().getBlocks() ));
 
@@ -214,5 +209,10 @@ public class ScenarioService implements IScenarioService {
 		}
 		
 		return set;
+	}
+	
+	@Override
+	public void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario) throws Exception{
+		scenarioRunner.runScenario(scenarioId, homeId, deviceId, modeId, scenario);
 	}
 }

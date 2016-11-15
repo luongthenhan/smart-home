@@ -23,8 +23,8 @@ import com.hcmut.smarthome.scenario.model.IBlock;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
-import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
+import com.hcmut.smarthome.utils.NotFoundException;
 
 @Service
 public class ScenarioRunner {
@@ -39,10 +39,18 @@ public class ScenarioRunner {
 	@Autowired
 	private IHomeService homeService;
 
-	@Autowired
-	private IDeviceService deviceService;
 	
-	public void runScenario( Scenario scenario) throws Exception {
+	public void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario) throws Exception{
+		if( scenarioId > 0 ){
+			scenario.setId(scenarioId);
+			scenario.setHomeId(homeId);
+			scenario.setDeviceId(deviceId);
+			scenario.setModeId(modeId);
+			runScenario(scenario);
+		}
+	}
+	
+	private void runScenario( Scenario scenario) throws Exception {
 		if (scenario == null || scenario.getId() == null 
 				|| scenario.getHomeId() <= 0
 				|| scenario.getModeId() <= 0
@@ -52,12 +60,23 @@ public class ScenarioRunner {
 		// Mark scenario as running
 		scenario.setStatus(ScenarioStatus.RUNNING);
 		mapScenarioController.put(scenario.getId(), scenario);
-		LOGGER.debug(String.format("New scenario with id %s is running", scenario.getId() ));
 		
-		scheduleTask(scenario);
+		if( checkIfScenarioCanRunInCurrentModeOrStopIt(scenario) ){
+			LOGGER.debug(String.format("New scenario with id %s is running", scenario.getId() ));
+			scheduleTask(scenario);
+		}
 		
 	}
 
+	private boolean checkIfScenarioCanRunInCurrentModeOrStopIt(Scenario scenario){
+		if( homeService.getCurrentModeIdGivenHome(scenario.getHomeId()) != scenario.getModeId() ){
+			LOGGER.debug(String.format("The script %s can only run in mode %s", scenario.getId(), scenario.getModeId()));
+			updateScenarioStatus(scenario.getId(), ScenarioStatus.STOPPING);
+			return false;
+		}
+		return true;
+	}
+	
 	private void scheduleTask(Scenario scenario) {
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -65,7 +84,6 @@ public class ScenarioRunner {
 			@Override
 			public void run() {
 
-				System.out.println("Goes here - timertask in runScenario "+ scenario.getId());
 				ScenarioStatus status = mapScenarioController.get(scenario.getId()).getStatus();
 
 				try {
@@ -80,11 +98,12 @@ public class ScenarioRunner {
 					ScenarioStatus status) throws Exception {
 				switch (status) {
 					case RUNNING:
-						// Only do action when home is enabled || device is enabled
-						if( canScenarioRunInCurrentMode(scenario) 
+						// NOTE: Only do action when home is enabled || device is enabled
+						/*if( checkIfScenarioCanRunInCurrentModeOrStopIt(scenario) 
 							&& homeService.isEnabled(scenario.getHomeId()) 
 							&& deviceService.isDeviceEnabled(scenario.getDeviceId()))
-							runBlocks(scenario.getBlocks());
+							 */
+						runBlocks(scenario.getBlocks());
 						break;
 					case STOPPING:
 						// Just skip
@@ -99,13 +118,6 @@ public class ScenarioRunner {
 				}
 			}
 			
-			private boolean canScenarioRunInCurrentMode(Scenario scenario){
-				if( homeService.getCurrentModeIdGivenHome(scenario.getHomeId()) != scenario.getModeId() ){
-					LOGGER.debug(String.format("The script %s can only run in mode %s", scenario.getId(), scenario.getModeId()));
-					return false;
-				}
-				return true;
-			}
 		}, 0, CONDITION_CHECKING_PERIOD);
 	}
 
@@ -122,7 +134,7 @@ public class ScenarioRunner {
 				action.doAction();
 
 			} else if (block instanceof ControlBlock) {
-				runControlBlock((ControlBlock) block);
+				runControlBlock((ControlBlock<?>) block);
 				// TODO: Move timeout to each model
 			}
 		}
@@ -133,7 +145,7 @@ public class ScenarioRunner {
 	 * 
 	 * @param controlBlock
 	 */
-	private void runControlBlock(ControlBlock controlBlock) {
+	private void runControlBlock(ControlBlock<?> controlBlock) {
 		if ( controlBlock.getClass().equals(ControlBlockFromTo.class) ){
 			ControlBlockFromTo controlBlockFromTo = (ControlBlockFromTo) controlBlock;
 			// TODO: Consider locale of time
@@ -186,22 +198,18 @@ public class ScenarioRunner {
 	public boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario) throws Exception{
 		Scenario oldScenario = mapScenarioController.get(scenarioId);
 		if( oldScenario == null ){
-			// TODO: Uncomment when finish start all scripts at first time run
-			//throw new NotFoundException(String.format(NOT_FOUND_OLD_SCENARIO_WITH_ID_TO_UPDATE_STATUS, scenarioId));
 			LOGGER.error(String.format(NOT_FOUND_OLD_SCENARIO_WITH_ID_TO_UPDATE_STATUS, scenarioId));
-			return false;
+			throw new NotFoundException(String.format(NOT_FOUND_OLD_SCENARIO_WITH_ID_TO_UPDATE_STATUS, scenarioId));
 		}
 			
-		newScenario.setId(oldScenario.getId());
-		newScenario.setHomeId(oldScenario.getHomeId());
-		newScenario.setDeviceId(oldScenario.getDeviceId());
-		newScenario.setModeId(oldScenario.getModeId());
-		newScenario.setTimeout(oldScenario.getTimeout());
-		
 		updateScenarioStatus(scenarioId, ScenarioStatus.STOP_FOREVER);
+		
 		// TODO: So far, we may put scenario.getTimeout() here
 		Thread.sleep(CONDITION_CHECKING_PERIOD + DELAY);
-		runScenario(newScenario);
+		
+		newScenario.setTimeout(oldScenario.getTimeout());
+		runScenario(oldScenario.getId(), oldScenario.getHomeId(), oldScenario.getDeviceId(), oldScenario.getModeId(), newScenario);
+		
 		return true;
 	}
 }

@@ -28,6 +28,7 @@ import com.hcmut.smarthome.entity.ScriptEntity;
 import com.hcmut.smarthome.entity.ScriptTypeEntity;
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
+import com.hcmut.smarthome.model.ScriptMoreDetail;
 import com.hcmut.smarthome.scenario.model.Condition;
 import com.hcmut.smarthome.scenario.model.ControlBlock;
 import com.hcmut.smarthome.scenario.model.ControlBlockFromTo;
@@ -193,8 +194,8 @@ public class DeviceService implements IDeviceService {
 			}
 			// Block If, IfElse
 			else if (block instanceof ControlBlock) {
-				ControlBlock blockIf = (ControlBlock) block;
-				Condition innerIfCondition = blockIf.getCondition();
+				ControlBlock<?> blockIf = (ControlBlock<?>) block;
+				Condition<?> innerIfCondition = blockIf.getCondition();
 				
 				if( Integer.parseInt(innerIfCondition.getName()) == deviceId )
 					return true;
@@ -253,7 +254,7 @@ public class DeviceService implements IDeviceService {
 		if( isValid ){
 			int scenarioId = saveScriptToDB(modeId, deviceId, script); 
 			// TODO: We must decide when script is created , which status is default ? running or stopping ??
-			runScenario(scenarioId, homeId, deviceId, modeId, scenario);
+			scenarioService.runScenario(scenarioId, homeId, deviceId, modeId, scenario);
 			return (scenarioId > 0 ? scenarioId : ADD_UNSUCCESSFULLY);
 		}
 		
@@ -337,16 +338,6 @@ public class DeviceService implements IDeviceService {
 			return true;
 		}
 		return false;
-	}
-	
-	private void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario) throws Exception{
-		if( scenarioId > 0 ){
-			scenario.setId(scenarioId);
-			scenario.setHomeId(homeId);
-			scenario.setDeviceId(deviceId);
-			scenario.setModeId(modeId);
-			scenarioService.runScenario(scenario);
-		}
 	}
 	
 	private int saveScriptToDB(int modeId, int deviceId, Script scriptToSave) throws Exception{
@@ -510,26 +501,19 @@ public class DeviceService implements IDeviceService {
 	}
 	
 	@Override
-	public boolean deleteCustomScript(int scriptId) throws NotFoundException {
-		return false;
-		
+	public List<ScriptMoreDetail> getAllScripts() throws Exception{
+		List<ScriptEntity> scriptEntities = scriptDao.getAll();
+		if( scriptEntities != null )
+			return ScriptConverter.toListModelWithMoreDetail(scriptEntities);
+		throw new Exception("Something wrong with DB");
 	}
 	
-	@Override
-	public boolean updatePartialCustomScript(int homeId, int modeId, int scriptId, Script scriptToUpdate) throws Exception {
-		return false;
-		
-	}
-	
-	@Override
-	public int addCustomScript(int homeId, int modeId, Script scriptToAdd) throws Exception  {
-		return modeId;
-		
-	}
-	
-	@Override
-	public boolean updateCustomScript(int homeId, int modeId, int scriptId, Script scriptToUpdate) throws Exception {
-		return false;
-		
+	@PostConstruct
+	public void runAllScriptsAtFirstTimeStartApplication() throws Exception{
+		List<ScriptMoreDetail> scripts = getAllScripts();
+		for (ScriptMoreDetail script : scripts) {
+			Scenario scenario = scenarioService.scriptToScenario(script.getHomeId(), script);
+			scenarioService.runScenario(script.getId(), script.getHomeId(), script.getDeviceId(), script.getModeId(), scenario);
+		}
 	}
 }

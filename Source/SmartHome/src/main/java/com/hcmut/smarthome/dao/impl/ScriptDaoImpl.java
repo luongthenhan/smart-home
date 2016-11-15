@@ -13,7 +13,7 @@ import com.hcmut.smarthome.utils.ConstantUtil;
 
 @Repository
 public class ScriptDaoImpl extends CommonDaoImpl<ScriptEntity> implements IScriptDao{
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional

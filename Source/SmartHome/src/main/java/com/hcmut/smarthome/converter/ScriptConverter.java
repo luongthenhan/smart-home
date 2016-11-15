@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.hcmut.smarthome.entity.ScriptEntity;
 import com.hcmut.smarthome.model.Script;
+import com.hcmut.smarthome.model.ScriptMoreDetail;
 
 public class ScriptConverter {
 	public static Script toModel(ScriptEntity scriptEntity){
@@ -28,4 +29,25 @@ public class ScriptConverter {
 		return scripts;
 	}
 	
+	public static ScriptMoreDetail toModelWithMoreDetail(ScriptEntity scriptEntity){
+		Script script = toModel(scriptEntity);
+		ScriptMoreDetail scriptMoreDetail = new ScriptMoreDetail(script);
+		if( scriptEntity.getDevice() != null )
+			scriptMoreDetail.setDeviceId(scriptEntity.getDevice().getId());
+		if( scriptEntity.getMode() != null ){
+			scriptMoreDetail.setModeId(scriptEntity.getMode().getId());
+			if( scriptEntity.getMode().getHome() != null )
+				scriptMoreDetail.setHomeId(scriptEntity.getMode().getHome().getId());
+		}
+		return scriptMoreDetail;
+	}
+	
+	public static List<ScriptMoreDetail> toListModelWithMoreDetail(Collection<ScriptEntity> scriptEntities){
+		List<ScriptMoreDetail> scripts = new ArrayList<>();
+		for (ScriptEntity scriptEntity : scriptEntities) {
+			scripts.add(toModelWithMoreDetail(scriptEntity));
+		}
+		
+		return scripts;
+	}
 }

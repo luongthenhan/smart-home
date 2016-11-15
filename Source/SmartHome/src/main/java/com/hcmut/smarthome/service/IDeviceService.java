@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
+import com.hcmut.smarthome.model.ScriptMoreDetail;
 import com.hcmut.smarthome.utils.NotFoundException;
 
 public interface IDeviceService {
@@ -42,17 +43,6 @@ public interface IDeviceService {
 
 	List<Script> getAllScriptsGivenHome(int homeId) throws Exception;
 
-	boolean deleteCustomScript(int scriptId) throws NotFoundException;
-
-	boolean updatePartialCustomScript(int homeId, int modeId, int scriptId,
-			Script scriptToUpdate) throws Exception;
-
-	int addCustomScript(int homeId, int modeId, Script scriptToAdd)
-			throws Exception;
-
-	boolean updateCustomScript(int homeId, int modeId, int scriptId,
-			Script scriptToUpdate) throws Exception;
-
 	List<Script> getScriptsGivenMode(int modeId);
 
 	Set<Integer> getListDeviceIdInScript(int homeId, Script script)
@@ -62,4 +52,6 @@ public interface IDeviceService {
 			throws Exception;
 
 	List<Script> getAllScriptsGivenMode(int modeId) throws Exception;
+
+	List<ScriptMoreDetail> getAllScripts() throws Exception;
 }

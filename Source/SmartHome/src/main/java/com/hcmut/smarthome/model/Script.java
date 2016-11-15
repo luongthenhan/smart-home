@@ -5,15 +5,15 @@ import java.io.Serializable;
 public class Script implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private int id;
+	protected int id;
 
-	private String name;
+	protected String name;
 
-	private String content;
+	protected String content;
 	
-	private Boolean enabled = null;
+	protected Boolean enabled = null;
 
-	private ScriptType scriptType;
+	protected ScriptType scriptType;
 
 	public Script() {
 		super();
