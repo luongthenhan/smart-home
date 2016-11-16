@@ -1,15 +1,85 @@
 <div class="row">
     <div class="col-xs-12">
-        <button type="button" class="device-type-button" ng-click="homePanelCtrl.toHome()">
+        <button type="button" class="device-type-button"
+                ng-class="{'disabled-device': homePanelCtrl.home.enabled == false}"
+                ng-click="homePanelCtrl.toHome()">
             <div class="row device-type-button-row">
                 <div class="device-type-indicator"></div>
                 <div class="col-xs-offset-2 col-xs-3">
                     <img class="img-responsive" src="assets/img/home.png">
                 </div>
-                <div class="col-xs-7 device-type-label">
+                <div class="col-xs-5 device-name">
                     {{ home.name }}
+                </div>
+                <div class="col-xs-2">
+                            <span role="button"
+                                  onclick="event.stopPropagation();"
+                                  ng-click="homePanelCtrl.toggleEnableDisableHome()"
+                                  class="glyphicon glyphicon-off device-panel-disable-button"></span>
+                    <span role="button"
+                          onclick="event.stopPropagation();"
+                          ng-click="homePanelCtrl.showDeleteHomeModal()"
+                          class="glyphicon glyphicon-trash device-panel-remove-button"></span>
                 </div>
             </div>
         </button>
+    </div>
+</div>
+
+<!-- Delete home modal -->
+<div class="modal home-panel-delete-home-modal" id="home-panel-delete-home-modal{{home.id}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Remove home {{home.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <div>Are you sure to delete home {{home.name}} ?</div>
+                <div>(All scripts and devices related to this home will also be deleted)</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="homePanelCtrl.deleteHome()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Yes</button>
+                <button type="button"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">No</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Disable home modal -->
+<div class="modal home-panel-disable-home-modal" id="home-panel-disable-home-modal{{home.id}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Disable home {{home.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <div>Are you sure to disable home {{home.name}} ?</div>
+                <div>(All scripts and devices related to this home will also be disabled)</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="homePanelCtrl.disableHome()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Yes</button>
+                <button type="button"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">No</button>
+            </div>
+        </div>
+
     </div>
 </div>

@@ -17,7 +17,13 @@ app.directive("devicePanel", ['MainService', function(MainService) {
             self.customScriptNameForAdd = null;
             self.customScriptContentForAdd = null;
 
+            // For add script
             self.otherDevices = [];
+            self.selectedOtherDevice = null;
+            self.conditions = [];
+            self.actions = [];
+            self.selectedCondition = null;
+            self.selectedAction = null;
 
             self.fromTime = null;
             self.toTime = null;
@@ -75,7 +81,9 @@ app.directive("devicePanel", ['MainService', function(MainService) {
                     self.selectedOtherDevice = self.otherDevices[0];
 
                     // Get conditions from selected other device
-                    self.conditions = self.selectedOtherDevice.conditions;
+                    if (self.selectedOtherDevice != null && typeof self.selectedOtherDevice != "undefined") {
+                        self.conditions = self.selectedOtherDevice.conditions;
+                    }
 
                     // Get action from current device
                     self.actions = self.currentDevice.actions;
@@ -98,25 +106,27 @@ app.directive("devicePanel", ['MainService', function(MainService) {
                 var newScript = {};
                 var newScriptContent = "";
                 if (self.selectedScriptTypeToAdd == "When/Then") {
-                    newScriptContent = "[['If'," + self.selectedCondition.script
-                            .replace(/ /g, "")
-                            .replace("$DID$", "'" + self.selectedOtherDevice.id + "'") + ",[";
-                    newScriptContent = newScriptContent + self.selectedAction.script
-                            .replace(/ /g, "")
-                            .replace("$DID$", "'" + $scope.device.id + "'") + "]]]";
-                    if (self.selectedCondition.hasParameter) {
-                        newScriptContent = newScriptContent.replace("$V$", "'" + self.selectedConditionParam + "'");
+                    if (self.selectedCondition != null && typeof self.selectedCondition != "undefined") {
+                        newScriptContent = "[['If'," + self.selectedCondition.script
+                                .replace(/ /g, "")
+                                .replace("$DID$", "'" + self.selectedOtherDevice.id + "'") + ",[";
+                        newScriptContent = newScriptContent + self.selectedAction.script
+                                .replace(/ /g, "")
+                                .replace("$DID$", "'" + $scope.device.id + "'") + "]]]";
+                        if (self.selectedCondition.hasParameter) {
+                            newScriptContent = newScriptContent.replace("$V$", "'" + self.selectedConditionParam + "'");
+                        }
+                        newScript.content = newScriptContent;
+                        newScript.type = {
+                            id: 1,
+                            name: "IfThen",
+                            template: "['If',C, A]"
+                        }
+                        if (self.selectedOtherDevice.enabled == false || $scope.device.enabled == false) {
+                            newScript.enabled = false;
+                        }
+                        MainService.addScript(newScript);
                     }
-                    newScript.content = newScriptContent;
-                    newScript.type = {
-                        id: 1,
-                        name: "IfThen",
-                        template: "['If',C, A]"
-                    }
-                    if (self.selectedOtherDevice.enabled == false || $scope.device.enabled == false) {
-                        newScript.enabled = false;
-                    }
-                    MainService.addScript(newScript);
                 } else if (self.selectedScriptTypeToAdd == "From/To") {
                     newScriptContent = "[['FromTo','" + self.fromTime + "','" + self.toTime + "',[";
                     newScriptContent = newScriptContent + self.selectedAction.script

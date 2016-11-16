@@ -8,22 +8,24 @@
     <span>From</span>
     <span class="clockpicker">
         <input type="text"
-               ng-class="{'disabled-script': deviceScriptFromToCtrl.script.enabled == false}"
+               ng-focus="deviceScriptFromToCtrl.oldFromTime = deviceScriptFromToCtrl.fromTime"
+               ng-change="deviceScriptFromToCtrl.updateFromTimeChange()"
                ng-model="deviceScriptFromToCtrl.fromTime">
     </span>
     <span>To</span>
     <span class="clockpicker">
         <input type="text"
-               ng-class="{'disabled-script': deviceScriptFromToCtrl.script.enabled == false}"
+               ng-focus="deviceScriptFromToCtrl.oldToTime = deviceScriptFromToCtrl.toTime"
+               ng-change="deviceScriptFromToCtrl.updateToTimeChange()"
                ng-model="deviceScriptFromToCtrl.toTime">
     </span>
     <span>,</span>
     <select class="script-condition-modify-input combobox"
-            ng-class="{'disabled-script': deviceScriptFromToCtrl.script.enabled == false}"
             ng-model="deviceScriptFromToCtrl.selectedAction"
             ng-options="action.name for action in deviceScriptFromToCtrl.currentDevice.actions"
             ng-change="deviceScriptFromToCtrl.updateActionChange()">
     </select>
+    <div class="disabled-script-warn" ng-if="deviceScriptFromToCtrl.script.enabled == false">DISABLED</div>
 </div>
 
 <!-- Delete Script Modal -->

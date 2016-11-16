@@ -120,3 +120,10 @@ form {
     left: 0;
     right: 0;
 }
+
+.disabled-script-warn {
+    display: inline-block;
+    background-color: #B22222;
+    color: white;
+    padding: 0 5px 0 5px;
+}

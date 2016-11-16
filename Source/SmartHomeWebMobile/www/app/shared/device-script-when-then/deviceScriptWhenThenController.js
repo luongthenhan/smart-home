@@ -27,6 +27,9 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
             self.selectedConditionParam = null;
             self.selectedAction = null;
 
+            self.oldSelectedOtherDevice = null;
+            self.oldConditionParam = null;
+
             self.init = function() {
                 MainService.deviceScriptCtrlList.push(self);
                 self.initializeData();
@@ -63,6 +66,7 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
                     })[0];
 
                     // Parse selected condition and it's param from condition list
+                    console.log(self.otherDevices);
                     self.selectedCondition = $.grep(self.selectedOtherDevice.conditions, function (cond) {
                         var condScript = cond.script;
                         if (cond.hasParameter) {
@@ -91,11 +95,19 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
                         .replace(/ /g, "")
                         .replace("$DID$", "'" + $scope.device.id + "'") + "]]]";
                 if (self.selectedCondition.hasParameter) {
+                    if (self.selectedConditionParam == null ||
+                        typeof self.selectedConditionParam == 'undefined' ||
+                        !self.selectedConditionParam.toString().trim()) {
+                        self.selectedConditionParam = 50;
+                    }
                     newScriptContent = newScriptContent.replace("$V$", "'" + self.selectedConditionParam + "'");
                 }
+                console.log("old device: " + self.oldSelectedOtherDevice.name);
+                console.log("new script content: " + newScriptContent);
+
                 $scope.script.content = newScriptContent;
-                self.parseInfoFromScript();
-                MainService.updateScript($scope.device.id, $scope.script);
+                self.scriptInfo = MainService.parseScriptInfo($scope.script);
+                MainService.updateScript($scope.script, self.oldSelectedOtherDevice);
             }
 
             self.updateConditionChange = function () {
@@ -109,23 +121,27 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
                 }
                 $scope.script.content = $scope.script.content
                     .replace(/ /g, "")
-                    .replace(self.scriptCondInfo, newCondInfo)
+                    .replace(self.scriptInfo.conditionContent, newCondInfo)
                     .replace(/ /g, "");
-                self.parseInfoFromScript();
-                MainService.updateScript($scope.device.id, $scope.script);
-
+                MainService.updateScript($scope.script);
+                self.scriptInfo = MainService.parseScriptInfo($scope.script);
             }
 
             self.updateConditionParamChange = function () {
-                var newCondInfo = self.scriptCondInfo.slice();
-                console.log(newCondInfo);
+                var newCondInfo = self.scriptInfo.conditionContent.split(",").slice();
                 newCondInfo[2] = "'" + self.selectedConditionParam + "'";
+
+                var oldScriptContent = $scope.script.content;
                 $scope.script.content = $scope.script.content
                     .replace(/ /g, "")
-                    .replace(self.scriptCondInfo, newCondInfo)
+                    .replace(self.scriptInfo.conditionContent, newCondInfo)
                     .replace(/ /g, "");
-                self.parseInfoFromScript();
-                MainService.updateScript($scope.device.id, $scope.script);
+                if (MainService.updateScript($scope.script) == false) {
+                    self.selectedConditionParam = self.oldConditionParam;
+                    $scope.script.content = oldScriptContent;
+                } else {
+                    self.scriptInfo = MainService.parseScriptInfo($scope.script);
+                }
             }
 
             self.updateActionChange = function () {
@@ -138,8 +154,8 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
                     .replace(/ /g, "")
                     .replace(self.scriptInfo.actionContent, newActionContent)
                     .replace(/ /g, "");
+                MainService.updateScript($scope.script);
                 self.scriptInfo = MainService.parseScriptInfo($scope.script);
-                MainService.updateScript($scope.device, $scope.script);
             }
 
             self.deleteScript = function() {

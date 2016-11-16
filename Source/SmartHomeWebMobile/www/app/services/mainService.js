@@ -1,4 +1,4 @@
-app.service('MainService', function($http, $location) {
+app.service('MainService', function($http, $location, blockUI) {
 
     var self = this;
 
@@ -11,11 +11,6 @@ app.service('MainService', function($http, $location) {
     // All device types
     self.allDeviceTypes = [];
 
-    // Nav bar controller
-    self.navBarCtrl = null;
-
-    self.modes = [];
-    self.selectedHomeId = -1;
     self.selectedHome = null;
     self.selectedMode = null;
     self.selectedDeviceType = null;
@@ -56,7 +51,7 @@ app.service('MainService', function($http, $location) {
 
     self.getHome = function() {
         $.ajax({
-            url: self.hostDomain + "/homes/" + self.selectedHomeId,
+            url: self.hostDomain + "/homes/" + self.selectedHome.id,
             type: 'GET',
             beforeSend: function (request) {
                 request.setRequestHeader("X-Auth-Token", self.token);
@@ -64,11 +59,8 @@ app.service('MainService', function($http, $location) {
             async: false,
             success: function(data, textStatus, xhr) {
                 console.log("get home successfully");
-                self.selectedHome = data;
 
-                self.modes = self.selectedHome.modes;
-
-                $.each(self.modes, function(index, val){
+                $.each(self.selectedHome.modes, function(index, val){
                     if (val.id == self.selectedHome.currentMode.id) {
                         self.selectedMode = val;
                     }
@@ -87,12 +79,13 @@ app.service('MainService', function($http, $location) {
             }
         }).then(function(response){
             controller.homes = response.data;
+            console.log(controller.homes);
         })
     }
 
     self.setUpForSelectedMode = function(controller) {
 
-        controller.modes = self.modes;
+        controller.modes = self.selectedHome.modes;
         controller.selectedMode = self.selectedMode;
 
         self.allDevices = [];
@@ -108,6 +101,9 @@ app.service('MainService', function($http, $location) {
             async: false,
             success: function(data, textStatus, xhr) {
                 self.allDeviceTypes = data;
+                self.allDeviceTypes = $.grep(self.allDeviceTypes, function (dt) {
+                    return dt.name.indexOf("Hidden Device") == -1;
+                })
                 controller.deviceTypes = self.allDeviceTypes;
 
                 // Fetch conditions, actions and scripts
@@ -222,6 +218,8 @@ app.service('MainService', function($http, $location) {
 
             scriptInfo.conditionDeviceId = parseInt(scriptConditionInfo[0].replace(/'/g, ""));
             scriptInfo.conditionParam = parseFloat(scriptConditionInfo[2].replace(/'/g, ""));
+            scriptInfo.conditionContent = scriptConditionContent;
+
             scriptInfo.actionDeviceId = parseInt(scriptActionInfo[1].replace(/'/g, ""));
             scriptInfo.actionContent = scriptActionContent;
         } else if (script.type.id == 2) {
@@ -240,9 +238,95 @@ app.service('MainService', function($http, $location) {
         return scriptInfo;
     }
 
-    self.enableDevice = function(controller) {
-        // TODO: Call web services /device/enable?deviceId=|n|
-        return true;
+    self.activateMode = function(mode) {
+        self.selectedHome.currentMode = mode;
+        $.ajax({
+            url: self.hostDomain + "homes/" + self.selectedHome.id,
+            type: 'PATCH',
+            data: JSON.stringify(self.selectedHome),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 204) {
+                    console.log("Activate mode successfully");
+                }
+            },
+            error: function (data, textStatus, xhr) {
+
+            }
+        })
+    }
+
+    self.addMode = function(mode) {
+        $.ajax({
+            url: self.hostDomain + "homes/" + self.selectedHome.id + "/modes",
+            type: 'POST',
+            data: JSON.stringify(mode),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 201) {
+                    console.log("Add mode successfully");
+                    mode.id = data.id;
+                    self.selectedHome.modes.push(mode);
+                }
+            },
+            error: function (data, textStatus, xhr) {
+
+            }
+        })
+    }
+
+    self.deleteMode = function(mode) {
+
+        // Delete all scripts of mode
+        $.each(self.allDevices, function(devIndex, devValue) {
+            $.ajax({
+                url: self.hostDomain + "devices/" + devValue.id + "/modes/" + mode.id + "/scripts",
+                type: 'GET',
+                beforeSend: function (request) {
+                    request.setRequestHeader("X-Auth-Token", self.token);
+                },
+                async: false,
+                success: function (data, textStatus, xhr) {
+                    $.each(data, function(scpIndex, scpValue) {
+                        self.deleteScript(scpValue);
+                    })
+                },
+                error: function (data, textStatus, xhr) {
+
+                }
+            })
+        })
+
+        // Delete mode
+        $.ajax({
+            url: self.hostDomain + "homes/" + self.selectedHome.id + "/modes/" + mode.id,
+            type: 'DELETE',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 204) {
+                    console.log("Delete mode successfully");
+                    self.selectedHome.modes = $.grep(self.selectedHome.modes, function(homeMode) {
+                        return homeMode.id != mode.id;
+                    })
+                }
+            },
+            error: function (data, textStatus, xhr) {
+
+            }
+        })
     }
 
     self.disableDevice = function(device) {
@@ -462,18 +546,120 @@ app.service('MainService', function($http, $location) {
         })
     }
 
-    self.updateScript = function(device, script) {
-        $http.put(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id
-            + "/scripts/" + script.id, script, {
+    self.updateScript = function(script, oldSelectedOtherDevice) {
+        var result = false;
+
+        // Parse script info
+        scriptInfo = self.parseScriptInfo(script);
+
+        // Get the device that script belong to
+        device = $.grep(self.selectedModeConditionableDevices, function(dev) {
+            return dev.id == scriptInfo.actionDeviceId;
+        })[0];
+
+        $http.patch(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id, script,{
             headers: {
                 'X-Auth-Token': self.token
             }
         }).then(function(response){
-            if (response.status == 204) {
+            if (response.status == 200) {
                 console.log("Update script successfully");
+
+                // Mark new device and Unmark old device if script is When/Then
+                if (script.type.id == 1 && oldSelectedOtherDevice != null && typeof oldSelectedOtherDevice != "undefined") {
+
+                    oldSelectedOtherDevice.refNum--;
+                    if (oldSelectedOtherDevice.refNum == 0) {
+                        self.unmarkDevice(oldSelectedOtherDevice);
+                    }
+
+                    selectedOtherDevice = $.grep(self.selectedModeConditionableDevices, function (dev) {
+                        return dev.id == scriptInfo.conditionDeviceId;
+                    })[0];
+
+                    if (selectedOtherDevice.refNum == 0) {
+                        self.markDevice(selectedOtherDevice);
+                    }
+                    selectedOtherDevice.refNum++;
+
+                    // Reload Device List page
+                    self.deviceListCtrl.initializeData();
+
+                    // Reload each Device Panel
+                    $.each(self.devicePanelCtrlList, function (panelCtrlIndex, panelCtrlVal) {
+                        panelCtrlVal.initializeData();
+                    })
+
+                    // Reload each When Then Script
+                    $.each(self.deviceScriptCtrlList, function (scpCtrlIndex, scpCtrlVal) {
+                        scpCtrlVal.initializeData();
+                    })
+                }
+                result = true;
+            } else {
+                window.alert("Update Failed !\n" + response.data.content);
+                result = false;
             }
+        }, function(error) {
+            window.alert("Update Failed !\n" + error.data.content);
+            result = false;
         })
-        return true;
+
+        // $.ajax({
+        //     url: self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id,
+        //     type: 'PATCH',
+        //     data: JSON.stringify(script),
+        //     dataType: 'json',
+        //     contentType: 'application/json; charset=UTF-8',
+        //     beforeSend: function (request)
+        //     {
+        //         request.setRequestHeader("X-Auth-Token", self.token);
+        //     },
+        //     async: true,
+        //     success: function(data, textStatus, xhr) {
+        //         if (xhr.status == 200) {
+        //             console.log("Update script successfully");
+        //
+        //             // Mark new device and Unmark old device if script is When/Then
+        //             if (script.type.id == 1 && oldSelectedOtherDevice != null && typeof oldSelectedOtherDevice != "undefined") {
+        //
+        //                 oldSelectedOtherDevice.refNum--;
+        //                 if (oldSelectedOtherDevice.refNum == 0) {
+        //                     self.unmarkDevice(oldSelectedOtherDevice);
+        //                 }
+        //
+        //                 selectedOtherDevice = $.grep(self.selectedModeConditionableDevices, function (dev) {
+        //                     return dev.id == scriptInfo.conditionDeviceId;
+        //                 })[0];
+        //
+        //                 if (selectedOtherDevice.refNum == 0) {
+        //                     self.markDevice(selectedOtherDevice);
+        //                 }
+        //                 selectedOtherDevice.refNum++;
+        //
+        //                 // Reload Device List page
+        //                 self.deviceListCtrl.initializeData();
+        //
+        //                 // Reload each Device Panel
+        //                 $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
+        //                     panelCtrlVal.initializeData();
+        //                 })
+        //
+        //                 // Reload each When Then Script
+        //                 $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
+        //                     scpCtrlVal.initializeData();
+        //                 })
+        //             }
+        //             result = true;
+        //         }
+        //     },
+        //     error: function(data, textStatus, xhr) {
+        //         window.alert("Update Failed !\n" + $.parseJSON(data.responseText).content);
+        //         result = false;
+        //     }
+        // })
+
+        return result;
     }
 
     self.disableScript = function(script) {
@@ -588,7 +774,7 @@ app.service('MainService', function($http, $location) {
             },
             async: false,
             success: function(data, textStatus, xhr) {
-                if (xhr.status == 204) {
+                if (xhr.status == 200) {
                     console.log("Delete script successfully");
                     // Remove deleted script from device's scripts
                     device.scripts = $.grep(device.scripts, function (scp) {
@@ -601,7 +787,6 @@ app.service('MainService', function($http, $location) {
                     }
 
                     if (script.type.id == 1) {
-                        scriptInfo = self.parseScriptInfo(script);
                         selectedOtherDevice = $.grep(self.selectedModeConditionableDevices, function (dev) {
                             return dev.id == scriptInfo.conditionDeviceId;
                         })[0];
@@ -740,19 +925,105 @@ app.service('MainService', function($http, $location) {
         self.selectedModeAvailableGpios = $.unique(self.selectedModeAvailableGpios);
     }
 
-    self.addHome = function (controller) {
-        var home = {"name" : controller.newHomeName, "address" : controller.newHomeAddress,
-        "description" : controller.newHomeDescription};
-        $http.post(self.hostDomain + "homes", home,{
-            headers: {
-                'X-Auth-Token': self.token
-            }
-        }).
-            success(function (data, status, header, config) {
-                controller.init();
-            })
-            .error(function (data, status, header, config) {
+    self.addHome = function (home) {
+        $.ajax({
+            url: self.hostDomain + "homes",
+            type: 'POST',
+            data: JSON.stringify(home),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 201) {
+                    console.log("Add home successfully");
+                    home.id = data.id;
+                }
+            },
+            error: function (data, textStatus, xhr) {
 
-            });
+            }
+        })
+    }
+
+    self.deleteHome = function (home) {
+
+        self.selectedHome = home;
+        self.getHome({});
+
+        $.each(self.selectedHome.modes, function(modeIndex, modeValue) {
+            self.selectedMode = modeValue;
+            self.setUpForSelectedMode({});
+            self.deleteMode(modeValue);
+        })
+
+        $.each(self.allDevices, function(devIndex, devValue) {
+            self.deleteDevice(devValue);
+        })
+
+        $.ajax({
+            url: self.hostDomain + "homes/" + home.id,
+            type: 'DELETE',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 204) {
+                    console.log("Delete home successfully");
+                }
+            },
+            error: function (data, textStatus, xhr) {
+
+            }
+        })
+    }
+
+    self.disableHome = function(home) {
+        home.enabled = false;
+        $.ajax({
+            url: self.hostDomain + "homes/" + home.id,
+            type: 'PATCH',
+            data: JSON.stringify(home),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 204) {
+                    console.log("Disable home successfully");
+                }
+            },
+            error: function (data, textStatus, xhr) {
+
+            }
+        })
+    }
+
+    self.enableHome = function(home) {
+        home.enabled = true;
+        $.ajax({
+            url: self.hostDomain + "homes/" + home.id,
+            type: 'PATCH',
+            data: JSON.stringify(home),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                if (xhr.status == 204) {
+                    console.log("Enable home successfully");
+                }
+            },
+            error: function (data, textStatus, xhr) {
+
+            }
+        })
     }
 })

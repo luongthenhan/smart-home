@@ -7,31 +7,29 @@
     </button>
     <span>When</span>
     <select class="combobox script-condition-modify-input"
-            ng-class="{'disabled-script': deviceScriptWhenThenCtrl.script.enabled == false}"
             ng-model="deviceScriptWhenThenCtrl.selectedOtherDevice"
+            ng-click="deviceScriptWhenThenCtrl.oldSelectedOtherDevice = deviceScriptWhenThenCtrl.selectedOtherDevice"
             ng-options="device.name for device in deviceScriptWhenThenCtrl.otherDevices"
             ng-change="deviceScriptWhenThenCtrl.updateDeviceChange()">
     </select>
     <select class="combobox script-condition-modify-input"
-            ng-class="{'disabled-script': deviceScriptWhenThenCtrl.script.enabled == false}"
             ng-model="deviceScriptWhenThenCtrl.selectedCondition"
             ng-options="condition.name for condition in deviceScriptWhenThenCtrl.selectedOtherDevice.conditions"
             ng-change="deviceScriptWhenThenCtrl.updateConditionChange()">
     </select>
     <input class="script-condition-modify-input script-condition-modify-input-number"
-           ng-class="{'disabled-script': deviceScriptWhenThenCtrl.script.enabled == false}"
            ng-if="deviceScriptWhenThenCtrl.selectedCondition.hasParameter"
+           ng-focus="deviceScriptWhenThenCtrl.oldConditionParam = deviceScriptWhenThenCtrl.selectedConditionParam"
            ng-model="deviceScriptWhenThenCtrl.selectedConditionParam"
-           ng-change="deviceScriptWhenThenCtrl.updateConditionParamChange()"
+           ng-blur="deviceScriptWhenThenCtrl.updateConditionParamChange()"
            type="number" step="0.1">
     <span>Then</span>
     <select class="script-condition-modify-input combobox"
-            ng-class="{'disabled-script': deviceScriptWhenThenCtrl.script.enabled == false}"
             ng-model="deviceScriptWhenThenCtrl.selectedAction"
             ng-options="action.name for action in deviceScriptWhenThenCtrl.currentDevice.actions"
             ng-change="deviceScriptWhenThenCtrl.updateActionChange()">
     </select>
-
+    <div class="disabled-script-warn" ng-if="deviceScriptWhenThenCtrl.script.enabled == false">DISABLED</div>
 </div>
 
 <!-- Delete Script Modal -->

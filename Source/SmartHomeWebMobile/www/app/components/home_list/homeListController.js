@@ -1,4 +1,4 @@
-app.controller('HomeListController', ['MainService', function (MainService) {
+app.controller('HomeListController', ['MainService', '$route', function (MainService, $route) {
 
     var self = this;
 
@@ -9,10 +9,16 @@ app.controller('HomeListController', ['MainService', function (MainService) {
 
     self.init = function() {
         MainService.getHomes(self);
+        console.log(self.homes);
     }
 
     self.addHome = function() {
-        MainService.addHome(self);
+        var newHome = {};
+        newHome.name = self.newHomeName;
+        newHome.address = self.newHomeAddress;
+        newHome.description = self.newHomeDescription;
+        MainService.addHome(newHome);
+        $route.reload();
     }
 
 }])

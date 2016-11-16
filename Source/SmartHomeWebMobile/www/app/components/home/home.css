@@ -8,3 +8,11 @@
     font-weight: bold;
     margin-left: 10px;
 }
+
+.home-add-mode-button {
+    background: #FF7F00;
+    color: white;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    float: right;
+}
