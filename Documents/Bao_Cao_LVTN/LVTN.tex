@@ -1,0 +1,225 @@
+\documentclass[11pt,a4paper,oneside]{book} 
+\usepackage{vntex}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ } 
+
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.3cm}
+\usepackage{epigraph}
+\usepackage[nottoc,notlot,notlof]{tocbibind}
+\usepackage{a4wide,amssymb,epsfig,latexsym,multicol,array,hhline,fancyhdr} 
+\usepackage{listings}
+\usepackage{verbatimbox}
+\usepackage[tikz]{bclogo}
+\usepackage{framed, color}
+\usepackage{amsmath}
+\usepackage{lastpage}
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+\usepackage{enumerate}
+\usepackage{color}
+\usepackage{graphicx}							% Standard graphics package
+\usepackage{array}
+\usepackage{tabularx, caption}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{epsfig}
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+  \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}   
+  
+ \usetikzlibrary{calc, trees, positioning, arrows, shapes, shapes.multipart, shadows, matrix, decorations.pathreplacing, decorations.pathmorphing}
+\usetikzlibrary{arrows,positioning,shapes.geometric}
+\usepackage{amsmath,amssymb,latexsym}
+\usepackage{mathrsfs,marvosym,textcomp}
+\usepackage{pifont,chemarrow}
+\usetikzlibrary{arrows,snakes,backgrounds}
+\usepackage{hyperref}
+\hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true} 
+\setlength{\headheight}{10pt}
+\setlength{\fboxrule}{1pt}
+
+%------------------------------------ Header and footer -------------------------%
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+
+\fancyfoot[L]{LUẬN VĂN TỐT NGHIỆP}
+\fancyfoot[R]{\thepage}
+ 
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+
+%------------------------------Remove top margin in chapter --------------------------------------%
+
+\makeatletter
+\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{}{}{}% Removes space above \chapter head
+\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{}{}{}% Removes space above \chapter* head
+\makeatother
+
+%-------------------------------------------------------------------------------------------------%
+
+\begin{document} 
+
+%-------------------------------------COVER PAGE
+\begin{titlepage}
+\begin{center}
+\Large \textbf{ĐẠI HỌC QUỐC GIA TP HỒ CHÍ MINH}  \\
+\Large \textbf{TRƯỜNG ĐẠI HỌC BÁCH KHOA} \\
+\large KHOA KHOA HỌC VÀ KỸ THUẬT MÁY TÍNH \\
+\large \ding{79} \ding{79} \ding{79}
+\end{center}
+ 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=3cm]{hcmut.png}
+\end{center}
+\end{figure}
+ 
+\begin{center}
+\begin{tabular}{c}
+\multicolumn{1}{l}{\underline{\textbf{{\large LUẬN VĂN TỐT NGHIỆP}}}}\\
+~~\\
+\hline 
+\hline 
+\\ 
+\\
+\textbf{{\LARGE \textbf{\centerline{ XÂY DỰNG HỆ THỐNG NHÀ THÔNG MINH }}}}\\
+\\\textbf{{\LARGE VỚI RASPBERRY PI}}\\
+\\ 
+\\
+\hline 
+\hline 
+\end{tabular}
+\end{center}
+
+\vspace{2cm}
+
+\begin{table}[h]
+\begin{tabular}{llll}
+\hspace{3 cm} & \textbf{\large{Giáo viên hướng dẫn:}} & TS. Nguyễn Đức Dũng\\
+\hspace{3 cm} & \textbf{\large{Giáo viên phản biện:}} & TS. \\
+\\
+& \textbf{\large{Sinh viên thực hiện:}}
+& Nguyễn Thành Tâm & 51201826 \\
+& & Nguyễn Thanh Tùng & 51204401 \\
+& & Bùi Quang Vinh & 51204518
+\end{tabular}
+\end{table}
+\vspace{2cm}
+
+\begin{center}
+{\footnotesize TP. HỒ CHÍ MINH, 11/2016}
+\end{center}
+\end{titlepage}
+
+%------------------------------ table of content --------------------------------------------------%
+\begingroup
+\let\cleardoublepage\clearpage
+\tableofcontents 
+\bibliographystyle{plain} 
+\endgroup
+
+
+
+%--------------------------------------------------------------------------------------------------%
+\chapter{Giới thiệu (5 - 8 trang)}
+\newpage
+\section{Tổng quan về nhà thông minh}
+\newpage
+\section{Nhà thông minh sử dụng Raspberry Pi}
+\newpage
+\section{Mục tiêu và phạm vi đề tài}
+\newpage
+\section{Cấu trúc luận văn}
+
+%--------------------------------------------------------------------------------------------------%
+\chapter{Điều khiển thiết bị sử dụng Raspberry Pi - (6 - 8 trang)}
+\newpage
+\section{Tổng quan về Raspberry Pi}
+\newpage
+\section{Phương pháp điều khiển thiết bị thông qua GPIO}
+
+%--------------------------------------------------------------------------------------------------%
+\chapter{Phát triển ứng dụng di động sử dụng Cordova và AngularJS(6 - 8 trang)}
+\newpage
+\section{Tổng quan về AngularJS}
+\newpage
+\section{Tổng quan về Cordova}
+
+%--------------------------------------------------------------------------------------------------%
+\chapter{Xây dựng server bằng ngôn ngữ Java (6 - 8 trang)}
+\newpage
+\section{Lập trình web service bằng Spring MVC}
+\newpage
+\section{Ứng dụng biểu thức lamda trong Java 8}
+ 	 
+%--------------------------------------------------------------------------------------------------%
+\chapter{Phân tích yêu cầu hệ thống (12 - 15 trang)}
+\newpage
+\section{Tổng quan hệ thống}
+\newpage
+\section{Sơ đồ usecase}
+\newpage
+\section{Yêu cầu đối với ứng dụng di động}
+\newpage
+\section{Yêu cầu đối với server}
+
+%--------------------------------------------------------------------------------------------------%
+\chapter{Thiết kế hệ thống (12 - 15)}
+\newpage
+\section{Kiến trúc tổng quan}
+\newpage
+\section{Kiến trúc ứng dụng di động}
+\newpage
+\section{Kiến trúc server}
+\newpage
+\section{Kiến trúc module điều khiển thiết bị}
+
+%--------------------------------------------------------------------------------------------------%
+\chapter{Hiện thực và đánh giá  (20 -25 trang)}
+\newpage
+\section{Phát triển ứng dụng di động}
+\newpage
+\section{Xây dựng cú pháp scenario}
+\newpage
+\section{Xây dựng server}
+\newpage
+\section{Xung đột trong scenario và cách giải quyết}
+\newpage
+\section{Lắp đặt thiết bị vào hệ thống}
+\newpage
+\section{Hiện thực module điều khiển thiết bị}
+\newpage
+\section{Đánh giá hệ thống}
+
+%--------------------------------------------------------------------------------------------------%
+\chapter{Tổng kết (2 trang)} 
+
+%---------------------------------------------------------------------------------------------------------------------
+\newpage
+\renewcommand{\refname}{Tài liệu tham khảo}
+\begin{thebibliography}{80}
+
+\bibitem{IR1} W. Bruce Croft, Donald Metzler, Trevor Strohman (2009). \textit{Search Engines: Information Retrieval in Practice}. Addison-Wesley Publishing Company, 1st edition, pp. 4-28.
+
+\bibitem{IRMD2} Stephen Wu, James Masanz, Ravikumar K.E., Hongfang Liu (2012). Three Questions about Clinical Information Retrieval. In \textit{ Proceedings of 21st Text Retrieval Conference (TREC-2012)}.
+
+\bibitem{IRMD1} Lorraine Goeuriot, Gareth J. F. Jones, Liadh Kelly, Henning Müller, Justin Zobel (2015). Medical information retrieval: Introduction to the special issue. In \textit{Information Retrieval Journal}, Volume 19, Issue 1, pp. 1-5.
+
+\bibitem{eval3} Nguyễn Thu Trang (2008). \textit{Học xếp hạng trong tính hạng đối tượng và tạo nhãn cụm tài liệu}. Luận văn Thạc sĩ. Đại học Công Nghệ - Đại học Quốc Gia Hà Nội
+
+\end{thebibliography}
+
+%--------------------------------------------------------------------------------------------------%
+\chapter*{Phụ lục} 
+\addcontentsline{toc}{chapter}{Phụ lục}
+
+\end{document}
