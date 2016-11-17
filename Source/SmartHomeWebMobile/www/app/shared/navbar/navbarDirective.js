@@ -3,22 +3,40 @@ app.directive("navbar", ['MainService', function(MainService) {
         restrict: "E",
         templateUrl: "app/shared/navbar/navbarView.html",
         controllerAs: 'navBarCtrl',
-        controller: function($scope, $location) {
+        controller: function($scope, $route, $location) {
             var self = this;
 
+            self.home = null;
             self.modes = [];
-            self.selectedMode = null;
+            self.activatedMode = null;
 
             self.init = function() {
-                MainService.navBarCtrl = self;
+                if (MainService.selectedHome != null) {
+                    self.home = MainService.selectedHome;
+                    self.modes = MainService.selectedHome.modes;
+                    self.activatedMode = MainService.selectedHome.currentMode;
+                }
             }
 
             self.toHomeList = function() {
+                MainService.selectedHome = null;
                 $location.path("/homes");
             }
 
             self.changeMode = function(mode) {
-                $location.path("/home");
+                MainService.activateMode(mode);
+                $route.reload();
+            }
+
+            self.deleteMode = function(mode) {
+                if (self.activatedMode.id == mode.id) {
+                    console.log("try to delete activated mode");
+                    var previousMode = self.modes[self.modes.indexOf(mode) - 1]
+                    MainService.activateMode(previousMode);
+                    MainService.selectedMode = previousMode;
+                }
+                MainService.deleteMode(mode);
+                $route.reload();
             }
         }
     }

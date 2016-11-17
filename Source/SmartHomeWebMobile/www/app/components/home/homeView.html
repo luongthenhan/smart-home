@@ -6,9 +6,54 @@
             ng-options="mode.name for mode in homeCtrl.modes track by mode.id"
             ng-change="homeCtrl.updateModeChange()">
     </select>
+    <button type="button"
+            data-toggle="modal"
+            data-target="#home-add-mode-modal"
+            class="btn home-add-mode-button">
+        <span class="glyphicon glyphicon-plus"></span>
+        Add Mode
+    </button>
     <br>
     <span class="mode-label">Activated: </span><span>{{homeCtrl.activatedMode.name}}</span>
     <p></p>
     <div class="row form-row form-title">Device Categories</div>
     <device-type-button ng-repeat="deviceType in homeCtrl.deviceTypes" devicetype="deviceType"></device-type-button>
+
+    <!-- Add Mode Modal -->
+    <div class="modal home-add-mode-modal" id="home-add-mode-modal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Mode</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <div class="row form-row">
+                                <div class="col-xs-12">
+                                    <input type="text" class="form-control input-field" id="homeNewDeviceName"
+                                           ng-model="homeCtrl.newModeName"
+                                           placeholder="New Mode Name">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            ng-click="homeCtrl.addNewMode()"
+                            onclick="fixCloseModel();"
+                            class="btn modal-confirm-btn add-script-btn"
+                            data-dismiss="modal">Add</button>
+                    <button type="button"
+                            onclick="fixCloseModel();"
+                            class="btn btn-default add-script-btn"
+                            data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>

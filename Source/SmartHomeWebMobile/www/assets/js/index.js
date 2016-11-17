@@ -1,4 +1,7 @@
-var app = angular.module('app', ["ngRoute", "ngMessages"]);
+var app = angular.module('app', ["ngRoute", "ngMessages", "blockUI"]);
+app.config(function(blockUIConfig) {
+    blockUIConfig.delay = 0;
+});
 
 app.config(['$routeProvider', function ($routeProvider) {
     $routeProvider

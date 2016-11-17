@@ -2,3 +2,10 @@
     content: "\2122";
     color: transparent !important;
 }
+
+.navbar-delete-mode-button {
+    margin-right: 17px;
+    font-size: 20px;
+    color: white;
+    float: right;
+}

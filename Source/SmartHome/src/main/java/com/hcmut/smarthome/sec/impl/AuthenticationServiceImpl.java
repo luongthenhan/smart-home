@@ -134,13 +134,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	}
 
 	private boolean isAccessable(CustomUserDetails user, int selectedHomeId) {
-		/*
-		 * List<HomeEntity> userHomes = user.getUserEntity().getHomes();
-		 * if(userHomes == null || userHomes.isEmpty()) { return false; }
-		 * 
-		 * for(HomeEntity home : userHomes) { if(selectedHomeId == home.getId())
-		 * { return true; } }
-		 */
+		
 		Home userHome = homeService.getHome(user.getUserEntity().getId(),
 				selectedHomeId);
 

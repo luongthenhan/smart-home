@@ -60,7 +60,7 @@ public class DeviceResource {
 		try {
 			deviceService.deleteDevice(homeId, deviceId);
 		} catch (Exception e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.OK);
 		}
 		return new ResponseEntity<ResponeString>(HttpStatus.NO_CONTENT);
 	}
@@ -93,11 +93,11 @@ public class DeviceResource {
 			} 
 		} 
 		catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		}
 		catch (Exception e) {
 			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),
-					HttpStatus.BAD_REQUEST);
+					HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
@@ -133,9 +133,9 @@ public class DeviceResource {
 			
 			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
 		} catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()), HttpStatus.OK);
 		}
 	}
 

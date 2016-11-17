@@ -17,6 +17,9 @@ app.directive("deviceScriptFromTo", ['MainService', function(MainService) {
             self.fromTime = null;
             self.toTime = null;
 
+            self.oldFromTime = null;
+            self.oldToTime = null;
+
             self.selectedAction = null;
 
             self.setUpTimePicker = function(){
@@ -63,7 +66,37 @@ app.directive("deviceScriptFromTo", ['MainService', function(MainService) {
                 MainService.deleteScript($scope.script);
             }
 
-            self.updateActionChange = function () {
+            self.updateFromTimeChange = function() {
+                var scriptInfo = MainService.parseScriptInfo($scope.script);
+                var newFromTimeContent = "'FromTo','" + self.fromTime + "'";
+                var oldScriptContent = $scope.script.content;
+                $scope.script.content = $scope.script.content
+                    .replace(/ /g, "")
+                    .replace("'FromTo','" + scriptInfo.fromTime + "'", newFromTimeContent)
+                    .replace(/ /g, "");
+                if (MainService.updateScript($scope.script) == false) {
+                    self.fromTime = self.oldFromTime;
+                    $scope.script.content = oldScriptContent;
+                }
+            }
+
+            self.updateToTimeChange = function() {
+                var scriptInfo = MainService.parseScriptInfo($scope.script);
+                var newToTimeContent = self.toTime + "',[[";
+                var oldScriptContent = $scope.script.content;
+                $scope.script.content = $scope.script.content
+                    .replace(/ /g, "")
+                    .replace(scriptInfo.toTime + "',[[", newToTimeContent)
+                    .replace(/ /g, "");
+                console.log("new script content: " + $scope.script.content);
+                if (MainService.updateScript($scope.script) == false) {
+                    self.toTime = self.oldToTime;
+                    $scope.script.content = oldScriptContent;
+                }
+            }
+
+            self.updateActionChange = function() {
+                var scriptInfo = MainService.parseScriptInfo($scope.script);
                 var newActionContent = self.selectedAction.script
                     .replace(/ /g, "")
                     .replace("$DID$", "'" + $scope.device.id + "'")
@@ -71,10 +104,9 @@ app.directive("deviceScriptFromTo", ['MainService', function(MainService) {
                     .replace("]","");
                 $scope.script.content = $scope.script.content
                     .replace(/ /g, "")
-                    .replace(self.scriptInfo.actionContent, newActionContent)
+                    .replace(scriptInfo.actionContent, newActionContent)
                     .replace(/ /g, "");
-                self.scriptInfo = MainService.parseScriptInfo($scope.script);
-                MainService.updateScript($scope.device, $scope.script);
+                MainService.updateScript($scope.script);
             }
         }
     }
