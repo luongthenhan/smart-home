@@ -53,9 +53,9 @@ public class ScriptResource {
 			deviceService.deleteScript(deviceId, scriptId);
 			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, ""), HttpStatus.OK);
 		} catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.NOT_FOUND);
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.OK);
 		}
 	}
 	
@@ -98,9 +98,9 @@ public class ScriptResource {
 			deviceService.updateScript(homeId, modeId, deviceId, scriptId,script);
 			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, ""), HttpStatus.OK);
 		} catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.OK);
 		}
 	}
 	
@@ -116,9 +116,9 @@ public class ScriptResource {
 			deviceService.updatePartialScript(homeId, modeId, deviceId, scriptId, script);
 			return new ResponseEntity<ResponeString>( new ResponeString(scriptId, ""), HttpStatus.OK);
 		} catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()) ,HttpStatus.OK);
 		}
 	}
 	
@@ -146,9 +146,9 @@ public class ScriptResource {
 				return new ResponseEntity<ResponeString>(new ResponeString(addedScriptId, URINewAddedObject),HttpStatus.CREATED);
 			}
 		} catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()), HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);

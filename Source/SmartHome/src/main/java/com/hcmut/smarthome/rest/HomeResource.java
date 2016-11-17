@@ -77,10 +77,10 @@ public class HomeResource {
 			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
 		}
 		catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		}
 		catch (Exception e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getMessage()),HttpStatus.OK);
 		}
 	}
 
@@ -99,10 +99,10 @@ public class HomeResource {
 			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
 		} 
 		catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		}
 		catch (Exception e) {
-			return new ResponseEntity<ResponeString>(new ResponeString(e.getCause().getMessage()),HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString(e.getCause().getMessage()),HttpStatus.OK);
 		}
 	}
 
@@ -113,10 +113,10 @@ public class HomeResource {
 			addedHomeId = homeService.addHome(authService.getCurrentUserId(), home);
 		}
 		catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		}
 		catch(Exception e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getMessage()), HttpStatus.OK);
 		}
 		
 		if (addedHomeId > 0) {
@@ -164,7 +164,7 @@ public class HomeResource {
 			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
 		} 
 		catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		}
 		catch (Exception e) {
 			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
@@ -190,7 +190,7 @@ public class HomeResource {
 			return new ResponseEntity<ResponeString>(HttpStatus.NOT_FOUND);
 		} 
 		catch(JDBCException e){
-			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<ResponeString>(new ResponeString( e.getSQLException().getMessage()), HttpStatus.OK);
 		}
 		catch (Exception e) {
 			return new ResponseEntity<ResponeString>(HttpStatus.BAD_REQUEST);
