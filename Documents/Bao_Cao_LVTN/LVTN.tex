@@ -65,10 +65,11 @@
 \makeatother
 
 %-------------------------------------------------------------------------------------------------%
+\begin{document}
 
-\begin{document} 
+\frontmatter
 
-%-------------------------------------COVER PAGE
+%-------------------------------------COVER PAGE--------------------------------------------------%
 \begin{titlepage}
 \begin{center}
 \Large \textbf{ĐẠI HỌC QUỐC GIA TP HỒ CHÍ MINH}  \\
@@ -92,7 +93,7 @@
 \\ 
 \\
 \textbf{{\LARGE \textbf{\centerline{ XÂY DỰNG HỆ THỐNG NHÀ THÔNG MINH }}}}\\
-\\\textbf{{\LARGE VỚI RASPBERRY PI}}\\
+\\\textbf{{\LARGE SỬ DỤNG RASPBERRY PI}}\\
 \\ 
 \\
 \hline 
@@ -120,6 +121,10 @@
 \end{center}
 \end{titlepage}
 
+%------------------------------ Abstract --------------------------------------------------%
+\chapter*{Tóm tắt luận văn}
+\addcontentsline{toc}{chapter}{Tóm tắt luận văn}
+
 %------------------------------ table of content --------------------------------------------------%
 \begingroup
 \let\cleardoublepage\clearpage
@@ -127,10 +132,18 @@
 \bibliographystyle{plain} 
 \endgroup
 
+%------------------------------ Table list --------------------------------------------------%
+\chapter*{Danh mục bảng}
+\addcontentsline{toc}{chapter}{Danh mục bảng}
 
+%------------------------------ Image list --------------------------------------------------%
+\chapter*{Danh mục hình ảnh}
+\addcontentsline{toc}{chapter}{Danh mục hình ảnh}
 
-%--------------------------------------------------------------------------------------------------%
-\chapter{Giới thiệu (5 - 8 trang)}
+%----------------------------------Giới thiệu---------------------------------------------------%
+\mainmatter
+
+\chapter{Giới thiệu}
 \newpage
 \section{Tổng quan về nhà thông minh}
 \newpage
@@ -140,70 +153,43 @@
 \newpage
 \section{Cấu trúc luận văn}
 
-%--------------------------------------------------------------------------------------------------%
-\chapter{Điều khiển thiết bị sử dụng Raspberry Pi - (6 - 8 trang)}
+%----------------------------------Phân tích và thiết kế hệ thống---------------------------------%
+\chapter{Phân tích và thiết kế hệ thống}
+\newpage
+\section{Phân tích yêu cầu}
+\newpage
+\section{Sơ đồ usecase}
+\newpage
+\section{Kiến trúc tổng quan}
+
+%-----------------------------------Server--------------------------------%
+\chapter{Kiến trúc server}
+
+%-----------------------------------Device controller---------------------%
+\chapter{Kiến trúc module điều khiển thiết bị}
 \newpage
 \section{Tổng quan về Raspberry Pi}
 \newpage
 \section{Phương pháp điều khiển thiết bị thông qua GPIO}
 
-%--------------------------------------------------------------------------------------------------%
-\chapter{Phát triển ứng dụng di động sử dụng Cordova và AngularJS(6 - 8 trang)}
-\newpage
-\section{Tổng quan về AngularJS}
-\newpage
-\section{Tổng quan về Cordova}
+%-----------------------------------Mobile app-----------------------------%
+\chapter{Kiến trúc ứng dụng di động}
 
-%--------------------------------------------------------------------------------------------------%
-\chapter{Xây dựng server bằng ngôn ngữ Java (6 - 8 trang)}
-\newpage
-\section{Lập trình web service bằng Spring MVC}
-\newpage
-\section{Ứng dụng biểu thức lamda trong Java 8}
- 	 
-%--------------------------------------------------------------------------------------------------%
-\chapter{Phân tích yêu cầu hệ thống (12 - 15 trang)}
-\newpage
-\section{Tổng quan hệ thống}
-\newpage
-\section{Sơ đồ usecase}
-\newpage
-\section{Yêu cầu đối với ứng dụng di động}
-\newpage
-\section{Yêu cầu đối với server}
-
-%--------------------------------------------------------------------------------------------------%
-\chapter{Thiết kế hệ thống (12 - 15)}
-\newpage
-\section{Kiến trúc tổng quan}
-\newpage
-\section{Kiến trúc ứng dụng di động}
-\newpage
-\section{Kiến trúc server}
-\newpage
-\section{Kiến trúc module điều khiển thiết bị}
-
-%--------------------------------------------------------------------------------------------------%
-\chapter{Hiện thực và đánh giá  (20 -25 trang)}
-\newpage
-\section{Phát triển ứng dụng di động}
-\newpage
-\section{Xây dựng cú pháp scenario}
+%-----------------------------------Hiện thực và đánh giá------------------%
+\chapter{Hiện thực và đánh giá}
 \newpage
 \section{Xây dựng server}
 \newpage
-\section{Xung đột trong scenario và cách giải quyết}
+\section{Xây dựng module điều khiển thiết bị}
 \newpage
-\section{Lắp đặt thiết bị vào hệ thống}
+\section{Phát triển ứng dụng di động}
 \newpage
-\section{Hiện thực module điều khiển thiết bị}
-\newpage
-\section{Đánh giá hệ thống}
+\section{Đánh giá tích hợp hệ thống}
 
-%--------------------------------------------------------------------------------------------------%
-\chapter{Tổng kết (2 trang)} 
+%-------------------------------------Tổng kết----------------------------------%
+\chapter{Tổng kết} 
 
-%---------------------------------------------------------------------------------------------------------------------
+%-------------------------------------Tài liệu tham khảo------------------------%
 \newpage
 \renewcommand{\refname}{Tài liệu tham khảo}
 \begin{thebibliography}{80}
@@ -218,7 +204,7 @@
 
 \end{thebibliography}
 
-%--------------------------------------------------------------------------------------------------%
+%--------------------------------------Phụ lục--------------------------------%
 \chapter*{Phụ lục} 
 \addcontentsline{toc}{chapter}{Phụ lục}
 
