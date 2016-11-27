@@ -1,0 +1,27 @@
+[1] @article{article,
+  author  = {IDC}, 
+  journal   = {http://www.idc.com/prodserv/smartphone-os-market-share.jsp},
+  year    = 2016,
+  month   = 8
+}
+
+[2] @article{article,
+  author  = {Apache Software Foundation (ASF)}, 
+  journal   = {https://cordova.apache.org/docs/en/latest/guide},
+  year    = 2015,
+  month   = November
+}
+
+[3] @article{article,
+  author  = {Robbie Abed}, 
+  journal   = {https://www.ymedialabs.com/hybrid-vs-native-mobile-apps-the-answer-is-clear/},
+  year    = 2016
+  month   = September
+}
+
+[4] @article{article,
+  author  = {DVMS Innovation}, 
+  journal   = {http://dvms.vn/tin-tuc/tin-nganh/114-phan-biet-ung-dung-goc-native-application-va-ung-dung-web-web-application.html},
+  year    = 2011
+  month   = December
+}
