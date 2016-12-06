@@ -23,11 +23,9 @@ public interface IScenarioService {
 	 * Convert one JSONArray object to Scenario
 	 * @param script
 	 * @return
-	 * @throws ParseException
-	 * @throws ConflictConditionException 
-	 * @throws NotSupportedException 
+	 * @throws Exception 
 	 */
-	Scenario JSONToScenario(int homeId, String script) throws ParseException, NotSupportedException, ConflictConditionException;
+	Scenario JSONToScenario(int homeId, String script) throws Exception;
 	
 	void updateScenarioStatus(int scenarioId, ScenarioStatus status);
 

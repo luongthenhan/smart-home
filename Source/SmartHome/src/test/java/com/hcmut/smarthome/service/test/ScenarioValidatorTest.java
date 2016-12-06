@@ -10,14 +10,11 @@ import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.TURN_OFF;
 import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.transaction.NotSupportedException;
-
-import org.json.simple.parser.ParseException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -206,6 +203,44 @@ public class ScenarioValidatorTest {
 		.begin()
 			.If(TSENSOR_5, NOT_EQUAL, 35.5f)
 				.If(TSENSOR_5, EQUAL, 34)
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testCaseUseWrongRequiredValueTypeForDevice() throws Exception{
+		expectedException.expect(NumberFormatException.class);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(TSENSOR_5, EQUAL, true)
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testCaseUseWrongRequiredOperatorTypeForDevice() throws Exception{
+		expectedException.expect(IllegalArgumentException.class);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(LSENSOR_4, GREATER_OR_EQUAL, true)
 					.action(TURN_OFF, LIGHT_2)
 				.endIf()
 			.endIf()
@@ -1406,7 +1441,7 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
-	private void runTestScriptValidation(String inputScript, List<String> existedScripts, boolean expectedResult) throws ParseException, NotSupportedException, ConflictConditionException{
+	private void runTestScriptValidation(String inputScript, List<String> existedScripts, boolean expectedResult) throws Exception{
 		
 		Pair<Scenario,List<Scenario>> pairInputAndExistedScenarios = scriptToScenario(inputScript,existedScripts);
 		Scenario inputScenario = pairInputAndExistedScenarios.getFirst();
@@ -1419,7 +1454,7 @@ public class ScenarioValidatorTest {
 	}
 	
 	// TODO: Home constant 
-	private Pair<Scenario,List<Scenario>> scriptToScenario(String inputScript, List<String> existedScripts) throws ParseException, NotSupportedException, ConflictConditionException{
+	private Pair<Scenario,List<Scenario>> scriptToScenario(String inputScript, List<String> existedScripts) throws Exception{
 		Scenario inputScenario = scenarioService.JSONToScenario(ConstantUtil.HOME_ID, inputScript);
 		List<Scenario> existedScenarios = new ArrayList<>();
 		for (String existedScript : existedScripts) {

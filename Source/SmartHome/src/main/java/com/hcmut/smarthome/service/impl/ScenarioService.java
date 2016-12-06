@@ -143,7 +143,7 @@ public class ScenarioService implements IScenarioService {
 	}
 	
 	@Override
-	public Scenario JSONToScenario(int homeId, String script) throws ParseException, NotSupportedException, ConflictConditionException {
+	public Scenario JSONToScenario(int homeId, String script) throws Exception {
 		return scenarioCreator.from(homeId, script);
 	}
 

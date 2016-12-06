@@ -29,12 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import javax.transaction.NotSupportedException;
-
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -74,14 +71,15 @@ public class ScenarioCreator {
 	@Autowired
 	private IDeviceService deviceService;
 	
-	@SuppressWarnings("unchecked")
-	public Scenario from(int homeId, String script) throws ParseException, NotSupportedException, ConflictConditionException{
+	public Scenario from(int homeId, String script) throws Exception{
 		// Must do that because library can't parse the string with single quote
 		JSONArray listControlBlocksOrActions = (JSONArray) parser.parse(script.replace("'", "\""));
 
 		Scenario scenario = new Scenario();
 		scenario.setBlocks(new ArrayList<IBlock>());
-		listControlBlocksOrActions.forEach(block -> scenario.getBlocks().add(createBlock(homeId, (JSONArray) block)));
+		for (Object block : listControlBlocksOrActions) {
+			scenario.getBlocks().add(createBlock(homeId, (JSONArray) block));
+		}
 
 		if( scenarioConflictValidator.isNotConflicted(scenario, ITSELF) )
 			return scenario;
@@ -94,8 +92,9 @@ public class ScenarioCreator {
 	 * 
 	 * @param object
 	 * @return
+	 * @throws NotFoundException 
 	 */
-	private IBlock createBlock(int homeId, JSONArray object) {
+	private IBlock createBlock(int homeId, JSONArray object) throws Exception {
 		IBlock block = null;
 
 		if (isListOfActions(object))
@@ -209,10 +208,15 @@ public class ScenarioCreator {
 		// SETUP DEVICE CONDITION
 		default:
 			try {
-				block = setupCondition(homeId, object);
-			} catch (NotFoundException e) {
+				block = setupCondition(homeId, object);			
+			} catch (NumberFormatException e){
+				LOGGER.error("Required value didn't match device type. Please check again your scenario!");
+				throw new NumberFormatException("Required value didn't match device type. Please check again your scenario!");
+			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
+				throw e;
 			}
+			
 			break;
 		}
 
@@ -244,13 +248,16 @@ public class ScenarioCreator {
 	 * 
 	 * @param objects
 	 * @return
+	 * @throws Exception 
 	 */
 	@SuppressWarnings("unchecked")
-	private IBlock createBlocksInsideArray(int homeId, JSONArray objects) {
+	private IBlock createBlocksInsideArray(int homeId, JSONArray objects) throws Exception {
 		Action action = new Action();
 		action.setName("LIST of ACTION | BLOCK");
 		action.setBlocks(new ArrayList<>());
-		objects.forEach(object -> action.getBlocks().add(createBlock(homeId, (JSONArray) object)));
+		for (Object object : objects) {
+			action.getBlocks().add(createBlock(homeId, (JSONArray) object));
+		}
 		return action;
 	}
 
@@ -288,7 +295,7 @@ public class ScenarioCreator {
 	 * @return
 	 * @throws NotFoundException 
 	 */
-	private IBlock setupCondition(int homeId, JSONArray object) throws NotFoundException {
+	private IBlock setupCondition(int homeId, JSONArray object) throws NotFoundException, NumberFormatException, IllegalArgumentException {
 		IBlock block = null;
 		int deviceId = Integer.valueOf(object.get(0).toString());
 		Device device = deviceService.getDevice(homeId, deviceId);
@@ -390,7 +397,7 @@ public class ScenarioCreator {
 	 */
 	private Condition setupLHSAndRHSCondition(JSONArray object,
 			String conditionName, Supplier<Object> LHSExpression,
-			Class<?> LHSExpressionType) {
+			Class<?> LHSExpressionType) throws NumberFormatException, IllegalArgumentException{
 		Condition condition = new Condition();
 		// TODO Rename variable name of condition, now it store deviceId
 		condition.setName(object.get(0).toString());
@@ -399,6 +406,7 @@ public class ScenarioCreator {
 		if (LHSExpressionType.equals(Boolean.class)) {
 			condition.setValue(Boolean.valueOf(object.get(2).toString()));
 			condition.setValueClassType(Boolean.class);
+			checkValidOperatorForBooleanValue(condition.getOperator());
 		} else if (LHSExpressionType.equals(Float.class)) {
 			condition.setValue(Float.valueOf(object.get(2).toString()));
 			condition.setValueClassType(Float.class);
@@ -440,7 +448,15 @@ public class ScenarioCreator {
 		return condition;
 	}
 
-	private ControlBlockIf setupControlBlockIf(int homeId, JSONArray object) {
+	private void checkValidOperatorForBooleanValue(String operator) throws IllegalArgumentException {
+		if( EQUAL.equals(operator)
+				|| NOT_EQUAL.equals(operator))
+			return;
+		throw new IllegalArgumentException("Only use '=', '!=' with sensor devices. Please check again your scenario!");
+	}
+
+
+	private ControlBlockIf setupControlBlockIf(int homeId, JSONArray object) throws Exception {
 		ControlBlockIf controlBlock = new ControlBlockIf();
 		controlBlock.setCondition((Condition) createBlock(homeId, (JSONArray) object
 				.get(1)));
@@ -448,7 +464,7 @@ public class ScenarioCreator {
 		return controlBlock;
 	}
 
-	private ControlBlockIfElse setupControlBlockIfElse(int homeId, JSONArray object) {
+	private ControlBlockIfElse setupControlBlockIfElse(int homeId, JSONArray object) throws Exception {
 		ControlBlockIfElse controlBlockIfElse = new ControlBlockIfElse();
 		controlBlockIfElse.setCondition((Condition) createBlock(homeId, (JSONArray) object.get(1)));
 		controlBlockIfElse.setAction((Action) createBlock(homeId, (JSONArray) object.get(2)));
