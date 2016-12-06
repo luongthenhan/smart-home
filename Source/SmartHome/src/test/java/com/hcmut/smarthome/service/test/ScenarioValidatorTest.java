@@ -179,6 +179,44 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
+	@Test
+	public void testCase3_4() throws Exception{
+		expectedException.expect(ConflictConditionException.class);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, GREATER_OR_EQUAL, 35.5f)
+				.If(TSENSOR_5, EQUAL, 34)
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testCase3_5() throws Exception{
+		expectedException.expect(ConflictConditionException.class);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.If(TSENSOR_5, NOT_EQUAL, 35.5f)
+				.If(TSENSOR_5, EQUAL, 34)
+					.action(TURN_OFF, LIGHT_2)
+				.endIf()
+			.endIf()
+		.end().build();
+		
+		List<String> existedScritps = new ArrayList<>();
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
 	/**
 	 * Input has conflicted conditions itself ( boolean value )
 	 * 

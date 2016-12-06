@@ -361,6 +361,9 @@ public class ScenarioConflictValidator {
 		
 		try{
 			switch (innerCondition.getOperator()) {
+			case EQUAL:
+				intersectionRange = outerConditionRange.intersection(Range.singleton(value));
+				break;
 			case GREATER_OR_EQUAL:
 				intersectionRange = outerConditionRange.intersection(Range.atLeast(value));
 				break;
