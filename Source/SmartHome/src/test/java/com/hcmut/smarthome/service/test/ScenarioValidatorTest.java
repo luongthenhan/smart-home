@@ -53,7 +53,7 @@ public class ScenarioValidatorTest {
 	ScenarioConflictValidator scenarioConflictService;
 	
 	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+	public ExpectedException expectedException = ExpectedException.none(); 
 	
 	/**
 	 * Input is more simpler than existing one 
@@ -1123,6 +1123,251 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
+	@Test
+	public void testTwoNestedFromToConflictItself() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("04:00", "12:00")
+				.FromTo("13:00", "15:00")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.FromTo("05:00", "23:00")
+				.action(TURN_ON, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate() throws Exception{
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("18:00", "02:00")
+				.FromTo("01:00", "01:59")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate_1() throws Exception{
+		
+		String input = new ScriptBuilder()
+		.begin()
+				.FromTo("01:00", "01:59")
+				.FromTo("18:00", "02:00")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate1() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("08:00", "09:00")
+				.FromTo("11:00", "11:59")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate1_1() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			
+				.FromTo("11:00", "11:59")
+				.FromTo("08:00", "09:00")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate2() throws Exception{
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("18:00", "02:00")
+				.FromTo("16:00", "04:59")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate2_1() throws Exception{
+		
+		String input = new ScriptBuilder()
+		.begin()
+			
+				.FromTo("16:00", "04:59")
+				.FromTo("18:00", "02:00")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate3() throws Exception{
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("14:00", "20:00")
+				.FromTo("16:00", "04:59")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate3_1() throws Exception{
+		
+		String input = new ScriptBuilder()
+		.begin()
+				.FromTo("16:00", "04:59")
+				.FromTo("14:00", "20:00")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate4() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
+		String input = new ScriptBuilder()
+		.begin()
+			.FromTo("16:00", "04:00")
+				.FromTo("05:00", "07:59")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate4_1() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
+		String input = new ScriptBuilder()
+		.begin()
+				.FromTo("05:00", "07:59")
+				.FromTo("16:00", "04:00")
+					.action(TURN_ON, LIGHT_2)
+				.endFromTo()
+			.endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
+	@Test
+	public void testTwoNestedFromToWithDurationCrossDate4_2() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
+		String input = new ScriptBuilder().configHome(ConstantUtil.HOME_ID)
+		.begin()
+				.FromTo("19:55" , "02:00").If("temp 1 sensor", "<", 35).action("TurnOff","light 4").endIf().endFromTo()
+		.end().build();
+		System.out.println(input);
+		
+		List<String> existedScritps = new ArrayList<>();
+		String existed = new ScriptBuilder().configHome(ConstantUtil.HOME_ID)
+		.begin()
+			.FromTo("22:00","02:00").action("TurnOn","light 4").endFromTo()
+		.end().build();
+		existedScritps.add(existed);
+		boolean expectedResult = false;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
 	private void runTestScriptValidation(String inputScript, List<String> existedScripts, boolean expectedResult) throws ParseException, NotSupportedException, ConflictConditionException{
 		
 		Pair<Scenario,List<Scenario>> pairInputAndExistedScenarios = scriptToScenario(inputScript,existedScripts);
@@ -1130,9 +1375,9 @@ public class ScenarioValidatorTest {
 		List<Scenario> existedScenarios = pairInputAndExistedScenarios.getSecond();
 		
 		
-		boolean isValidate = scenarioConflictService.isNotConflicted(inputScenario, existedScenarios);
-		System.out.println("Script is validated ? -> " + isValidate);
-		assertThat(isValidate, is(expectedResult));
+		boolean isValid = scenarioConflictService.isNotConflicted(inputScenario, existedScenarios);
+		System.out.println("Script is valid ? -> " + isValid);
+		assertThat(isValid, is(expectedResult));
 	}
 	
 	// TODO: Home constant 

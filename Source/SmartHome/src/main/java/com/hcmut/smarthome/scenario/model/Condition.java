@@ -12,6 +12,7 @@ public class Condition<C extends Comparable<? extends Object>> implements IBlock
 	protected Predicate<Object> predicate;
 	protected Range<C> range;
 	protected Class<C> valueClassType;
+	protected Boolean isDateDefined;
 	
 	public Condition() {
 		super();
@@ -20,7 +21,7 @@ public class Condition<C extends Comparable<? extends Object>> implements IBlock
 	public Condition(String name, Predicate<Object> predicate) {
 		super();
 		this.name = name;
-		this.predicate = predicate;
+		this.predicate = predicate; 
 	}
 
 	@Override
@@ -62,13 +63,6 @@ public class Condition<C extends Comparable<? extends Object>> implements IBlock
 		this.value = value;
 	}
 
-	public Range<C> getRange() {
-		return range;
-	}
-
-	public void setRange(Range<C> range) {
-		this.range = range;
-	}
 	
 	@Override
 	public String toString() {
@@ -80,6 +74,7 @@ public class Condition<C extends Comparable<? extends Object>> implements IBlock
 		return Objects.hash(name,operator,value);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object o) {
 		if( o == this )
@@ -91,7 +86,7 @@ public class Condition<C extends Comparable<? extends Object>> implements IBlock
 		if( !(o instanceof Condition) )
 			return false;
 		
-		Condition condition = (Condition) o;
+		Condition condition = (Condition) o; 
 		return Objects.equals(name, condition.name)
 				&& Objects.equals(operator, condition.operator)
 				&& Objects.equals(value, condition.value);
@@ -104,5 +99,20 @@ public class Condition<C extends Comparable<? extends Object>> implements IBlock
 	public void setValueClassType(Class<C> valueClassType) {
 		this.valueClassType = valueClassType;
 	}
-	
+
+	public Range<C> getRange() {
+		return range;
+	}
+
+	public void setRange(Range<C> range) {
+		this.range = range;
+	}
+
+	public Boolean isDateDefined() {
+		return isDateDefined;
+	}
+
+	public void setIsDateDefined(Boolean isDateDefined) {
+		this.isDateDefined = isDateDefined;
+	}
 }

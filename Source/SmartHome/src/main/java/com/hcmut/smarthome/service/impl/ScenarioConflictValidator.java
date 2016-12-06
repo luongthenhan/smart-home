@@ -9,7 +9,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.LESS_THAN;
 import static com.hcmut.smarthome.utils.ConstantUtil.NOT_EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.SCRIPT_CONFLICT;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -119,19 +119,19 @@ public class ScenarioConflictValidator {
 			Condition condition1 = listActionsAndConditionsToCompare.get(action1Index).getFirst();
 			Condition condition2 = listActionsAndConditionsToCompare.get(action2Index).getFirst();
 			
-			if( areTwoConditionsNotNullAndNotLocalTime(condition1, condition2)
+			if( areTwoConditionsNotNullAndNotLocalDateTime(condition1, condition2)
 					&& condition1.equals(getElseCondition(condition2)))
 				throw new ConflictConditionException(BOTH_IF_ELSE_BLOCK_YIELD_SAME_ACTION);
 		}
 	}
 	
-	private boolean areTwoConditionsNotNullAndNotLocalTime(
+	private boolean areTwoConditionsNotNullAndNotLocalDateTime(
 			Condition condition1, Condition condition2) {
 		return condition1 != null && condition2 != null 
 				&& condition1.getValueClassType() != null
-				&& !condition1.getValueClassType().equals(LocalTime.class)
+				&& !condition1.getValueClassType().equals(LocalDateTime.class)
 				&& condition2.getValueClassType() != null
-				&& !condition2.getValueClassType().equals(LocalTime.class);
+				&& !condition2.getValueClassType().equals(LocalDateTime.class);
 	}
 
 	public List<Pair<List<Condition>, SimpleAction>> getPairActionAndFullConditions(
@@ -285,25 +285,50 @@ public class ScenarioConflictValidator {
 		Condition outerCondition = 
 				stackOuterConditions.stream().filter(c -> c.getName().equals(innerCondition.getName())).findAny().orElse(null);
 		
-		if( LocalTime.class.equals(innerCondition.getValueClassType()) ){
-			Range<LocalTime> outerConditionRange = null;
+		if( LocalDateTime.class.equals(innerCondition.getValueClassType()) ){
+			Range<LocalDateTime> outerConditionRange = null;
 			if( outerCondition == null || outerCondition.getRange() == null)
 				outerConditionRange = Range.all();
 			else outerConditionRange = outerCondition.getRange();
-			Range<LocalTime> intersectionRange = null;
-			try{
-				intersectionRange = outerConditionRange.intersection(innerCondition.getRange());
-			}
-			catch(IllegalArgumentException e){
-				throw new ConflictConditionException(SCRIPT_CONFLICT);
-			}
+			Range<LocalDateTime> intersectionRange = intersectTwoLocalDateTimeRange(innerCondition.getRange(), outerConditionRange, true);
 			
-			if( intersectionRange != null && intersectionRange.isEmpty() )
+			if( checkTwoLocalDateTimeRangeNotIntersect(intersectionRange))
 				throw new ConflictConditionException(SCRIPT_CONFLICT);
 			
 			innerCondition.setRange(intersectionRange);
 			
 		}
+	}
+
+	private Range<LocalDateTime> intersectTwoLocalDateTimeRange(Range inner, Range outer, boolean isNeedToIncreaseDateByOneIfIntersectFail) throws ConflictConditionException{
+		Range<LocalDateTime> intersectionRange = null;
+		try{
+			intersectionRange = outer.intersection(inner);
+		}
+		catch(IllegalArgumentException e){
+			if( !isNeedToIncreaseDateByOneIfIntersectFail || !inner.hasLowerBound() || !inner.hasUpperBound() || !outer.hasLowerBound() || !outer.hasUpperBound() )
+				throw new ConflictConditionException(SCRIPT_CONFLICT);
+			
+			LocalDateTime innerLowerPoint = (LocalDateTime) inner.lowerEndpoint();
+			LocalDateTime outerLowerPoint = (LocalDateTime) outer.lowerEndpoint();
+			LocalDateTime innerUpperPoint = (LocalDateTime) inner.upperEndpoint();
+			LocalDateTime outerUpperPoint = (LocalDateTime) outer.upperEndpoint();
+			if( innerUpperPoint.getDayOfYear() < outerUpperPoint.getDayOfYear() && innerUpperPoint.getYear() == outerUpperPoint.getYear() 
+					|| innerUpperPoint.getYear() < outerUpperPoint.getYear()){
+				Range<LocalDateTime> newInner = Range.closed(innerLowerPoint.plusDays(1), innerUpperPoint.plusDays(1));
+				return intersectTwoLocalDateTimeRange(newInner, outer, false);
+			}else{
+				Range<LocalDateTime> newOuter = Range.closed(outerLowerPoint.plusDays(1), outerUpperPoint.plusDays(1));
+				return intersectTwoLocalDateTimeRange(inner, newOuter, false);
+			}
+		}
+		return intersectionRange;
+	}
+	
+	private boolean checkTwoLocalDateTimeRangeNotIntersect(Range<LocalDateTime> intersectionRange) {
+		if( intersectionRange != null && intersectionRange.isEmpty())
+			return true;
+		return false;
 	}
 	
 	private void mergeInnerWithOuterConditionsOtherControlBlocks(Condition innerCondition, Stack<Condition> stackOuterConditions)
@@ -542,7 +567,7 @@ public class ScenarioConflictValidator {
 			Range conditionRange, Range existedConditionRange) {
 		return conditionRange != null  && existedConditionRange != null
 				&& conditionToCompare.getValueClassType() != null
-				&& conditionToCompare.getValueClassType().equals(LocalTime.class)
+				&& conditionToCompare.getValueClassType().equals(LocalDateTime.class)
 				&& conditionToCompare.getValueClassType().equals(existedCondition.getValueClassType());
 	}
 	
@@ -591,8 +616,8 @@ public class ScenarioConflictValidator {
 		// Different class type of value
 		if (conditionToCompare.getValueClassType() != existedCondition
 				.getValueClassType()){
-			if( LocalTime.class.equals(conditionToCompare.getValueClassType()) 
-					|| LocalTime.class.equals(existedCondition.getValueClassType()) )
+			if( LocalDateTime.class.equals(conditionToCompare.getValueClassType()) 
+					|| LocalDateTime.class.equals(existedCondition.getValueClassType()) )
 					return true;
 			return false;
 		}

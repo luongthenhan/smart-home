@@ -3,6 +3,7 @@ package com.hcmut.smarthome.service.impl;
 import static com.hcmut.smarthome.utils.ConstantUtil.BUZZER;
 import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_FROM_TO;
 import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF;
+import static com.hcmut.smarthome.utils.ConstantUtil.DEFAULT_ZONE_ID;
 import static com.hcmut.smarthome.utils.ConstantUtil.EQUAL;
 import static com.hcmut.smarthome.utils.ConstantUtil.GAS_SENSOR;
 import static com.hcmut.smarthome.utils.ConstantUtil.GREATER_OR_EQUAL;
@@ -21,6 +22,7 @@ import static com.hcmut.smarthome.utils.ConstantUtil.TOGGLE;
 import static com.hcmut.smarthome.utils.ConstantUtil.TURN_OFF;
 import static com.hcmut.smarthome.utils.ConstantUtil.TURN_ON;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -106,22 +108,32 @@ public class ScenarioCreator {
 		// CONTROL BLOCK
 		// TODO: Do we need to check from value and to value ???
 		case CONTROL_BLOCK_FROM_TO:
-			ControlBlockFromTo conFromTo = new ControlBlockFromTo();
-			LocalTime t1,t2;
+			ControlBlockFromTo conFromTo = new ControlBlockFromTo(); 
+			LocalTime localTimeFrom,localTimeTo;
+			LocalDateTime localDTimeFrom, localDTimeTo;
+			LocalDateTime now = LocalDateTime.now(DEFAULT_ZONE_ID);
 
 			try {
-				t1 = LocalTime.parse(object.get(1).toString());
-				t2 = LocalTime.parse(object.get(2).toString());
+				localTimeFrom = LocalTime.parse(object.get(1).toString()); 
+				localTimeTo = LocalTime.parse(object.get(2).toString());
+				localDTimeFrom = now.with(localTimeFrom);
+				localDTimeTo = now.with(localTimeTo);
 			} catch (DateTimeParseException e) {
 				throw new DateTimeParseException("Cannot parse the time",
 						object.toString(), 0);
 			}
-
-			Range<LocalTime> r = Range.closed(t1, t2);
-			Condition<LocalTime> c = new Condition<>();
+			
+			Condition<LocalDateTime> c = new Condition<>();
 			c.setName(TIME);
+			// TODO: now just support check date by date
+			c.setIsDateDefined(false);
+			Range<LocalDateTime> r;
+			if( localTimeFrom.isAfter(localTimeTo) ){
+				localDTimeTo = localDTimeTo.plusDays(1);
+			}
+			r = Range.closed(localDTimeFrom, localDTimeTo);
 			c.setRange(r);
-			c.setValueClassType(LocalTime.class);
+			c.setValueClassType(LocalDateTime.class);
 			conFromTo.setCondition(c);
 			conFromTo.setAction((Action) createBlock(homeId, (JSONArray) object.get(3)));
 			block = conFromTo;

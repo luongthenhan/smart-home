@@ -5,7 +5,8 @@ import static com.hcmut.smarthome.utils.ConstantUtil.CONTROL_BLOCK_IF_ELSE;
 import static com.hcmut.smarthome.utils.ConstantUtil.DEFAULT_ZONE_ID;
 import static com.hcmut.smarthome.utils.ConstantUtil.DELAY;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,18 +148,33 @@ public class ScenarioRunner {
 	 */
 	private void runControlBlock(ControlBlock<?> controlBlock) {
 		if ( controlBlock.getClass().equals(ControlBlockFromTo.class) ){
-			ControlBlockFromTo controlBlockFromTo = (ControlBlockFromTo) controlBlock;
-			// TODO: Consider locale of time
-			if( controlBlockFromTo.getCondition().getRange().contains(LocalTime.now(DEFAULT_ZONE_ID)) )
-				runBlocks(controlBlockFromTo.getAction().getBlocks());
-		}
-		else if (controlBlock.getCondition().check()) {
+			runControlBlockFromTo(controlBlock);
+		} else if (controlBlock.getCondition().check()) {
 			runBlocks(controlBlock.getAction().getBlocks());
 		} else if (CONTROL_BLOCK_IF_ELSE.equals(controlBlock.getName())) {
 			ControlBlockIfElse controlBlockIfElse = (ControlBlockIfElse) controlBlock;
 			runBlocks(controlBlockIfElse.getElseAction().getBlocks());
 		}
 		
+	}
+
+	private void runControlBlockFromTo(ControlBlock<?> controlBlock) {
+		ControlBlockFromTo controlBlockFromTo = (ControlBlockFromTo) controlBlock; 
+		// NOTE: Consider locale of time
+		LocalDateTime dateTimeToCheck = LocalDateTime.now(DEFAULT_ZONE_ID);
+		
+		// If date is not defined , it means that we only care the TIME, e.g 14:00 to 23:00 or 22:00 to 02:00
+		// Due to time can be cross date, e.g today 22:00 -> tomorrow 02:00
+		// -> so we need to check either of @dateTimeToCheck and @dateTimeToCheck.plusDays(1) is contained 
+		// in the range or not
+		if( !controlBlockFromTo.getCondition().isDateDefined() ){
+			LocalDate dateMustBeIgnored = controlBlockFromTo.getCondition().getRange().lowerEndpoint().toLocalDate();
+			dateTimeToCheck = dateTimeToCheck.with(dateMustBeIgnored);
+			
+			if( controlBlockFromTo.getCondition().getRange().contains(dateTimeToCheck) 
+					|| controlBlockFromTo.getCondition().getRange().contains(dateTimeToCheck.plusDays(1)))
+				runBlocks(controlBlockFromTo.getAction().getBlocks());
+		}
 	}
 	
 	public void updateScenarioStatus(int scenarioId, ScenarioStatus status){
