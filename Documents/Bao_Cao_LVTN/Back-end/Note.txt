@@ -3,4 +3,5 @@
 23h50: update 1.2 ( add Hibernate section + new image) , finish 2.2 
 
 7/12/16
-update 2.5
+19h00: update 2.5
+21h00: update 2.6
