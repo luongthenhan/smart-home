@@ -29,6 +29,9 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when('/homes', {
             templateUrl: 'app/components/home_list/homeListView.html',
         })
+        .when('/manage_custom_scripts', {
+            templateUrl: 'app/components/manage_custom_scripts/manageCustomScriptsView.html',
+        })
         .otherwise({
             redirectTo: "/login"
         })

@@ -24,7 +24,7 @@ app.directive("deviceScriptCustom", ['MainService', function(MainService) {
             self.updateScript = function() {
                 $scope.script.name = self.scriptName;
                 $scope.script.content = self.scriptContent;
-                MainService.updateScript($scope.device, $scope.script);
+                MainService.updateCustomScript($scope.script);
             }
         }
     }

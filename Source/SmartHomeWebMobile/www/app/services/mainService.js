@@ -17,6 +17,8 @@ app.service('MainService', function($http, $location, blockUI) {
 
     // All devices
     self.allDevices = [];
+    // Hidden device for custom scripts
+    self.hiddenDevice = null;
     // Current available gpios of selected mode
     self.selectedModeAvailableGpios = [];
     // Condition-able (displayable) devices
@@ -72,6 +74,26 @@ app.service('MainService', function($http, $location, blockUI) {
         })
     }
 
+    self.updateHome = function(home) {
+        $.ajax({
+            url: self.hostDomain + "homes/" + home.id,
+            type: 'PUT',
+            data: JSON.stringify(home),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                console.log("Update home successfully");
+            },
+            error: function (data, textStatus, xhr) {
+                console.log("Error update home");
+            }
+        })
+    }
+
     self.getHomes = function(controller) {
         $http.get(self.hostDomain + "/homes", {
             headers: {
@@ -101,10 +123,9 @@ app.service('MainService', function($http, $location, blockUI) {
             async: false,
             success: function(data, textStatus, xhr) {
                 self.allDeviceTypes = data;
-                self.allDeviceTypes = $.grep(self.allDeviceTypes, function (dt) {
-                    return dt.name.indexOf("Hidden Device") == -1;
+                controller.deviceTypes = $.grep(self.allDeviceTypes, function (dt) {
+                    return dt.name.indexOf("<!Hidden Device!>") == -1;
                 })
-                controller.deviceTypes = self.allDeviceTypes;
 
                 // Fetch conditions, actions and scripts
                 $.each(self.allDeviceTypes, function(dtIndex, dtVal){
@@ -117,7 +138,11 @@ app.service('MainService', function($http, $location, blockUI) {
                         async: false,
                         success: function (data, textStatus, xhr) {
                             $.each(data, function(dIndex, dVal) {
-                                self.allDevices.push(dVal);
+                                if (dVal.name.indexOf("<!Hidden Device!>") == -1) {
+                                    self.allDevices.push(dVal);
+                                } else {
+                                    self.hiddenDevice = dVal;
+                                }
                                 dVal.refNum = 0;
                                 self.fetchConditionsAndActions(dtVal, dVal);
                                 self.getSelectedModeScripts(dVal);
@@ -193,7 +218,9 @@ app.service('MainService', function($http, $location, blockUI) {
             success: function (data, textStatus, xhr) {
                 var scripts = data;
                 $.each(scripts, function(scpIndex, scpValue) {
-                    scpValue.content = scpValue.content.replace(/ /g, "");
+                    if (scpValue.type.id != 3) {
+                        scpValue.content = scpValue.content.replace(/ /g, "");
+                    }
                 })
                 device.scripts = scripts;
             },
@@ -325,6 +352,26 @@ app.service('MainService', function($http, $location, blockUI) {
             },
             error: function (data, textStatus, xhr) {
 
+            }
+        })
+    }
+
+    self.updateMode = function(mode) {
+        $.ajax({
+            url: self.hostDomain + "homes/" + self.selectedHome.id + "/modes/" + mode.id,
+            type: 'PUT',
+            data: JSON.stringify(mode),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                console.log("Update mode successfully");
+            },
+            error: function (data, textStatus, xhr) {
+                console.log("Error update mode");
             }
         })
     }
@@ -530,6 +577,26 @@ app.service('MainService', function($http, $location, blockUI) {
         return true;
     }
 
+    self.updateDevice = function(device) {
+        $.ajax({
+            url: self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices/" + device.id,
+            type: 'PUT',
+            data: JSON.stringify(device),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                console.log("Update device successfully");
+            },
+            error: function (data, textStatus, xhr) {
+                console.log("Error update device");
+            }
+        })
+    }
+
     self.getAllScripts = function(device) {
         $.each(self.selectedHome.modes, function(index, val) {
             $http.get(self.hostDomain + "devices/" + device.id + "/modes/" + val.id + "/scripts",{
@@ -556,15 +623,13 @@ app.service('MainService', function($http, $location, blockUI) {
         device = $.grep(self.selectedModeConditionableDevices, function(dev) {
             return dev.id == scriptInfo.actionDeviceId;
         })[0];
-
-        $http.patch(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id, script,{
+        $http.put(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id, script,{
             headers: {
                 'X-Auth-Token': self.token
             }
         }).then(function(response){
             if (response.status == 200) {
                 console.log("Update script successfully");
-
                 // Mark new device and Unmark old device if script is When/Then
                 if (script.type.id == 1 && oldSelectedOtherDevice != null && typeof oldSelectedOtherDevice != "undefined") {
 
@@ -660,6 +725,44 @@ app.service('MainService', function($http, $location, blockUI) {
         // })
 
         return result;
+    }
+
+    self.updateCustomScript = function (script) {
+        console.log(script);
+        // $http.put(self.hostDomain + "/devices/" + self.hiddenDevice.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id, script,{
+        //     headers: {
+        //         'X-Auth-Token': self.token
+        //     }
+        // }).then(function(response){
+        //     if (response.status == 200) {
+        //         console.log("Update custom script successfully");
+        //         result = true;
+        //     } else {
+        //         window.alert("Update Failed !\n" + response.data.content);
+        //         result = false;
+        //     }
+        // }, function(error) {
+        //     window.alert("Update Failed !\n" + error.data.content);
+        //     result = false;
+        // })
+
+        $.ajax({
+            url: self.hostDomain + "/devices/" + self.hiddenDevice.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id,
+            type: 'PATCH',
+            data: JSON.stringify(script),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                console.log("Update custom script successfully");
+            },
+            error: function (data, textStatus, xhr) {
+                console.log("Error update custom script");
+            }
+        })
     }
 
     self.disableScript = function(script) {

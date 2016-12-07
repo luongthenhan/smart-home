@@ -18,8 +18,8 @@
                                   class="glyphicon glyphicon-off device-panel-disable-button"></span>
                     <span role="button"
                           onclick="event.stopPropagation();"
-                          ng-click="homePanelCtrl.showDeleteHomeModal()"
-                          class="glyphicon glyphicon-trash device-panel-remove-button"></span>
+                          ng-click="homePanelCtrl.showEditHomeModal()"
+                          class="glyphicon glyphicon-edit panel-edit-button"></span>
                 </div>
             </div>
         </button>
@@ -78,6 +78,50 @@
                         onclick="fixCloseModel();"
                         class="btn btn-default add-script-btn"
                         data-dismiss="modal">No</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Edit Home Modal -->
+<div class="modal home-panel-edit-home-modal" id="home-panel-edit-home-modal{{home.id}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Home</h4>
+            </div>
+            <div class="modal-body">
+
+                <form>
+                    <input type="text" class="form-control input-field" ng-model="home.name" placeholder="Edit Home Name">
+                    <textarea class="form-control input-field device-panel-custom-script-input"
+                              rows="3"
+                              placeholder="Edit Home Address" ng-model="home.address"></textarea>
+                    <textarea class="form-control input-field device-panel-custom-script-input"
+                              rows="3"
+                              placeholder="Edit Home Description" ng-model="home.description"></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="homePanelCtrl.showDeleteHomeModal()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-delete-btn btn-danger add-script-btn"
+                        data-dismiss="modal">Delete</button>
+                <button type="button"
+                        role="confirm"
+                        ng-click="homePanelCtrl.updateHome()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Save</button>
+                <button type="button"
+                        ng-click="homePanelCtrl.resetHomeValue()"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">Cancel</button>
             </div>
         </div>
 

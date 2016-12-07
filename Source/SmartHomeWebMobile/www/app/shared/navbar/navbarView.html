@@ -15,6 +15,7 @@
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav navbar-right">
                 <li ng-if="navBarCtrl.home != null"><a ng-click="navBarCtrl.toHomeList()">To Home List</a></li>
+                <li ng-if="navBarCtrl.home != null"><a ng-click="navBarCtrl.toManageCustomScripts()">Manage Custom Scripts</a></li>
                 <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                 <li class="dropdown" ng-if="navBarCtrl.home != null">
                     <a class="dropdown-toggle" data-toggle="dropdown">Change mode<span class="caret"></span></a>
@@ -26,8 +27,8 @@
                             <span role="button"
                                   ng-if="mode.name != 'default'"
                                   onclick="event.stopPropagation();"
-                                  ng-click="navBarCtrl.deleteMode(mode)"
-                                  class="glyphicon glyphicon-trash navbar-delete-mode-button"></span>
+                                  ng-click="navBarCtrl.showEditModeModal(mode)"
+                                  class="glyphicon glyphicon-edit navbar-delete-mode-button"></span>
                         </li>
                     </ul>
                 </li>
@@ -35,3 +36,70 @@
         </div>
     </div>
 </nav>
+
+<!-- Edit Mode Modal -->
+<div class="modal navbar-edit-mode-modal" id="navbar-edit-mode-modal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Mode</h4>
+            </div>
+            <div class="modal-body">
+
+                <form>
+                    <input type="text" class="form-control input-field" ng-model="navBarCtrl.selectedEditMode.name" placeholder="Edit Mode Name">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="navBarCtrl.showDeleteModeModal()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-delete-btn btn-danger add-script-btn"
+                        data-dismiss="modal">Delete</button>
+                <button type="button"
+                        ng-click="navBarCtrl.updateMode()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Save</button>
+                <button type="button"
+                        ng-click="navBarCtrl.resetModeValue()"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Delete Mode Modal -->
+<div class="modal navbar-delete-mode-modal" id="navbar-delete-mode-modal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete Mode</h4>
+            </div>
+            <div class="modal-body">
+                <span>Do you want to delete Mode </span>
+                <span>{{navBarCtrl.selectedEditMode.name}}</span>
+                <span> ?</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="navBarCtrl.deleteMode()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Yes</button>
+                <button type="button"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>

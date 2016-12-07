@@ -85,6 +85,10 @@ form {
     color: #FFFFFF;
 }
 
+.modal-delete-btn {
+    float: left;
+}
+
 .script-condition-modify-input {
     height: 25px;
 }
@@ -126,4 +130,10 @@ form {
     background-color: #B22222;
     color: white;
     padding: 0 5px 0 5px;
+}
+
+.panel-edit-button {
+    margin-right: 17px;
+    font-size: 20px;
+    color: #ffa500;
 }
