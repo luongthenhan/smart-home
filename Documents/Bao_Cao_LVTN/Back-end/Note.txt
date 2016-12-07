@@ -1,3 +1,6 @@
 30/11/16
 20h: from beginning to the end of 2.4 and Appendix .. list API
 23h50: update 1.2 ( add Hibernate section + new image) , finish 2.2 
+
+7/12/16
+update 2.5
