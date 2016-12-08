@@ -24,8 +24,8 @@
                                   class="glyphicon glyphicon-off device-panel-disable-button"></span>
                             <span role="button"
                                   onclick="event.stopPropagation();"
-                                  ng-click="devicePanelCtrl.showRemoveDeviceModal()"
-                                  class="glyphicon glyphicon-trash device-panel-remove-button"></span>
+                                  ng-click="devicePanelCtrl.showEditDeviceModal()"
+                                  class="glyphicon glyphicon-edit panel-edit-button"></span>
                         </div>
                         <button data-toggle="collapse" data-target="#deviceCollapse{{device.id}}" class="device-panel-toggle-button"
                                 ng-class="{'disabled-device': devicePanelCtrl.currentDevice.enabled == false}">
@@ -213,6 +213,47 @@
                         onclick="fixCloseModel();"
                         class="btn btn-default add-script-btn"
                         data-dismiss="modal">No</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Edit Device Modal -->
+<div class="modal device-panel-edit-device-modal" id="device-panel-edit-device-modal{{device.id}}" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Device</h4>
+            </div>
+            <div class="modal-body">
+
+                <form>
+                    <input type="text" class="form-control input-field" ng-model="device.name" placeholder="Edit Device Name">
+                    <textarea class="form-control input-field device-panel-custom-script-input"
+                              rows="3"
+                              placeholder="Edit Device Description" ng-model="device.description"></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        ng-click="devicePanelCtrl.showRemoveDeviceModal()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-delete-btn btn-danger add-script-btn"
+                        data-dismiss="modal">Delete</button>
+                <button type="button"
+                        role="confirm"
+                        ng-click="devicePanelCtrl.updateDevice()"
+                        onclick="fixCloseModel();"
+                        class="btn modal-confirm-btn add-script-btn"
+                        data-dismiss="modal">Save</button>
+                <button type="button"
+                        ng-click="devicePanelCtrl.resetDeviceValue()"
+                        onclick="fixCloseModel();"
+                        class="btn btn-default add-script-btn"
+                        data-dismiss="modal">Cancel</button>
             </div>
         </div>
 

@@ -1,0 +1,51 @@
+<navbar></navbar>
+<div class="wrapper-content" ng-controller="ManageCustomScriptsController as manageCustomScriptCtrl" ng-init="manageCustomScriptCtrl.init()">
+
+    <div class="row form-row form-title">Custom Scripts</div>
+    <div class="panel-footer script-panel-body">
+        <device-script ng-repeat="customScript in manageCustomScriptCtrl.device.scripts"
+                       device="manageCustomScriptCtrl.device"
+                       script="customScript"></device-script>
+        <div class="row">
+            <button class="add-script-button pull-right"
+                    ng-if="device.gpiotype != 'in'"
+                    data-toggle="modal"
+                    data-target="#manage-custom-scripts-add-script-modal">
+                <span class="glyphicon glyphicon-plus-sign"/>
+                Add script
+            </button>
+        </div>
+    </div>
+
+    <!-- Add Script modal -->
+    <div class="modal manage-custom-scripts-add-script-modal" id="manage-custom-scripts-add-script-modal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add New Custom Script</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <input type="text" class="form-control input-field" ng-model="manageCustomScriptCtrl.newCustomScriptName" placeholder="Custom Script Name">
+                        <textarea class="form-control input-field device-panel-custom-script-input"
+                                  rows="8"
+                                  placeholder="Custom Script Content" ng-model="manageCustomScriptCtrl.newCustomScriptContent"></textarea>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            ng-click="manageCustomScriptCtrl.addNewCustomScript()"
+                            onclick="fixCloseModel();"
+                            class="btn modal-confirm-btn add-script-btn"
+                            data-dismiss="modal">Add</button>
+                    <button type="button"
+                            onclick="fixCloseModel();"
+                            class="btn btn-default add-script-btn"
+                            data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

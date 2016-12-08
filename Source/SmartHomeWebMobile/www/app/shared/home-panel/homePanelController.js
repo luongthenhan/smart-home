@@ -10,6 +10,7 @@ app.directive("homePanel", ['MainService', function(MainService) {
             var self = this;
 
             self.home = $scope.home;
+            self.beforeUpdateHome = null;
 
             self.toHome = function() {
                 MainService.selectedHome = $scope.home;
@@ -30,6 +31,10 @@ app.directive("homePanel", ['MainService', function(MainService) {
                 }
             }
 
+            self.updateHome = function() {
+                MainService.updateHome($scope.home);
+            }
+
             self.disableHome = function() {
                 MainService.disableHome($scope.home);
             }
@@ -38,7 +43,18 @@ app.directive("homePanel", ['MainService', function(MainService) {
                 MainService.enableHome($scope.home);
             }
 
+            self.resetHomeValue = function() {
+                $scope.home.name = self.beforeUpdateHome.name;
+                $scope.home.address = self.beforeUpdateHome.address;
+                $scope.home.description = self.beforeUpdateHome.description;
+            }
+
             // for UI handling
+            self.showEditHomeModal = function() {
+                self.beforeUpdateHome = angular.copy($scope.home);
+                $("#home-panel-edit-home-modal" + $scope.home.id).modal('show');
+            }
+
             self.showDeleteHomeModal = function() {
                 $("#home-panel-delete-home-modal" + $scope.home.id).modal('show');
             }

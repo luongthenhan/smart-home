@@ -28,6 +28,8 @@ app.directive("devicePanel", ['MainService', function(MainService) {
             self.fromTime = null;
             self.toTime = null;
 
+            self.beforeEditDevice = null;
+
             self.toggleShowDetails = function() {
                 self.isShowDetails = !self.isShowDetails;
             }
@@ -173,6 +175,15 @@ app.directive("devicePanel", ['MainService', function(MainService) {
                 MainService.enableDevice($scope.device);
             }
 
+            self.updateDevice = function() {
+                MainService.updateDevice($scope.device);
+            }
+
+            self.resetDeviceValue = function() {
+                $scope.device.name = self.beforeEditDevice.name;
+                $scope.device.description = self.beforeEditDevice.description;
+            }
+
             // for UI handling
             self.showRemoveDeviceModal = function() {
                 $("#device-panel-remove-device-modal" + $scope.device.id).modal('show');
@@ -180,6 +191,11 @@ app.directive("devicePanel", ['MainService', function(MainService) {
 
             self.showDisableDeviceModal = function() {
                 $("#device-panel-disable-device-modal" + $scope.device.id).modal('show');
+            }
+
+            self.showEditDeviceModal = function () {
+                self.beforeEditDevice = angular.copy($scope.device);
+                $("#device-panel-edit-device-modal" + $scope.device.id).modal('show');
             }
         }
     }
