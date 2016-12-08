@@ -5,3 +5,9 @@
 7/12/16
 19h00: update 2.5
 21h00: update 2.6
+
+8/12/16
+Update 2.7-> 2.10 content
+
+9/12/16
+Update flowchart 2.7 -> 2.10
