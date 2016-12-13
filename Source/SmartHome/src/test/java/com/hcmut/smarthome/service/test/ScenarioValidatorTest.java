@@ -1071,7 +1071,7 @@ public class ScenarioValidatorTest {
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
-				.action(TURN_ON, LIGHT_2)
+				.action(TURN_ON, 26)
 			.endFromTo()
 		.end().build();
 		
@@ -1079,7 +1079,7 @@ public class ScenarioValidatorTest {
 		String existedScript = new ScriptBuilder()
 		.begin()
 			.FromTo("12:01", "23:00")
-				.action(TURN_OFF, LIGHT_2)
+				.action(TURN_OFF, 26)
 			.endFromTo()
 		.end().build();
 		existedScritps.add(existedScript);
