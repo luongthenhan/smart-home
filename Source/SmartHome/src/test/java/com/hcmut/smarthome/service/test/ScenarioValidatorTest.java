@@ -197,7 +197,6 @@ public class ScenarioValidatorTest {
 	
 	@Test
 	public void testCase3_5() throws Exception{
-		expectedException.expect(ConflictConditionException.class);
 		
 		String input = new ScriptBuilder()
 		.begin()
@@ -210,7 +209,7 @@ public class ScenarioValidatorTest {
 		
 		List<String> existedScritps = new ArrayList<>();
 		
-		boolean expectedResult = false;
+		boolean expectedResult = true;
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
@@ -1065,9 +1064,6 @@ public class ScenarioValidatorTest {
 	@Test
 	public void testCase12_2() throws Exception{
 		
-		expectedException.expect(ConflictConditionException.class);
-		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
-		
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -1084,7 +1080,7 @@ public class ScenarioValidatorTest {
 		.end().build();
 		existedScritps.add(existedScript);
 		
-		boolean expectedResult = false;
+		boolean expectedResult = true;
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
@@ -1427,7 +1423,7 @@ public class ScenarioValidatorTest {
 		
 		String input = new ScriptBuilder().configHome(ConstantUtil.HOME_ID)
 		.begin()
-				.FromTo("19:55" , "02:00").If("temp 1 sensor", "<", 35).action("TurnOff","light 4").endIf().endFromTo()
+			.FromTo("19:55" , "02:00").If("temp 1 sensor", "<", 35).action("TurnOff","light 4").endIf().endFromTo()
 		.end().build();
 		System.out.println(input);
 		
