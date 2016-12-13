@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper,oneside]{book} 
+\documentclass[12pt,a4paper,oneside]{book} 
 \usepackage{vntex}
 
 \usepackage{geometry}
@@ -9,7 +9,7 @@
  top=20mm,
  } 
  
-
+\usepackage{csquotes}
 \usepackage{enumitem}
 \setlist[itemize]{leftmargin=1.3cm}
 \usepackage{epigraph}
@@ -49,6 +49,30 @@
 \usepackage{longtable}
 \usepackage{svg}
 \setsvg{inkscape=inkscape -z -D,svgpath=images/}
+\usepackage{listings}
+\usepackage{color}
+ 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    numberstyle=\tiny\color{codegray},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
 
 \hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true} 
 \setlength{\headheight}{10pt}
@@ -117,7 +141,7 @@
 \hspace{3 cm} & \textbf{\large{Giáo viên phản biện:}} & TS. \\
 \\
 & \textbf{\large{Sinh viên thực hiện:}}
-& Nguyễn Thành Tâm & 51201826 \\
+& Nguyễn Thành Tâm & 51203264 \\
 & & Nguyễn Thanh Tùng & 51204401 \\
 & & Bùi Quang Vinh & 51204518
 \end{tabular}
@@ -154,7 +178,7 @@
 \mainmatter
 
 \chapter{Giới thiệu}
-\newpage
+
 \section{Tổng quan về nhà thông minh}
 \newpage
 \section{Nhà thông minh sử dụng Raspberry Pi}
@@ -165,7 +189,7 @@
 
 %----------------------------------Phân tích và thiết kế hệ thống---------------------------------%
 \chapter{Phân tích và thiết kế hệ thống}
-\newpage
+
 \section{Phân tích yêu cầu}
 \newpage
 \section{Sơ đồ usecase}
@@ -175,7 +199,6 @@
 %-----------------------------------Server--------------------------------%
 \chapter{Server back-end}
 
-\newpage
 \section{DB Design}
 
 Trước khi đến với phần thiết kế DB này, ta cần nắm rõ yêu cầu của ứng dụng. Yêu cầu chính đó là tạo ra và lưu trữ các kịch bản của người dùng. Do đó, việc thiết kế database đóng một vai trò quan trọng trong việc xây dựng ứng dụng này. Ở phần thiết kế database, nhóm sử dụng PostgreSQL để hiện thực trên Raspberry Pi. Phần thiết kế database được trình bày ở hình 1.
@@ -207,7 +230,7 @@ Chi tiết về chức năng các bảng trong thiết kế được trình bày
 	1 &	Account\_User &	Thông tin liên quan đến tài khoản người dùng, đã kích hoạt hay chưa, một vài thông tin cá nhân cơ bản\\ \hline
 	2 &	Home &	Thông tin liên quan đến nhà , có đang “active” hay không, nhà đang ở chế độ nào\\ \hline
 	3 &	Mode &	Thông tin liên quan chế độ được người dùng định nghĩa cho ngôi nhà của mình\\ \hline
-	4 &	Device &	Thông tin các thiết bị cho từng nhà  mà hệ thống quản lý như cổng GPIO, có đang “active” không v.v.\\ \hline
+	4 &	Device &	Thông tin các thiết bị cho từng nhà  mà hệ thống quản lý như cổng GPIO, có đang ”active” không v.v.\\ \hline
 	5 &	Device\_Type &	Loại thiết bị hệ thống có thể quản lý như đèn , còi , cảm biến v.v.\\ \hline
 	6 &	Script &	Quản lý các thông tin liên quan đến kịch bản, kịch bản người dùng được lưu xuống theo 1 cú pháp định sẵn\\ \hline
 	7 &	Script\_Type &	Phân loại kịch bản đơn giản, được cung cấp sẵn hay phức tạp\\ \hline
@@ -220,11 +243,11 @@ Chi tiết về chức năng các bảng trong thiết kế được trình bày
 
 \section{Thiết kế và kiến trúc hệ thống back-end}
 
-Hệ thống back-end được hiện thực hoàn toàn dựa trên ngôn ngữ Java và tận dụng sức mạnh từ Spring, một trong những framework được sử dụng nhiều nhất trong Java EE framework. Bằng cách sử dụng framework Spring, việc giao tiếp giữa client và server, cũng như là server với database trở nên dễ dàng hơn. Hơn thế nữa, với đặc trưng của ứng dụng hiện tại là dùng những kịch bản quản lý tự động thiết bị trong nhà, không cần real time(như ứng dụng chat, stream video …) và chỉ gửi yêu cầu tại một số thời điểm, với tần suất nhỏ nên nhóm lựa chọn dùng RESTful web service, xây dựng những API cho client có thể giao tiếp và truy xuất tài nguyên từ server một cách thuận tiện.
+Hệ thống back-end được hiện thực hoàn toàn dựa trên ngôn ngữ Java và tận dụng sức mạnh từ Spring, một trong những framework được sử dụng nhiều nhất trong Java EE framework. Bằng cách sử dụng framework Spring, việc giao tiếp giữa client và server, cũng như là server với database trở nên dễ dàng hơn. Hơn thế nữa, với đặc trưng của ứng dụng hiện tại là dùng những kịch bản quản lý tự động thiết bị trong nhà, không cần real time(như ứng dụng chat, stream video \dots) và chỉ gửi yêu cầu tại một số thời điểm, với tần suất nhỏ nên nhóm lựa chọn dùng RESTful web service, xây dựng những API cho client có thể giao tiếp và truy xuất tài nguyên từ server một cách thuận tiện.
 
 \subsection{Spring framework}
 
-Hai khái niệm chính của Spring framework core là "Dependency Injection - DI" và "Aspect Oriented Programming - AOP". Spring framework được sử dụng như là ứng dụng java cơ bản để đạt được kỹ thuật "loose coupling" giữa các components khác nhau bằng cách sử dụng kỹ thuật DI và hỗ trợ việc thực hiện chéo những task vụ như logging, authentication, ... theo kỹ thuật AOP [1][2].
+Hai khái niệm chính của Spring framework core là “Dependency Injection - DI” và “Aspect Oriented Programming - AOP”. Spring framework được sử dụng như là ứng dụng java cơ bản để đạt được kỹ thuật “loose coupling” giữa các components khác nhau bằng cách sử dụng kỹ thuật DI và hỗ trợ việc thực hiện chéo những task vụ như logging, authentication, \dots theo kỹ thuật AOP [1][2].
 
 Spring framework cung cấp khá nhiều tính năng khác và số lượng lớn các module cho các mục đích cụ thể, ví dụ như web có Spring MVC, hỗ trợ security có Spring Security, tương tác với datababse có Spring JDBC, và nhiều thứ khác nữa. Ngoài ra, nó còn là một dự án open source với rất nhiều cộng đồng sử dụng, tài liệu tham khảo.
 
@@ -238,15 +261,15 @@ Một vài tính năng cũng như ưu điểm mà Spring đem đến
 
 \begin{itemize}[topsep=1mm,itemsep=-0.5mm]
 \item Dependency Injection hoặc Inversion of Control được sử dụng để giúp các component tách rời, độc lập với nhau. Spring container sẽ giúp gắn kết những components này lại với nhau theo đặc tả business của bạn.
-\item Spring MVC framework được sử dụng cho phát triển ứng dụng web rất dễ dàng với việc hỗ trợ rất tốt các tính năng web services, json,... (như RESTful web service framework)
-\item Hỗ trợ quản lý transaction, JDBC operations, File uploading, Exception Handling,... rất dễ dàng bằng cách cấu hình được rút gọn, thay vào đó là sử dụng annotation.
-\item Làm giảm đi khối lượng code rất nhiều, chẳng hạn như việc khởi tạo đối tượng, open/close các resources,...
+\item Spring MVC framework được sử dụng cho phát triển ứng dụng web rất dễ dàng với việc hỗ trợ rất tốt các tính năng web services, json, \dots (như RESTful web service framework)
+\item Hỗ trợ quản lý transaction, JDBC operations, File uploading, Exception Handling, \dots rất dễ dàng bằng cách cấu hình được rút gọn, thay vào đó là sử dụng annotation.
+\item Làm giảm đi khối lượng code rất nhiều, chẳng hạn như việc khởi tạo đối tượng, open/close các resources, \dots
 \vspace{1mm}
 \end{itemize}
 
 \subsection{RESTful Web Service}
 
-Representational State Transfer (REST) định nghĩa các quy tắc kiến trúc để bạn thiết kế Web services chú trọng vào tài nguyên hệ thống, bao gồm các trạng thái tài nguyên được định dạng như thế nào và được chuyển tải qua HTTP thông qua số lượng lớn người dùng và được viết bởi những ngôn ngữ khác nhau. Nếu tính theo số dịch vụ mạng sử dụng, REST đã nổi lên trong vài năm qua như là một mô hình thiết kế dịch vụ chiếm ưu thế[5].
+Representational State Transfer (REST) định nghĩa các quy tắc kiến trúc để bạn thiết kế Web services chú trọng vào tài nguyên hệ thống, bao gồm các trạng thái tài nguyên được định dạng như thế nào và được chuyển tải qua HTTP thông qua số lượng lớn người dùng và được viết bởi những ngôn ngữ khác nhau. Nếu tính theo số dịch vụ mạng sử dụng, REST đã nổi lên trong vài năm qua như là một mô hình thiết kế dịch vụ chiếm ưu thế [5].
 
 \begin{figure}[h]
   \centering
@@ -342,10 +365,10 @@ Chi tiết về hiện thực các module này sẽ nằm trong mục Hiện th�
 
 %-----------------------------------Device controller---------------------%
 \chapter{Module điều khiển thiết bị}
-Điều khiển các thiết bị điện trong nhà là một phần không thể thiếu trong hệ thống nhà thông minh. Server cần một bộ điều khiển có thể lấy được dữ liệu từ các cảm biến đặt tại các nơi khác nhau trong nhà, chụp ảnh từ các camera, bật hoặc tắt các thiết bị điện,…Trong chương này, chúng tôi đưa ra các công trình liên quan trong việc sử dụng máy tính siêu nhỏ Raspberry Pi để giải quyết nhiều vấn đề khác nhau trong cuộc sống. Tiếp đến, nhóm trình bày tổng quan thiết kế của module điều khiển thiết bị sử dụng Raspberry Pi và các công nghệ có thể hỗ trợ để hiện thực module.
-\newpage
+Điều khiển các thiết bị điện trong nhà là một phần không thể thiếu trong hệ thống nhà thông minh. Server cần một bộ điều khiển có thể lấy được dữ liệu từ các cảm biến đặt tại các nơi khác nhau trong nhà, chụp ảnh từ các camera, bật hoặc tắt các thiết bị điện, \dots Trong chương này, chúng tôi đưa ra các công trình liên quan trong việc sử dụng máy tính siêu nhỏ Raspberry Pi để giải quyết nhiều vấn đề khác nhau trong cuộc sống. Tiếp đến, nhóm trình bày tổng quan thiết kế của module điều khiển thiết bị sử dụng Raspberry Pi và các công nghệ có thể hỗ trợ để hiện thực module.
+
 \section{Tổng quan về Raspberry Pi}
-Raspberry Pi là một chuỗi các máy tính có kích thước bằng một thẻ tín dụng, được phát triển tại Anh bởi Raspberry Pi Foundation với mục đích giảng dạy khoa học máy tính căn bản.[1] Hình \ref{fig:4-pi3-model-b} mô tả cấu trúc bên ngoài của máy tính Raspberry Pi 3 Model B.
+Raspberry Pi được phát triển tại anh bởi Raspberry Pi Foundation với mục đích giúp sinh viên có thể thực hành nhiều hơn trong môn Khoa học máy tính. Nó được thiết kế nhỏ gọn và phải đủ bền để sinh viên có thể giữ trong cặp. Hình \ref{fig:4-pi3-model-b} mô tả cấu trúc bên ngoài của máy tính Raspberry Pi 3 Model B \cite{pi-for-dummies}\cite{pi-wiki}.
 
 \begin{figure}[h]
   \centering
@@ -361,7 +384,7 @@ Giá thành của một con Raspberry Pi khá rẻ, phù hợp với túi tiền
   \caption{Siêu máy tính được chế tạo từ các con Raspberry Pi [2]}\label{fig:4-Sieu-may-tinh}
 \end{figure}
 
-Một sở thú ở Lodon, Anh cũng sử dụng Raspberry Pi để sáng tạo ra một công cụ gọi là EyesPi, cho phép chụp ảnh các hoạt động thường ngày của các loài động vật trong sở thú. Một người tên Dave Akerman đã cùng những người đồng nghiệp lắp đặt Raspberry Pi trên một khinh khí cầu, sau đó, họ thả bay khinh khí cầu và chụp những bức ảnh về Trái đất khi nhìn từ trên cao [2]. 
+Một sở thú ở Lodon, Anh cũng sử dụng Raspberry Pi để sáng tạo ra một công cụ gọi là EyesPi, cho phép chụp ảnh các hoạt động thường ngày của các loài động vật trong sở thú. Một người tên Dave Akerman đã cùng những người đồng nghiệp lắp đặt Raspberry Pi trên một khinh khí cầu, sau đó, họ thả bay khinh khí cầu và chụp những bức ảnh về Trái đất khi nhìn từ trên cao [2].
 
 \textbf{Các phiên bản:} đã có nhiều thế hệ Raspberry Pi được đưa ra thị trường, phiên bản đầu tiên (Raspberry Pi 1 Model B) được ra mắt vào tháng 2 năm 2012. Từ năm 2012 cho đến nay đã có rất nhiều phiên bản Raspbery Pi ra đời với nhiều cải tiến. Raspberry Pi 3 Model B là phiên bản mới nhất tính đến thời điểm hiện tại, được phát hành vào tháng 2 năm 2016, tích hợp thêm bộ thu phát sóng WiFi và Bluetooth so với phiên bản trước. Đây cũng chính là phiên bản được nhóm lựa chọn sử dụng, thông số kỹ thuật được mô tả tại bảng \ref{tab:pi-3-model-b-specs} [1].
 
@@ -384,13 +407,13 @@ Một sở thú ở Lodon, Anh cũng sử dụng Raspberry Pi để sáng tạo 
 \end{tabular}
 \end{table}
 
-\textbf{Hệ điều hành:} Raspberry Pi đa phần sử dụng một hệ điều hành chuyên dụng là Raspbian. Đây là hệ điều hành mã nguồn mở, được xây dựng dựa trên nền tảng hệ điều hành Debian, được tạo ra bởi một nhóm nhỏ những người hâm mộ Raspberry Pi với mục đích tối ưu hóa cho việc sử dụng phần cứng của Raspberry Pi. Raspbian có khoảng 35000 packages cũng như những phần mềm biên dịch sẵn đính kèm, tiện cho việc cài đặt sử dụng. [1] [7]
+\textbf{Hệ điều hành:} Raspberry Pi đa phần sử dụng một hệ điều hành chuyên dụng là Raspbian. Đây là hệ điều hành mã nguồn mở, được xây dựng dựa trên nền tảng hệ điều hành Debian, được tạo ra bởi một nhóm nhỏ những người hâm mộ Raspberry Pi với mục đích tối ưu hóa cho việc sử dụng phần cứng của Raspberry Pi. Raspbian có khoảng 35000 packages cũng như những phần mềm biên dịch sẵn đính kèm, tiện cho việc cài đặt sử dụng [1][7].
 
-Ngoài hệ điều hành Raspbian, Raspberry Pi còn có thể chạy được Windows 10 IoT Core, một hệ điều hành được Microsoft thiết kế để sử dụng riêng cho hệ thống nhúng, và các hệ điều hành có nhân Linux khác như Ubuntu MATE, Xbian, CentOS,…Trong quá trình phát triển ứng dụng, nhóm quyết định cài đặt hệ điều hành Raspbian trên Raspberry Pi vì đây vẫn là hệ điều hành được sử dụng và hỗ trợ nhiều nhất cho Raspberry Pi.
+Ngoài hệ điều hành Raspbian, Raspberry Pi còn có thể chạy được Windows 10 IoT Core, một hệ điều hành được Microsoft thiết kế để sử dụng riêng cho hệ thống nhúng, và các hệ điều hành có nhân Linux khác như Ubuntu MATE, Xbian, CentOS, \dots Trong quá trình phát triển ứng dụng, nhóm quyết định cài đặt hệ điều hành Raspbian trên Raspberry Pi vì đây vẫn là hệ điều hành được sử dụng và hỗ trợ nhiều nhất cho Raspberry Pi.
 
 %--------------------------------------------------------------------------%
 \section{Điều khiển thiết bị sử dụng GPIO}
-Một trong những yếu tố quan trọng của Raspberry Pi là các cổng GPIO (General Purpose Input/Output) được bố trí dọc theo một cạnh của nó. Hình \ref{fig:4-vi-tri-dat-gpio} miêu tả vị trí đặt các cổng GPIO của Raspberry Pi 3 Model B. [6]
+Một trong những yếu tố quan trọng của Raspberry Pi là các cổng GPIO (General Purpose Input/Output) được bố trí dọc theo một cạnh của nó. Hình \ref{fig:4-vi-tri-dat-gpio} miêu tả vị trí đặt các cổng GPIO của Raspberry Pi 3 Model B [6].
 
 \begin{figure}[h]
   \centering
@@ -398,7 +421,7 @@ Một trong những yếu tố quan trọng của Raspberry Pi là các cổng G
   \caption{Vị trí đặt các cổng GPIO của Raspberry Pi 3 Model B}\label{fig:4-vi-tri-dat-gpio}
 \end{figure}
 
-Mỗi cổng GPIO đều có hai trạng thái là High và Low tương ứng với mức điện áp lần lượt là 3.3V và 0V. Có thể xem các cổng GPIO như một cầu nối giữa Raspberry Pi và thế giới bên ngoài, mỗi cổng cũng có thể là input, cũng có thể là output cho tín hiệu số. Nói một cách đơn giản, mỗi cổng GPIO như một công tắc, người bên ngoài có thể tắt hoặc bật, tức thay đổi trạng thái cổng GPIO, lúc này, GPIO thực hiện chức năng là một cổng input. Các chương trình trên Raspberry Pi cũng có thể thay đổi trạng thái các cổng GPIO, GPIO lúc này thực hiện chức năng là một cổng output, truyền tín hiệu từ các trương trình ra ngoài. [6]
+Mỗi cổng GPIO đều có hai trạng thái là High và Low tương ứng với mức điện áp lần lượt là 3.3V và 0V. Có thể xem các cổng GPIO như một cầu nối giữa Raspberry Pi và thế giới bên ngoài, mỗi cổng cũng có thể là input, cũng có thể là output cho tín hiệu số. Nói một cách đơn giản, mỗi cổng GPIO như một công tắc, người bên ngoài có thể tắt hoặc bật, tức thay đổi trạng thái cổng GPIO, lúc này, GPIO thực hiện chức năng là một cổng input. Các chương trình trên Raspberry Pi cũng có thể thay đổi trạng thái các cổng GPIO, GPIO lúc này thực hiện chức năng là một cổng output, truyền tín hiệu từ các trương trình ra ngoài [6].
 
 Trong số 40 cổng của Raspberry Pi 3 Model B, có 26 cổng GPIO, 4 cổng nguồn có điện áp luôn luôn là 3.3V hoặc 5V, 8 cổng đất và 2 cổng ID EEPROM được dùng trong các mục đích đặt biệt. Hình \ref{fig:4-vi-tri-phan-bo-gpio} mô tả chi tiết phân bố của các cổng trên Raspberry Pi.
 
@@ -408,7 +431,7 @@ Trong số 40 cổng của Raspberry Pi 3 Model B, có 26 cổng GPIO, 4 cổng 
   \caption{Vị trí phân bố các cổng GPIO}\label{fig:4-vi-tri-phan-bo-gpio}
 \end{figure}
 
-Trong số 26 cổng GPIO, một vài cổng có thêm những những chức năng khác ngoài việc thay đổi trạng thái giữa High và Low. Những cổng có thêm những chức năng đặc biệt này được gắn thêm một nhãn tên phía sau như mô tả trong hình …: 
+Trong số 26 cổng GPIO, một vài cổng có thêm những những chức năng khác ngoài việc thay đổi trạng thái giữa High và Low. Những cổng có thêm những chức năng đặc biệt này được gắn thêm một nhãn tên phía sau như mô tả trong hình \ref{fig:4-pi3-gpio}: 
 
 \begin{itemize}[topsep=1mm,itemsep=-0.5mm]
 \item UART (Universal Asynchronous Receiver/Transmitter) Serial Bus– GPIO 15, GPIO 16: Giả sử như chúng ta cắm một thiết bị vào mà nó có khả năng hiển thị dữ liệu lên thì khi cắm vào hai chân này, ta có thể đọc được những thông báo từ kernel của Raspberry Pi. Ví dụ như Pi không thể khởi động lên được, ta dùng cách này như một công cụ chẩn đoán lỗi. 
@@ -418,6 +441,12 @@ Trong số 26 cổng GPIO, một vài cổng có thêm những những chức n�
 \item SPI (Serial Peripheral Interface) Bus: phục vụ cho in-system programming (ISP). Các GPIO sau hỗ trợ SPI : GPIO 10 ,11, 12, 13, 14.
 \vspace{1mm}
 \end{itemize}
+
+\begin{figure}[h]
+  \centering
+     \includegraphics[width=11cm]{4-pi3-gpio}
+  \caption{Vị trí phân bố các cổng GPIO}\label{fig:4-pi3-gpio}
+\end{figure}
 
 %---------------------------------Thiết kế chi tiết-------------------------%
 \section{Thiết kế chi tiết}
@@ -440,11 +469,11 @@ Module điều khiển thiết bị được thiết kế gồm hai phần chín
   \caption{Thiết kế chi tiết module điều khiển thiết bị}\label{fig:4-module-dieu-khien-detail}
 \end{figure}
 
-\textbf{Bộ điều khiển tổng quát (General controller):} vai trò của bộ điều khiển tổng quát là nhận tất cả yêu cầu được gửi đến tử server và xử lý tất cả yêu cầu này, xác định xem đây là yêu cầu dành cho loại thiết bị nào và sử dụng đúng bộ điều khiển dành cho loại thiết bị đó. Trong bộ điều khiển tổng quát có chứa nhiều bộ điều khiển con dành cho từng loại thiết bị, tùy vào yêu cầu của server mà bộ điều khiển tổng quát sẽ quyết định sử dụng bộ điều khiển con nào. 
+\textbf{Bộ điều khiển tổng quát (General controller):} vai trò của bộ điều khiển tổng quát là nhận tất cả yêu cầu được gửi đến từ server và xử lý tất cả yêu cầu này, xác định xem đây là yêu cầu dành cho loại thiết bị nào và sử dụng đúng bộ điều khiển dành cho loại thiết bị đó. Trong bộ điều khiển tổng quát có chứa nhiều bộ điều khiển con dành cho từng loại thiết bị, tùy vào yêu cầu của server mà bộ điều khiển tổng quát sẽ quyết định sử dụng bộ điều khiển con nào. 
 
-Bộ điều khiển camera (Camera controller) được dùng để chụp ảnh với camera chuyên dụng của Raspberry Pi. Với sự hỗ trợ của thư viện JRPiCam, bộ điều khiển camera có thể dễ dàng điều chỉnh các thông số từ chất lượng ảnh cho đến độ sáng, độ nét và độ tương phản. Các bộ điều khiển cảm biến (Gas sensor controller, Light sensor controller,…) lấy dữ liệu từ các cảm biến thông qua các cổng GPIO. Dữ liệu trả về có thể thuộc dạng số thực, như nhiệt độ hoặc dạng đúng/sai như có gas hay không?, trời sáng hay không?, ...
+Bộ điều khiển camera (Camera controller) được dùng để chụp ảnh với camera chuyên dụng của Raspberry Pi. Với sự hỗ trợ của thư viện JRPiCam, bộ điều khiển camera có thể dễ dàng điều chỉnh các thông số từ chất lượng ảnh cho đến độ sáng, độ nét và độ tương phản. Các bộ điều khiển cảm biến (Gas sensor controller, Light sensor controller, \dots) lấy dữ liệu từ các cảm biến thông qua các cổng GPIO. Dữ liệu trả về có thể thuộc dạng số thực, như nhiệt độ hoặc dạng đúng/sai như có gas hay không, trời sáng hay không, \dots ?
 
-Hai bộ điều khiển còn lại là bộ điều khiển đèn (Lightbulb controller) và bộ điều khiển còi (Buzzer controller) có vai trò như một công tắt đóng/mở. Mỗi thiết bị đèn hoặc còi sẽ được điều khiển bởi một cổng GPIO. Như đã trình bày, mỗi cổng GPIO đều có hai trạng thái là Low và Hight, tùy thuộc vào người thiết kế hệ thống mà từng trạng thái của GPIO sẽ tương ứng với bật hay tắt thiết bị. Trong dự dán của mình, nhóm sử dụng trạng thái Low là bật và trạng thái Hight là tắt.
+Hai bộ điều khiển còn lại là bộ điều khiển đèn (Lightbulb controller) và bộ điều khiển còi (Buzzer controller) có vai trò như một công tắt đóng/mở. Mỗi thiết bị đèn hoặc còi sẽ được điều khiển bởi một cổng GPIO. Như đã trình bày, mỗi cổng GPIO đều có hai trạng thái là Low và High, tùy thuộc vào người thiết kế hệ thống mà từng trạng thái của GPIO sẽ tương ứng với bật hay tắt thiết bị. Trong dự dán của mình, nhóm sử dụng trạng thái Low là bật và trạng thái High là tắt.
 
 \textbf{Bộ cung cấp GPIO (GPIO provider):} bộ cung cấp GPIO có vai trò khai báo và cung cấp chính xác loại cổng mà bộ điều khiển thiết bị cần. Với các bộ điều khiển thiết bị dành cho cảm biến, bộ cung cấp GPIO cần khởi tạo cổng nhập (input pin) có chức năng nhận dữ liệu từ cảm biến. Đối với bộ điều khiển thiết bị cho đèn hoặc còi, bộ cung cấp GPIO cần khởi tạo cổng xuất (output pin) sử dụng cho việc điều khiển trạng thái bật/tắt.
 %------------------------------------------------------------------------%
@@ -455,7 +484,7 @@ Có rất nhiều thư viện được viết bằng nhiều ngôn ngữ khác n
 
 \textbf{Thư viện Pi4J:} Pi4J là một thư viện được viết bằng ngôn ngữ Java với mục đích cung cấp các API (Application Programming Interface) cho người lập trình có thể điều khiển dễ dàng các cổng GPIO mà không cần quan tâm đến cấu trúc bên dưới của Raspberry Pi.
 
-\textbf{Thư viện WiringPi:} cũng là một thư viện được sử dụng để điều khiển các cổng GPIO, thư viện WiringPi được viết bằng ngôn ngữ C, là một thư viện hiệu quả đối với những chương trình viết bằng C hoặc C++. Tuy nhiên, đã có nhiều lập trình viên tạo thêm những phiên bản phù hợp với những loại ngôn ngữ khác như Java, Python, Ruby,…
+\textbf{Thư viện WiringPi:} cũng là một thư viện được sử dụng để điều khiển các cổng GPIO, thư viện WiringPi được viết bằng ngôn ngữ C, là một thư viện hiệu quả đối với những chương trình viết bằng C hoặc C++. Tuy nhiên, đã có nhiều lập trình viên tạo thêm những phiên bản phù hợp với những loại ngôn ngữ khác như Java, Python, Ruby, \dots
 
 \textbf{Thư viện RPi.GPIO:} là một thư viện được viết bằng ngôn ngữ Python, RPi.GPIO được tạo ra với mục đích cung cấp những API cần thiết cho người lập trình Python có thể điều khiển các cổng GPIO của Raspberry Pi một cách dễ dàng
 
@@ -465,7 +494,7 @@ Có rất nhiều thư viện được viết bằng nhiều ngôn ngữ khác n
 
 Sau khi tìm hiểu các công nghệ có thể hỗ trợ, chúng tôi quyết định chọn thư viện Pi4J sử dụng cho việc lấy dữ liệu và điều khiển trạng thái các cổng GPIO, thư viện JRPiCam sẽ được dùng để hiện thực bộ điều khiển camera. Lý do nhóm quyết định lựa chọn hai thư viện này vì đây đều là những thư viện mã nguồn mở, được công bố công khai tại GitHub. Vì vậy, nhóm có thể tùy chỉnh lại mã nguồn nếu cần thiết để tăng hiệu suất của hệ thống. Bên cạnh đó, phương pháp lập trình nhóm hướng đến là lập trình hướng đối tượng, nên chúng tôi ưu tiên sử dụng những thư viện được viết bằng ngôn ngữ Java.
 
-Với thiết kế của module điều khiển thiết bị đã được nêu ở những phần trên, tuy không thể điều khiển được tất cả các thiết bị có trong nhà, nhưng đủ để nhóm có thể tạo ra một mô hình thí nghiệm với đầy đủ các thiết bị cần thiết như các cảm biến, đèn, còi và camera. Server được cung cấp đầy đủ các API để điều khiển tất cả các thiết bị hiện có phục vụ cho các mục đích khác nhau như bật/tắt đèn hoặc còi, lấy nhiệt độ, kiểm tra khí gas,…Chi tiết hiện thực module điều khiển thiết bị sẽ được trình bày tại chương …
+Với thiết kế của module điều khiển thiết bị đã được nêu ở những phần trên, tuy không thể điều khiển được tất cả các thiết bị có trong nhà, nhưng đủ để nhóm có thể tạo ra một mô hình thí nghiệm với đầy đủ các thiết bị cần thiết như các cảm biến, đèn, còi và camera. Server được cung cấp đầy đủ các API để điều khiển tất cả các thiết bị hiện có phục vụ cho các mục đích khác nhau như bật/tắt đèn hoặc còi, lấy nhiệt độ, kiểm tra khí gas, \dots Chi tiết hiện thực module điều khiển thiết bị sẽ được trình bày tại phần 6.2.
 
 %------------------------------------------------------------------------%
 
@@ -473,7 +502,7 @@ Với thiết kế của module điều khiển thiết bị đã được nêu 
 \chapter{Ứng dụng di động}
 
 %--------------------------------Các chức năng của ứng dụng--------------%
-\newpage
+
 \section{Các chức năng của ứng dụng}
 Ứng dụng di động nhà thông minh được thiết kế để hỗ trợ người dùng dễ dàng:
 \begin{itemize}[topsep=1mm,itemsep=-0.5mm]
@@ -514,7 +543,7 @@ Với cách thiết kế như trên, kiến trúc ứng dụng di động cung c
 
 %-----------------------------------Hiện thực và đánh giá------------------%
 \chapter{Hiện thực và đánh giá}
-\newpage
+
 \section{Hiện thực server back-end}
 
 \subsection{RESTFul Web Service - Cách thức giao tiếp giữa client và server}
@@ -532,59 +561,63 @@ Hình \ref{fig:6-spring-RESTfulWS-workflow} diễn tả luồng thực thi của
 \begin{itemize}[topsep=1mm,itemsep=-0.5mm]
 \item Client gửi yêu cầu đến web service theo như một định dạng URI nào đó có sẵn và hợp lệ
 \item Yêu cầu đi qua Servlet Dispacher đầu tiên và nó sẽ tìm ra 1 controller phù hợp nhất để xử lý yêu cầu đó
-\item Yêu cầu sau khi được xử lý bởi controller sẽ được gửi trả về client dưới định dạng JSON[3].
+\item Yêu cầu sau khi được xử lý bởi controller sẽ được gửi trả về client dưới định dạng JSON [3].
 \vspace{1mm}
 \end{itemize}
 
 Danh sách API có thể được tham khảo thêm ở mục Phụ lục
 
 \subsection{Cách thức giao tiếp với database}
-Như đã đề cập ở mục thiết kế hệ thống back-end bên trên, nhóm sử dụng Hibernate framework để hỗ trợ cho các thao tác liên quan đến database. Hibernate cung cấp sẵn các hàm giúp truy xuất, lưu, cập nhật, xóa thực thể liên quan. Dựa trên đó, nhóm đã thiết kế ra 1 tầng thao tác dữ liệu (DAO) có cấu trúc như sau
+Như đã đề cập ở mục thiết kế hệ thống back-end bên trên, nhóm sử dụng Hibernate framework để hỗ trợ cho các thao tác liên quan đến database. Hibernate cung cấp sẵn các hàm giúp truy xuất, lưu, cập nhật, xóa thực thể liên quan. Dựa trên đó, nhóm đã thiết kế ra 1 tầng thao tác dữ liệu (DAO) có cấu trúc như sau:
 
-%\begin{figure}[h]
-%  \centering
-%    \includesvg[width=12cm]{6-DAO-structure}
-%  \caption{ Tổ chức của tầng truy xuất dữ liệu(DAO)}\label{fig:6-DAO-structure}
-%\end{figure}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=12cm]{6-DAO-structure}
+  \caption{ Tổ chức của tầng truy xuất dữ liệu(DAO)}\label{fig:6-DAO-structure}
+\end{figure}
 
-Thiết kế này giúp tăng khả năng tái sử dụng (reuse), cũng như việc quản lý, bảo trì, mở rộng hệ thống được dễ dàng hơn trong tương lai. Ý tưởng cơ bản là có 1 class BaseDao, được hiện thực đầy đủ các hàm save(), update(), delete(), ... còn các thực thể khác (như Home, User, Mode, Device, Script) thì thừa kế class BaseDao này và hiện thực thêm một số phương thức khác tùy theo nhu cầu.
+Thiết kế này giúp tăng khả năng tái sử dụng (reuse), cũng như việc quản lý, bảo trì, mở rộng hệ thống được dễ dàng hơn trong tương lai. Ý tưởng cơ bản là có 1 class BaseDao, được hiện thực đầy đủ các hàm \textit{save}, \textit{update}, \textit{delete}, \dots còn các thực thể khác (như Home, User, Mode, Device, Script) thì thừa kế class BaseDao này và hiện thực thêm một số phương thức khác tùy theo nhu cầu.
 
-Nếu những thao tác với database gây ra lỗi, dữ liệu sẽ được rollback ngay thời điểm đó(ví dụ như vi phạm constraint, khóa ngoại-foreign key, … ), nhằm đảm bảo tính nhất quán của dữ liệu.
+Nếu những thao tác với database gây ra lỗi, dữ liệu sẽ được rollback ngay thời điểm đó(ví dụ như vi phạm constraint, khóa ngoại-foreign key, \dots ), nhằm đảm bảo tính nhất quán của dữ liệu.
 
-\subsection{giới thiệu về kịch bản(scenario)}
+\subsection{Giới thiệu về kịch bản(scenario)}
 
-Kịch bản là một bản phác thảo, diễn tả những hành vi mình mong muốn thiết bị trong nhà sẽ tự động thực hiện trong hoàn cảnh nhất định hay điều kiện nào đó thỏa mãn. 
+Kịch bản là một bản phác thảo, diễn tả những hành vi mình mong muốn thiết bị trong nhà sẽ tự động thực hiện trong hoàn cảnh nhất định hay điều kiện nào đó thỏa mãn.
 
-\textbf{Kịch bản người dùng:} Kịch bản người dùng sử dụng ngôn ngữ tự nhiên để đặc tả. Lấy ví dụ như “Trong khoảng thời gian từ 18h tối đến 22h tối thì bật đèn ở hành lang lên”. Vế đầu “trong khoảng thời gian từ 18h tối đến 22h tối” đặc tả điều kiện, vế sau “bật đèn hành lang” nêu ra hành động mong muốn khi mà điều kiện trên thỏa mãn.
+\textbf{Kịch bản người dùng:} Kịch bản người dùng sử dụng ngôn ngữ tự nhiên để đặc tả. Lấy ví dụ như \enquote{Trong khoảng thời gian từ 18h tối đến 22h tối thì bật đèn ở hành lang lên}. Vế đầu \enquote{trong khoảng thời gian từ 18h tối đến 22h tối} đặc tả điều kiện, vế sau \enquote{bật đèn hành lang} nêu ra hành động mong muốn khi mà điều kiện trên thỏa mãn.
 
-\textbf{Kịch bản hệ thống:} Kịch bản hệ thống được đặc tả bởi văn phạm riêng(sẽ được giới thiệu ở mục 3.5), nhằm giúp hệ thống có khả năng “đọc”, “hiểu” kịch bản của người dùng.
+\textbf{Kịch bản lưu trữ (script):} Kịch bản lưu trữ có tác dụng như một bản thảo ngắn gọn của kịch bản người dùng, phục vụ mục đích lưu trữ dưới cơ sở dữ liệu là chính. Kịch bản lưu trữ được đặc tả bởi văn phạm riêng, được giới thiệu ở mục 2.4 sắp tới.
+
+\textbf{Kịch bản hệ thống (scenario):} Kịch bản hệ thống là dạng kịch bản mà hệ thống có khả năng \enquote{đọc}, \enquote{hiểu} và xử lý. Hệ thống đọc kịch bản lưu trữ và dùng 1 cấu trúc dữ liệu riêng (sẽ được giới thiệu ở mục 2.5) để mô tả nó và xây dựng lên thành kịch bản hệ thống (lưu trên bộ nhớ máy tính).
 
 \subsection{Văn phạm(Grammar) dùng tạo ra kịch bản hệ thống}
 
-Kịch bản của người dùng thường được đặc tả bởi ngôn ngữ tự nhiên. Với hệ thống hiện tại của nhóm, tính năng xử lý ngôn ngữ tự nhiên không được hỗ trợ, do đó vấn đề cấp thiết đặt ra đầu tiên và cũng không kém phần quan trọng, chính là đặc tả văn phạm cho kịch bản. Đặc tả văn phạm kịch bản nhằm giúp hệ thống phân định được kịch bản nào là hợp lệ và kịch bản nào không hợp lệ. Hơn thế nữa, văn phạm giúp hệ thống có thể “đọc”, “hiểu” và xử lý kịch bản. Tuy nhiên, công việc khó khăn là làm sao văn phạm đặc tả chính xác được kịch bản mà vẫn giữ đúng ý nghĩa của nó. Sau thời gian nghiên cứu, nhóm quyết định chọn BNF (Backus-Naur form), gồm những kí hiệu toán học để đặc tả văn phạm cho ngôn ngữ phi ngữ cảnh, thường dùng để xây dựng cú pháp các ngôn ngữ trong ngành máy tính, ví dụ như ngôn ngữ lập trình, tập lệnh... áp dụng vào việc xây dựng văn phạm kịch bản hệ thống.
+Kịch bản của người dùng thường được đặc tả bởi ngôn ngữ tự nhiên. Với hệ thống hiện tại của nhóm, tính năng xử lý ngôn ngữ tự nhiên không được hỗ trợ, do đó vấn đề cấp thiết đặt ra đầu tiên và cũng không kém phần quan trọng, chính là đặc tả văn phạm cho kịch bản. Đặc tả văn phạm kịch bản nhằm một mặt giúp hệ thống có thể lưu trữ, mặt khác là phân định được kịch bản nào là hợp lệ và kịch bản nào không hợp lệ. Hơn thế nữa, văn phạm còn giúp hệ thống có thể “đọc”, “hiểu” và xử lý kịch bản. Tuy nhiên, công việc khó khăn là làm sao văn phạm đặc tả chính xác được kịch bản mà vẫn giữ đúng ý nghĩa của nó. Sau thời gian nghiên cứu, nhóm quyết định chọn BNF (Backus-Naur form), gồm những kí hiệu toán học để đặc tả văn phạm cho ngôn ngữ phi ngữ cảnh, thường dùng để xây dựng cú pháp các ngôn ngữ trong ngành máy tính, ví dụ như ngôn ngữ lập trình, tập lệnh... áp dụng vào việc xây dựng văn phạm kịch bản hệ thống.
 
-Dưới đây là văn phạm mà nhóm dùng để mô tả những kịch bản hệ thống, bao gồm từ khóa (đặt trong cặp ngoặc kép), kí hiệu, phép toán, cấu trúc (đặt trong <>):
+Dưới đây là văn phạm mà nhóm dùng để mô tả những kịch bản lưu trữ, bao gồm từ khóa (đặt trong cặp ngoặc kép), kí hiệu, phép toán, cấu trúc (đặt trong <>):
 
 \begin{table}[h]
-\centering
-\caption{Cấu trúc văn phạm}\label{tab:grammars}
-\begin{tabular}[t]{ lll } 
+\centering\label{tab:grammars}
+\footnotesize
+\begin{tabular}[t]{ |lll| } 
+	\hline
+	&&\\
 	<Scenario>	&	::= & 
 	\begin{tabular}[t]{l}
-	[“ <ControlBlock> “] | “[“ <Scenario> “,”  <ControlBlock> “]” \\ 
-	| “[“ <SimpleAction> “]” | “[“ <Scenario>  “,”  <SimpleAction> “]”
+	[“ <ControlBlock> ”] | “[” <Scenario> “,”  <ControlBlock> “]” \\ 
+	| “[” <SimpleAction> “]” | “[” <Scenario>  “,”  <SimpleAction> “]”
 	\end{tabular}\\
 	
 	<ControlBlock> 	&	::=	&
 	\begin{tabular}[t]{l}
-	“[‘If’ ,“  <Condition>  “,”  <Action> “]” \\
+	“[‘If’ ,”  <Condition>  “,”  <Action> “]” \\
 	| “[‘If’,” <Condition> “,” <Action> “,” <Action> “]” \\
 	| <FromToBlock>
 	\end{tabular}\\
 	
 	<Condition>  & ::= &
 	\begin{tabular}[t]{l}
-	“[“ <DeviceName> “,”  <RelationalOperator> “,”  <Value> “]”
+	“[” <DeviceName> “,”  <RelationalOperator> “,”  <Value> “]”
 	\end{tabular}\\
 	
 	<Action> & ::= &
@@ -594,7 +627,7 @@ Dưới đây là văn phạm mà nhóm dùng để mô tả những kịch bả
 	
 	<FromToBlock> &	::= &
 	\begin{tabular}[t]{l}
-	“[‘FromTo’,”  Time “,” Time “,”  <Action>  “]” 
+	“[‘FromTo’,”  \textbf{Time} “,” \textbf{Time} “,”  <Action>  “]” 
 	\end{tabular}\\
 	
 	<RelationalOperator> &	::= &
@@ -605,15 +638,15 @@ Dưới đây là văn phạm mà nhóm dùng để mô tả những kịch bả
 	
 	<SimpleAction> & ::= &
 	\begin{tabular}[t]{l}
-	“[‘TurnOn’,”  <DeviceName> “]“\\
+	“[‘TurnOn’,”  <DeviceName> “]”\\
 	| “[‘TurnOff’,”  <DeviceName> “]”\\
 	| “[‘Toggle’,” <DeviceName> “]”\\
 	| “[‘TakePicture’,”  <DeviceName> “]”
 	\end{tabular}\\
 	
-	<DeviceName> & ::= & String \\
+	<DeviceName> & ::= & \textbf{String} \\
 	
-	<Value> & ::= &	Long | Boolean \\
+	<Value> & ::= &	\textbf{Long} | \textbf{Boolean} \\
 	
 	<Equal> & ::= &	“=” \\
 	
@@ -625,30 +658,86 @@ Dưới đây là văn phạm mà nhóm dùng để mô tả những kịch bả
 	
 	<LessThan> 	& ::= & “<” \\
 	
-	<LessThanEqual>	& ::= & “<=”
-	
-	
+	<LessThanEqual>	& ::= & “<=”\\
+	&&\\
+	\hline
 \end{tabular}
 \end{table}
 
-\newpage
+Nhóm đã chọn đặc tả văn phạm kịch bản với cú pháp nêu trên, nhằm mục đích:
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Có thể dễ dàng lưu trữ kịch bản
+\item Cú pháp tương tự như dạng JSON, nhóm có thể dùng parser JSON để phân tích và chuyển đổi thành kịch bản hệ thống dễ dàng hơn.
+\vspace{1mm}
+\end{itemize}
+
+Tuy nhiên, với cú pháp trên cũng có những mặt hạn chế với cú pháp như:
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Việc tạo ra kịch bản lưu trữ cần phải được xử lý cẩn thận. Nếu khâu đầu vào có sai sót thì toàn bộ khâu còn lại, như đọc và xử lý sẽ gặp vấn đề. 
+\vspace{1mm}
+\end{itemize}
+
+Để khắc phục hạn chế này, nhóm đã xây dựng 1 module nhằm tạo ra kịch bản hệ thống theo cú pháp nhất định(sẽ được giới thiệu vào mục Module script builder).
+
+Để dễ hình dung, sau đây là một ví dụ trong thực tế về 1 kịch bản mà ta đang muốn hệ thống đọc, hiểu và xử lý:
+“Nếu cảm biến nhiệt phát hiện nhiệt độ nằm trong khoảng 40 đến 50 độ C thì bật còi hú ở phòng khách”
+“Trong khoảng thời gian từ 18h tối đến 22h tối thì bật đèn ở hành lang lên”
+
+Sử dụng văn phạm đã có, kịch bản lưu trữ dùng mô tả các kịch bản trên sẽ là:
+\begin{verbatim}
+“[ [‘If’, [‘temperature_sensor’,’>’, 40], 
+[ [‘If’, [‘temperature_sensor’,’<’, 50], 
+[ [‘TurnOn’, ‘buzzer_living_room’] ] ] ] ] ]”
+
+“[ [ ‘FromTo’, ’18:00’, ’20:00’, [ [ ‘TurnOn’, ‘light_lobby’ ] ] ] ]”
+\end{verbatim}
+
+Với văn phạm đặc tả trên, hệ thống đã có thể phân định được kịch bản hợp lệ và không hợp lệ. Vì lý do thời gian nên nhóm chưa thể hỗ trợ nhiều loại kịch bản hơn, nhưng việc mở rộng là hoàn toàn khả thi và sẽ được đề cập trong mục Thảo Luận sắp tới. Nhóm cũng đã liệt kê một số kịch bản thông dụng trên thực tế mà nhóm đã sưu tập và lặp nên (tham khảo thêm ở phần phụ lục).
+
+\subsection{Cấu trúc dữ liệu xây dựng kịch bản hệ thống}
+Kịch bản hệ thống (scenario) sẽ bao gồm
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Thông tin trạng thái của nó, được định nghĩa bằng 1 enum ScenarioStatus là
+
+	\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+	\item RUNNING: đang được thực thi
+	\item STOPPING: đang dừng lại (tạm thời và sau đó có thể được khởi động chạy lại)
+	\item STOP\textunderscore FOREVER: dừng lại vĩnh viễn, trạng thái này dùng để kiểm soát những kịch bản trong hàng chờ được gỡ bỏ
+	\vspace{1mm}
+	\end{itemize}
+
+\item Tập hợp các khối (block) hiện thực từ interface IBlock, các khối hợp lệ và được phép nằm trong kịch bản sẽ là
+
+	\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+	\item ControlBlock (sẽ chứa tham khảo đến Condition)
+	\item Action
+	\item SimpleAction
+	\vspace{1mm}
+	\end{itemize}
+	
+\vspace{1mm}
+\end{itemize}
+
+
+
 \section{Xây dựng module điều khiển thiết bị}
 \subsection{Lắp đặt thiết bị}
 Để Raspberry Pi có thể điều khiển được các thiết bị thông qua các chân GPIO, đầu tiên, chúng ta phải lắp đặt đúng cách thiết bị đó vào Raspberry Pi. Nhằm mục đích đảm bảo an toàn và thuận tiện trong việc tiến hành thí nghiệm, chúng tôi ưu tiên sử dụng những thiết bị điện yêu cầu hiệu điện thế thấp (từ 5V trở xuống).
 
-\textbf{Lắp đặt đèn:} Đèn được sử dụng trong thí nghiệm là loại đèn led bốn chân tích cực mức cao. Một chân của đèn led sẽ luôn luôn được nối vào cổng Ground của Raspberry Pi, một chân còn lại (chân red, green hoặc blue) sẽ được nối vào một GPIO. Khi GPIO ở trạng thái High, tức mức điện áp đưa vào là 3.3V, đèn led sẽ sáng, ngược lại, đèn sẽ tắt. Hình \ref{fig:6-rgb-led} trình bày thông tin các chân của đèn led. Ngoài led ba màu, nhóm còn sử dụng thêm loại led chỉ có hai chân được sử dụng rộng rãi, cách lắp đặt tương tự như đèn led bốn chân.
-
 \begin{figure}[h]
   \centering
-     \includegraphics[scale=1.0]{6-rgb-led}
+     \includegraphics[width=10cm]{6-rgb-led}
   \caption{Thông tin các chân của đèn led [1]}\label{fig:6-rgb-led}
 \end{figure}
+
+\textbf{Lắp đặt đèn:} Đèn được sử dụng trong thí nghiệm là loại đèn led bốn chân tích cực mức cao. Một chân của đèn led sẽ luôn luôn được nối vào cổng Ground của Raspberry Pi, một chân còn lại (chân red, green hoặc blue) sẽ được nối vào một GPIO. Khi GPIO ở trạng thái High, tức mức điện áp đưa vào là 3.3V, đèn led sẽ sáng, ngược lại, đèn sẽ tắt. Hình \ref{fig:6-rgb-led} trình bày thông tin các chân của đèn led. Ngoài led ba màu, nhóm còn sử dụng thêm loại led chỉ có hai chân được sử dụng rộng rãi, cách lắp đặt tương tự như đèn led bốn chân.
 
 \textbf{Lắp đặt còi:} Còi là một thiết bị không thể thiếu trong các căn nhà thông minh, mục đích chủ yếu là để cảnh báo chủ nhà đang có nguy hiểm xảy ra. Loại còi được nhóm sử dụng trong mô hình nhà thông minh gồm có ba chân: VCC, GND và Signal. Hình \ref{fig:6-buzzer} mô tả vị trí các chân nằm trên module còi. Hai chân VCC và GND sẽ lần lượt được gắn vào hai cổng luôn luôn có hiệu điện thế lần lượt là 3.3V và 0V, chân Signal sẽ được gắn vào một cổng GPIO có nhiện vụ điều khiển. Loại còi mà nhóm sử dụng thuộc loại tích cực mức thấp nên còi sẽ bắt đầu hú khi trạng thái của GPIO điều khiển là Low.
 
 \begin{figure}[h]
   \centering
-     \includegraphics[scale=0.3]{6-buzzer}
+     \includegraphics[width=5cm]{6-buzzer}
   \caption{Module còi gồm 3 chân: VCC, GND và Signal (nằm giữa) [2]}\label{fig:6-buzzer}
 \end{figure}
 
@@ -656,34 +745,34 @@ Dưới đây là văn phạm mà nhóm dùng để mô tả những kịch bả
 
 \begin{figure}[h]
   \centering
-     \includegraphics[scale=0.3]{6-camera}
+     \includegraphics[width=5cm]{6-camera}
   \caption{Raspberry Pi được lắp đặt camera chuyên dụng}\label{fig:6-camera}
 \end{figure}
 
 \textbf{Lắp đặt cảm biến khí gas:} Với các đặc tính như giá thành rẻ, độ nhạy cao và phạm vi phát hiện rộng, cảm biến khí gas MQ-2 được nhóm sử dụng để phát hiện sự xuất hiện của các khí dễ cháy như gas, cồn và khói. Cảm biến gồm có bốn chân: VCC, GND, DOUT và AOUT, hình \ref{fig:6-gas-sensor} mô tả cấu trúc bên ngoài của một cảm biến khí gas. Các chân VCC và GND lần lượt sẽ được nối vào các cổng có hiệu điện thế là 3.3V và 0V. Khi phát hiện khí gas, cổng AOUT sẽ xuất ra tính hiện tương tự (analog) còn cổng DOUT sẽ xuất ra tín hiện số (digital).
 
-Do đặc tính các chân GPIO của Raspberry Pi chỉ nhận được tín hiệu số, nên chúng tôi chỉ sử dụng chân DOUT của cảm biến để phát hiện khí gas. Chân DOUT sẽ được đấu nối với một cổng GPIO của Raspberry PI. Bình thường, chân DOUT của cảm biến sẽ ở trạng thái High, tức có mức điện áp là 3.3V, khi phát hiện khí gas, chân DOUT sẽ ngay lập tức chuyển từ trạng thái High thành Low (0V), và trạng thái này kéo dài cho đến khi cảm biến không còn phát hiện khí gas trong không khí. Độ nhạy của cảm biến sẽ được điều chỉnh bằng tay thông qua bộ điều chỉnh màu xanh đặc bên dưới cảm biến. [3]
-
 \begin{figure}[h]
   \centering
-     \includegraphics[scale=0.3]{6-gas-sensor}
+     \includegraphics[width=5cm]{6-gas-sensor}
   \caption{Module cảm biến khí gas MQ-2 [4]}\label{fig:6-gas-sensor}
 \end{figure}
 
+Do đặc tính các chân GPIO của Raspberry Pi chỉ nhận được tín hiệu số, nên chúng tôi chỉ sử dụng chân DOUT của cảm biến để phát hiện khí gas. Chân DOUT sẽ được đấu nối với một cổng GPIO của Raspberry PI. Bình thường, chân DOUT của cảm biến sẽ ở trạng thái High, tức có mức điện áp là 3.3V, khi phát hiện khí gas, chân DOUT sẽ ngay lập tức chuyển từ trạng thái High thành Low (0V), và trạng thái này kéo dài cho đến khi cảm biến không còn phát hiện khí gas trong không khí. Độ nhạy của cảm biến sẽ được điều chỉnh bằng tay thông qua bộ điều chỉnh màu xanh đặc bên dưới cảm biến [3].
+
 \textbf{Lắp đặt cảm biến ánh sáng:} Module cảm biến ánh sáng sử dụng quang trở được lựa chọn sử dụng để phát hiện thời gian hiện tại là ban ngày hay ban đêm. Khi cường độ ánh sáng tăng, điện trở của quang trở sẽ giảm và ngược lại, khi cường độ ánh sáng giảm, điện trở sẽ tăng. Giống module cảm biến khí gas MQ-2, module cảm biến ánh sáng sử dụng quang trở cũng có ba chân: VCC, GND và Signal. VCC và GND cũng sẽ được nối vào hai cổng có hiệu điện thế lần lượt là 3.3V và 0V, chân Signal được nối vào một công GPIO của Raspberry Pi. 
-Khi cường độ ánh sáng thấp hơn giá trị ngưỡng, cổng Signal sẽ ở trạng thái High, tức có hiệu điện thế là 3.3V. Khi cường độ ánh sáng vượt quá giá trị ngưỡng, cổng Signal sẽ ở trạng thái Low, tức có hiệu điện thế là 0V. Giá trị ngưỡng được điều chỉnh bằng  tay sử dụng nút vặn màu xanh nằm phía dưới cảm biến. Hình \ref{fig:6-light-sensor} mô tả một con Raspberry Pi đã được kết nối với module cảm biến ánh sáng quang trở. [5][6]
+Khi cường độ ánh sáng thấp hơn giá trị ngưỡng, cổng Signal sẽ ở trạng thái High, tức có hiệu điện thế là 3.3V. Khi cường độ ánh sáng vượt quá giá trị ngưỡng, cổng Signal sẽ ở trạng thái Low, tức có hiệu điện thế là 0V. Giá trị ngưỡng được điều chỉnh bằng  tay sử dụng nút vặn màu xanh nằm phía dưới cảm biến. Hình \ref{fig:6-light-sensor} mô tả một con Raspberry Pi đã được kết nối với module cảm biến ánh sáng quang trở [5][6].
 
 \begin{figure}[h]
   \centering
-     \includegraphics[scale=0.2]{6-light-sensor}
+     \includegraphics[width=6cm]{6-light-sensor}
   \caption{Module cảm biến ánh sáng quang trở được gán vào Raspberry Pi [6]}\label{fig:6-light-sensor}
 \end{figure}
 
-\textbf{Lắp đặt cảm biến chuyển động:} Chức năng chống trộm cũng là một chức năng không thể thiếu của một ngôi nhà thông minh. Nhóm sử dụng module cảm biến chuyển động PIR (Passive InfraRed) để nhận biết có người hay có trộm vừa đi ngang qua. Nguyên lý hoạt động của cảm biến là dựa vào bức xạ nhiệt mà con người phát ra. Mỗi người trong chúng ta đều có thân nhiệt lúc bình thường khoảng 37 độ C và đều phát ra các bức xạ nhiệt. Khi một người đi qua, các tia bức xạ nhiệt phát ra từ người đó sẽ kích hoạt cảm biến. Hình \ref{fig:6-pir-sensor} mô tả cấu trúc bên ngoài cảm biến chuyển động PIR. [7]
+\textbf{Lắp đặt cảm biến chuyển động:} Chức năng chống trộm cũng là một chức năng không thể thiếu của một ngôi nhà thông minh. Nhóm sử dụng module cảm biến chuyển động PIR (Passive InfraRed) để nhận biết có người hay có trộm vừa đi ngang qua. Nguyên lý hoạt động của cảm biến là dựa vào bức xạ nhiệt mà con người phát ra. Mỗi người trong chúng ta đều có thân nhiệt lúc bình thường khoảng 37 độ C và đều phát ra các bức xạ nhiệt. Khi một người đi qua, các tia bức xạ nhiệt phát ra từ người đó sẽ kích hoạt cảm biến. Hình \ref{fig:6-pir-sensor} mô tả cấu trúc bên ngoài cảm biến chuyển động PIR [7].
 
 \begin{figure}[h]
   \centering
-     \includegraphics[scale=0.2]{6-pir-sensor}
+     \includegraphics[width=7cm]{6-pir-sensor}
   \caption{Cảm biến chuyển động PIR}\label{fig:6-pir-sensor}
 \end{figure}
 
@@ -697,10 +786,12 @@ Cảm biến có ba chân: VCC, GND và OUT. Cổng VCC và GND sẽ lần lư�
   \caption{Cách mắc dây cho cảm biến nhiệt độ DS18B20 [11]}\label{fig:6-temp-sensor}
 \end{figure}
 
-Do cảm biến DS18B20 sử dụng cơ chế truyền tín hiệu 1-Wire nên cho phép người sử dụng có thể kết nhiều cảm biến vào cùng một chân trên Raspberry Pi. Cách kết nối cũng vô cùng đơn giản, chỉ cần kết nối tất cả cổng OUT của tất cả cảm biến vào cùng chân GPIO số 4 của Raspberry Pi. [9]
+Do cảm biến DS18B20 sử dụng cơ chế truyền tín hiệu 1-Wire nên cho phép người sử dụng có thể kết nhiều cảm biến vào cùng một chân trên Raspberry Pi. Cách kết nối cũng vô cùng đơn giản, chỉ cần kết nối tất cả cổng OUT của tất cả cảm biến vào cùng chân GPIO số 4 của Raspberry Pi [9].
 
 %------------------------------Hiện thực module----------------------------%
 \subsection{Hiện thực module}
+
+Module điều khiển thiết bị được chia làm nhiều bộ điều khiển nhỏ cho các loại thiết bị và được quản lý bởi bộ điều chung. Tất cả các yêu cầu từ server sẽ được bộ điều khiển chung xử lý và đẩy vào các bộ điều khiển thích hợp. Bên cạnh đó, module điều khiển thiết bị còn có thêm bộ cung cấp GPIO với nhiệm vụ khởi tạo đúng loại cổng mà một bộ điều khiển cần. Hình \ref{fig:6-module-dieu-khien-class-diagram} thể hiện sơ đồ lớp (class diagram) của module.
 
 \begin{figure}[h]
   \centering
@@ -708,13 +799,14 @@ Do cảm biến DS18B20 sử dụng cơ chế truyền tín hiệu 1-Wire nên c
   \caption{Sơ đồ lớp (class diagram) của module điều khiển thiết bị}\label{fig:6-module-dieu-khien-class-diagram}
 \end{figure}
 
-\textbf{Bộ điều khiển chung (GPIO Controller):} Như đã trình bày, bộ điều khiển chung sẽ nhận tất cả yêu cầu từ server. Bộ điều khiển chung cung cấp tất cả các phương thức mà server cần để lấy dữ liệu từ cảm biến cũng như điều khiển các thiết bị điện. Để sử dụng một hàm, server cần truyền vào một thực thể device. Thực thể device sẽ cung cấp tất cả các thông tin mà bộ điều khiển chung cần để thực hiện đúng hành động vào đúng thiết bị mà server cần như loại thiết bị, số thứ tự cổng GPIO… Bộ điều khiển chung sẽ dựa vào thông tin loại thiết bị và quyết định nên sử dụng bộ điều khiển thiết bị nào phù hợp. Ví dụ, server gửi yêu cầu tắt một thiết bị, trong yêu cầu của server sẽ chứa thông tin loại thiết bị mà server muốn tắt (đèn, còi,…) kèm theo số thứ tự của cổng GPIO đang điều khiển thiết bị đó. Nếu loại thiết bị là đèn, bộ điều khiển chung sử dụng bộ điều khiển đèn (Light bulb controller) để thực hiện phương thức tắt.
+\textbf{Bộ điều khiển chung (GPIO Controller):} Như đã trình bày, bộ điều khiển chung sẽ nhận tất cả yêu cầu từ server. Bộ điều khiển chung cung cấp tất cả các phương thức mà server cần để lấy dữ liệu từ cảm biến cũng như điều khiển các thiết bị điện. Để sử dụng một hàm, server cần truyền vào một thực thể device. Thực thể device sẽ cung cấp tất cả các thông tin mà bộ điều khiển chung cần để thực hiện đúng hành động vào đúng thiết bị mà server cần như loại thiết bị, số thứ tự cổng GPIO,... Bộ điều khiển chung sẽ dựa vào thông tin loại thiết bị và quyết định nên sử dụng bộ điều khiển thiết bị nào phù hợp. Ví dụ, server gửi yêu cầu tắt một thiết bị, trong yêu cầu của server sẽ chứa thông tin loại thiết bị mà server muốn tắt (đèn, còi, \dots) kèm theo số thứ tự của cổng GPIO đang điều khiển thiết bị đó. Nếu loại thiết bị là đèn, bộ điều khiển chung sử dụng bộ điều khiển đèn (Light bulb controller) để thực hiện phương thức tắt.
 
 \textbf{Bộ cung cấp GPIO (GPIO Provider):} Trong thư viện Pi4J, để sử dụng một cổng GPIO, bước đầu tiên là khai báo cổng cần sử dụng. Bộ cung cấp GPIO có nhiệm vụ hỗ trợ các bộ điều khiển thiết bị thực hiện thao tác khai báo một cổng GPIO. Tùy thuộc vào mục đích mà một cổng GPIO có thể được khai báo là cổng nhập (input pin) hay cổng xuất (output pin). Cổng nhập (input pin) được các bộ điều khiển cảm biến sử dụng để lấy dữ liệu từ các cổng GPIO. Cổng xuất (output pin) được bộ điều khiển đèn và còi sử dụng để điều khiển việc bật hoặc tắt. Cú pháp khai báo một cổng GPIO được trình bày ở đoạn code sau:
 
-…..
-
-Để tránh những sự thay đổi về phần cứng sẽ ảnh hưởng đến phần mềm sử dụng các chân GPIO của Raspberry Pi, Pi4J sử dụng bộ quy tắc đánh số riêng cho những cổng GPIO. Vì thế, bộ cung cấp GPIO còn giữ vai trò chuyển đổi số thứ tự một cổng GPIO trên Raspberry Pi về số thứ tự hợp lệ trên Pi4J. Hình … mô tả cách đánh số của thư viện Pi4J trên Raspberry Pi 3 Model B. Ví dụ, cổng GPIO ở vị trí 11 trên Raspberry Pi khi chuyển đổi sang cách đánh số của thư viện Pi4J sẽ có số thứ tự là GPIO 0.
+\begin{lstlisting}[language=Java, label={lst:declare-gpio}]
+	final GpioPinDigitalOutput outputPin = gpio.provisionDigitalOutputPin(
+					RaspiPin.GPIO_01, "MyLED", PinState.HIGH);
+\end{lstlisting}
 
 \begin{figure}[h]
   \centering
@@ -722,28 +814,102 @@ Do cảm biến DS18B20 sử dụng cơ chế truyền tín hiệu 1-Wire nên c
   \caption{Quy tắc đánh số của Pi4J cho Raspberry Pi 3 Model B}\label{fig:4-pi4j-danh-so}
 \end{figure}
 
-\textbf{Bộ điều khiển đèn và còi:} Hai bộ điều khiển này được sử dụng bởi bộ điều khiển chung khi server có các yêu cầu liên quan đến đèn và còi. Sau khi nhận yêu cầu từ server, bộ điều khiển chung sẽ truyền thông tin về cổng GPIO đến đúng bộ điều khiển. Khi nhận thông tin về số thứ tự cổng GPIO, bộ điều khiển đèn hoặc còi sẽ sử dụng bộ cung cấp GPIO để khởi tạo đúng loại cổng, input pin hay output pin.
+Để tránh những sự thay đổi về phần cứng sẽ ảnh hưởng đến phần mềm sử dụng các chân GPIO của Raspberry Pi, Pi4J sử dụng bộ quy tắc đánh số riêng cho những cổng GPIO. Vì thế, bộ cung cấp GPIO còn giữ vai trò chuyển đổi số thứ tự một cổng GPIO trên Raspberry Pi về số thứ tự hợp lệ trên Pi4J. Hình \ref{fig:4-pi4j-danh-so} mô tả cách đánh số của thư viện Pi4J trên Raspberry Pi 3 Model B. Ví dụ, cổng GPIO ở vị trí 11 trên Raspberry Pi khi chuyển đổi sang cách đánh số của thư viện Pi4J sẽ có số thứ tự là GPIO 0.
+
+\textbf{Bộ điều khiển đèn và bộ điều khiển còi:} Hai bộ điều khiển này được sử dụng bởi bộ điều khiển chung khi server có các yêu cầu liên quan đến đèn và còi. Sau khi nhận yêu cầu từ server, bộ điều khiển chung sẽ truyền thông tin về thiết bị đến đúng bộ điều khiển thích hợp. Khi nhận thông tin về thiết bị bao gồm số thứ tự cổng GPIO, bộ điều khiển đèn hoặc còi sẽ sử dụng bộ cung cấp GPIO để khởi tạo đúng loại cổng, input pin hay output pin.
 Như đã trình bày, mỗi cổng GPIO sẽ có hai trạng thái là Low hoặc High. Bộ điều khiển đèn và còi sẽ điều khiển các thiết bị bằng cách thay đổi trạng thái của chân GPIO đang điều khiển thiết bị đó. Tùy loại thiết bị mà trạng thái High hoặc Low sẽ tương ứng với việc bật hay tắt và ngược lại. Ví dụ, nếu loại đèn được sử dụng là tích cực mức thấp, khi chân GPIO ở trạng thái Low thì đèn sẽ sáng và ngược lại. Loại đèn và còi mà nhóm đang sử dụng để thuộc loại tích cực mức thấp. Cú pháp thay đổi trạng thái một cổng GPIO khi sử dụng thư viện Pi4J thể hiện như sau:
 
-…
+\begin{lstlisting}[language=Java, label={lst:change-state-gpio}]
+	outputPin.setState(PinState.LOW);
+	outputPin.setState(PinState.HIGH);
+\end{lstlisting}
 
-\textbf{Bộ điều khiển cảm biến ánh sáng, chuyển động và khí gas:}
+\textbf{Các bộ điều khiển cảm biến:} Tương tự như bộ điều khiển đèn và còi, các bộ điều khiển cảm biến cũng được sử dụng bởi bộ điều khiển chung khi server gửi một yêu cầu lấy dữ liệu từ các cảm biến đến bộ điều khiển chung. Tùy loại cảm biến mà cách lấy dữ liệu sẽ khác nhau, tuy nhiên, giống như đèn và còi, mỗi cảm biến sẽ được điều khiển bởi một GPIO nhất định.
+Đối với bộ điều khiển cảm biến khí gas, do loại cảm biến khí gas mà nhóm sử dụng thuộc loại tích cực mức thấp, tức bình thường, chân DOUT của cảm biến sẽ ở trạng thái High, khi phát hiện khí gas, lập tức chân DOUT sẽ chuyển sang trạng thái Low. Vì vậy, sau khi nhận thông tin về số thứ tự GPIO từ bộ điều khiển chung, bộ điều khiển khí gas cần nhờ sự hỗ trợ của bộ cung cấp GPIO để khai báo một cổng nhập phù hợp với loại cảm biến tích cực mức thấp. Sau khi đã khai báo xong, bộ điều khiển khí gas có thể lấy thông tin từ cảm biến bằng cách kiểm trang xem GPIO điều khiển cảm biến đang ở trạng thái High hay Low, vì GPIO điều khiển cảm biến sẽ được nối vào chân DOUT của cảm biến khí gas. Cú pháp kiểm tra khi sử dụng thư viện Pi4J cũng khá đơn giản, được thể hiện ở đoạn code sau:
+
+\begin{lstlisting}[language=Java, label={lst:check-state-active-low}]
+	activeLowPin.isLow();
+\end{lstlisting}
+
+Khác với bộ điều khiển cảm biến khí gas, loại cảm biến ánh sáng và cảm biến chuyển động mà nhóm đang sử dụng thuộc loại tích cực mức cao, tức khi trời tối hoặc khi phát hiện có người chuyển động, cổng Signal của cảm biến ánh sáng và cổng OUT của cảm biến chuyển động sẽ ở trạng thái High. Vì vậy, cách khai báo cổng nhập cho hai bộ điều khiển này khác với bộ điều khiển cảm biến khí gas, cần sử dụng phương thức khai báo cổng nhập tích cực mức cao do bộ cung cấp GPIO hỗ trợ. Sau khi đã hoàn thành việc khai báo, công việc lấy dữ liệu từ cảm biến sẽ vô cùng đơn giản, chỉ cần kiểm tra xem cổng GPIO đang điều khiển cảm biến áng sáng hoặc cảm biến chuyển động có ở trạng thái High không, nếu có tức trời đang tối hoặc có người đang đi ngang qua. Cú pháp kiểm tra được thực hiện bởi đoạn code sau với sự hỗ trợ của thư viện Pi4J:
+
+\begin{lstlisting}[language=Java, label={lst:check-state-active-high}]
+	activeHighPin.isHigh();
+\end{lstlisting}
+
+Trong tất cả các thiết bị cảm biến mà nhóm hiện có, cảm biến nhiệt độ là một trường hợp đặc biệt. Do cảm biến nhiệt độ mà nhóm sử dụng là DS18B20, sử dụng cơ chế truyền tín hiệu 1\-wire, có thể kết nối nhiều cảm biến vào chân GPIO số 4 của Raspberry Pi nên cách lấy dữ liệu sẽ khác với các cảm biến khác. Thông tin về nhiệt độ sẽ được để vào một tệp có tên là w1\_slave. Mỗi cảm biến nhiệt độ DS18B20 sẽ có một thư mục riêng chứ tệp w1\_slave, vì vậy, chúng ta cần vào đúng thư mục của cảm biến phù hợp. Cấu trúc thư mục của mỗi cảm biến chứ thông tin nhiệt độ là:
+\begin{verbatim}
+/sys/bus/w1/devices/<temperature-sensor-id>/w1_slave
+\end{verbatim}
+Trong đó, \textit{<temperature-sensor-id>} là thư mục riêng của mỗi cảm biến, và \textit{<temperature-sensor-id>} sẽ khác nhau với từng cảm biến. Ví dụ, cảm biến nhiệt độ mà nhóm đang sử dụng có \textit{<temperature-sensor-id>} là 28-0316054b32ff. Thông tin về nhiệt độ mà cảm biến nhận được sẽ được liên tục cập nhật vào tệp \textit{w1\textunderscore slave}. Nội dung toàn bộ của tệp \textit{w1\textunderscore slave} là:
+
+\begin{lstlisting}[label={lst:temperature-file}]
+	d9 01 4b 46 7f ff 0c 10 13 : crc=13 YES
+	d9 01 4b 46 7f ff 0c 10 13 t=29562
+\end{lstlisting}
+
+Trong đó, \textit{t=29562} chính là giá trị mà cảm biến đo được. Theo ví dụ trên, nhiệt độ hiện tại là 29.562 độ C và đây cũng chính là giá trị mà bộ điều khiển cảm biến nhiệt độ trả về cho server.
+
+Bộ điều khiển camera: Raspberry Pi cung cấp một chân cắm đặc biệt để kết nối camera chuyên dụng vào Raspberry Pi. Vì vậy, khác với các bộ điều khiển khác sử dụng GPIO để lấy dữ liệu từ cảm biến hoặc điều khiển hoạt động bật tắt, bộ điều khiển camera điều khiển hoạt động chụp hình thông qua chân cắm được dành riêng cho camera. Do thư viện Pi4J không hỗ trợ điều khiển camera, nên bộ điều khiển camera sử dụng một thư viện khác là JRPiCam. Để sử dụng JRPiCam, đầu tiên chúng ta cần khởi tạo đối tượng RPiCamera. Cú pháp khởi tạo được thể hiện trong đoạn code sau:
+
+\begin{lstlisting}[language=Java, label={lst:declare-camera}]
+	RPiCamera piCamera = new RPiCamera();
+\end{lstlisting}
+
+Bộ điều khiển camera cung cấp một chức năng chính là chụp hình khi cần thiết. Khi server muốn chụp một tấm ảnh từ camera, server sẽ gửi một yêu cầu đến một điều khiển chung và bộ điều khiển chung sẽ tiếp tục gửi yêu cầu đến bộ điều khiển thiết bị. Khi nhận được yêu cầu, bộ điều khiển camera sẽ tiến hành chụp ảnh với sự trợ giúp của thư viện JRPiCam. Cú pháp sử dụng thư viện để chụp ảnh được mô tả qua đoạn code sau:
+
+\begin{lstlisting}[language=Java, label={lst:camera-take-picture}]
+	//Take image and store in BufferedImage
+	BufferedImage bufferedImage = piCamera.takeBufferedStill();
+\end{lstlisting}
+
+Ngoài chụp ảnh, bộ điều khiển camera còn cung cấp các phương thức hỗ trợ trong việc cấu hình camera. Các thông số của camera đều có thể được tùy chỉnh như kích thước ảnh, độ sáng, độ tương phản, độ nét, độ trễ, \dots Cách tùy chỉnh thông số khi sử dụng JRPiCam được thể hiện qua đoạn code sau:
+
+\begin{lstlisting}[language=Java, label={lst:camera-take-picture}]
+	// Change Automatic White Balance setting to automatic 
+	piCamera.setAWB(AWB.AUTO);
+	// Turn off Dynamic Range Compression
+	piCamera.setDRC(DRC.OFF);
+	// Set maximum contrast
+	piCamera.setContrast(contrast);
+	// Set maximum sharpness
+	piCamera.setSharpness(sharpness);
+	// Set brightness
+	piCamera.setBrightness(brightness);
+	// Set maximum quality
+	piCamera.setQuality(quality);
+	// Wait 1 second to take the image
+	piCamera.setTimeout(timeout);
+	// Set image width
+	piCamera.setWidth(width);
+	// Set image height
+	piCamera.setHeight(height);
+	// Turn on image preview
+	piCamera.turnOnPreview();
+	// Change encoding of images to PNG
+	piCamera.setEncoding(Encoding.PNG);
+\end{lstlisting}
+
+\subsection{Đánh giá}
+Đối với cách thiết kế và hiện thực như trên, module điều khiển thiết bị đã cung cấp đầy đủ các phương thức cần thiết giúp server có thể điều khiển các thiết bị như đèn, còi, camera và lấy dữ liệu từ các cảm biến. Bên cạnh đó, module đã được hiện thực đúng với cách thiết kế ban đầu là điều khiển thiết bị thông qua các chân GPIO của Raspberry Pi, cung cấp cho server cách thức đơn giản để điều khiển thiết bị mà không cần quan tâm đến thiết bị thuộc loại gì.
+
+Tuy nhiên, việc sử dụng các chân GPIO của Raspberry Pi để điều khiển và nhận dữ liệu từ các thiết bị vẫn còn nhiều hạn chế. Do GPIO chỉ có hai trạng thái là Low và High nên việc điều khiển đèn và còi chỉ dừng lại ở mức bật hoặc tắt, vẫn chưa có cách để có thể cấu hình độ sáng cho đèn hoặc âm lượng cho còi thông qua các chân GPIO. Cũng vì lý do trên mà độ nhạy của các cảm biến như cảm biến ánh sáng hoặc cảm biến khí gas phải được điều chỉnh bằng tay bằng bộ điều chỉnh có trên cảm biến. Số lượng giới hạn các chân GPIO cũng là một khó khăn nếu một căn nhà có nhiều thiết bị. 
 
 %-------------------------------Phát triển ứng dụng di động-------------------%
-\newpage
 \section{Phát triển ứng dụng di động}
 \subsection{Hướng phát triển ứng dụng di động}
 Hiện nay có 2 xu hướng phát triển ứng dụng di động chính là: Phát triển ứng dụng di động thuần túy (Native Mobile Application Development) và Phát triển ứng dụng di động lại (Hybrid Mobile Application Development).
 
 \textbf{Phát triển ứng dụng di động thuần túy (Native Mobile Application Development):} phát triển ứng dụng di động thuần túy là phát triển một ứng dụng đặc biệt chỉ chạy trên một hệ điều hành nhất định thuộc một thiết bị nhất định, với ngôn ngữ phát triển cụ thể (như Objective-C hoặc Swift cho hệ điều hành iOS hoặc Java cho hệ điều hành Android), và thường phải thông qua điều chỉnh để có thể chạy được trên nhiều thiết bị khác nhau [4].
 
-Vì ứng dụng được phát triển hoàn toàn trong môi trường dành riêng cho một hệ điều hành nhất định, với những đặc tính kỹ thuật và giao diện đặc trưng của hệ điều hành đó, nên không chỉ có lợi thế về hiệu xuất, ứng dụng di động thuần túy còn có lợi thế trong trải nghiệm người dùng. Lợi thế trong trải nghiệm người dùng ở đây là ứng dụng có được sự đồng nhất về mặt giao diện và cảm nhận với nhiều ứng dụng thuần túy khác trên thiết bị. Người dùng có thể dễ dàng nắm bắt cách thức sử dụng cũng như tương tác với ứng dụng một cách nhanh chóng hơn. Ngoài ra, những ứng dụng di động thuần túy có lợi thế không nhỏ trong việc có khả năng truy cập và sử dụng một cách dễ dàng những tính năng đặc thù của thiết bị (GPS, sổ địa chỉ, camera, bộ phận cảm ứng…) [3].
+Vì ứng dụng được phát triển hoàn toàn trong môi trường dành riêng cho một hệ điều hành nhất định, với những đặc tính kỹ thuật và giao diện đặc trưng của hệ điều hành đó, nên không chỉ có lợi thế về hiệu xuất, ứng dụng di động thuần túy còn có lợi thế trong trải nghiệm người dùng. Lợi thế trong trải nghiệm người dùng ở đây là ứng dụng có được sự đồng nhất về mặt giao diện và cảm nhận với nhiều ứng dụng thuần túy khác trên thiết bị. Người dùng có thể dễ dàng nắm bắt cách thức sử dụng cũng như tương tác với ứng dụng một cách nhanh chóng hơn. Ngoài ra, những ứng dụng di động thuần túy có lợi thế không nhỏ trong việc có khả năng truy cập và sử dụng một cách dễ dàng những tính năng đặc thù của thiết bị (GPS, sổ địa chỉ, camera, bộ phận cảm ứng \dots) [3].
 
 \textbf{Phát triển ứng dụng di động lai (Hybrid Mobile Application Development):} phát triển ứng dụng di động lai là phát triển ứng dụng dựa trên nền tảng Web, sử dụng công nghệ phổ biến là HTML5 và JavaScript, được đóng gói lại trong một thành phần thuần túy (native container). Thành phần này thực hiện việc tải phần lớn thông tin lên giao diện khi người dùng truy cập qua từng chức năng của ứng dụng [3].
 
 \begin{table}[!htbp]
 \centering
 \caption{So sánh điểm mạnh, điểm yếu của Phát triển ứng dụng di động thuần túy và Phát triển ứng dụng di động lai [4]}\label{tab:compare-native-and-hybrid}
+\small
 \begin{tabular}{ |p{2cm}|p{6cm}|p{6cm}| }
 \hline
 	So sánh & 
@@ -757,7 +923,7 @@ Vì ứng dụng được phát triển hoàn toàn trong môi trường dành r
 	Điểm mạnh &
 	\begin{tabular}[t]{p{5.5cm}}
 	- Về mặt hiệu năng, trong hầu hết trường hợp, ứng dụng di động thuần túy chạy nhanh hơn ứng dụng lai nhưng sự chênh lệch không quá lớn và thường khó nhận biết bởi người dùng.\\
-	- Về tính năng, ứng dụng di động thuần túy có thể dễ dàng truy cập tới phần cứng của thiết bị (camera, thiết bị thu âm…) cũng như truy cập tới các chức năng đặc quyền như sao chép, tạo, ghi dữ liệu trên bộ nhớ, thông tin danh bạ, cuộc gọi, tin nhắn… so với ứng dụng di động lại còn nhiều hạn chế về việc tận dụng toàn bộ sức mạnh của thiết bị.\\
+	- Về tính năng, ứng dụng di động thuần túy có thể dễ dàng truy cập tới phần cứng của thiết bị (camera, thiết bị thu âm \dots) cũng như truy cập tới các chức năng đặc quyền như sao chép, tạo, ghi dữ liệu trên bộ nhớ, thông tin danh bạ, cuộc gọi, tin nhắn \dots so với ứng dụng di động lại còn nhiều hạn chế về việc tận dụng toàn bộ sức mạnh của thiết bị.\\
 	- Khi không có kết nối Internet, ứng dụng di động thuần túy có thể sử dụng những dữ liệu đã lưu trữ tạm (cache) trước đó trong khi ứng dụng lai đa phần đều cần phải có kết nối Internet để truy cập dữ liệu.
 	\end{tabular} &
 	\begin{tabular}[t]{p{5.5cm}}
@@ -820,7 +986,7 @@ Các tính năng và thành phần cốt lõi của AngularJS:
 
 Với các tính năng hỗ trợ phù hợp với kiến trúc của ứng dụng, cộng với sự phổ biến và được sử dụng rộng rãi của AngularJS. Nhóm chúng tôi quyết định sử dụng công nghệ này để phát triển ứng dụng trên nền tảng Web.
 
-\textbf{Apache Cordova:} Apache Cordova là một framework mã nguồn mở hỗ trợ phát triển ứng dụng di động trên nền tảng Web. Framework này cho phép sử dụng những kĩ thuật Web chuẩn như HTML5, CSS3 và JavaScript để phát triển. Ứng dụng Web được xây dựng sẽ được chuyển tiếp thành ứng dụng trên các nền tảng di động gốc và dựa trên các API ràng buộc chuẩn để truy cập tới các chức năng của từng thiết bị như cảm biến, dữ liệu, tình trạng mạng…
+\textbf{Apache Cordova:} Apache Cordova là một framework mã nguồn mở hỗ trợ phát triển ứng dụng di động trên nền tảng Web. Framework này cho phép sử dụng những kĩ thuật Web chuẩn như HTML5, CSS3 và JavaScript để phát triển. Ứng dụng Web được xây dựng sẽ được chuyển tiếp thành ứng dụng trên các nền tảng di động gốc và dựa trên các API ràng buộc chuẩn để truy cập tới các chức năng của từng thiết bị như cảm biến, dữ liệu, tình trạng mạng \dots
 
 Apache Cordova thường được sử dụng khi:
 
@@ -960,7 +1126,7 @@ Thẻ Kịch bản từ/đến (Device-script-from-to) là thành phần đóng 
 \vspace{1mm}
 \end{itemize}
 
-\newpage
+
 \section{Đánh giá tích hợp hệ thống}
 
 %-------------------------------------Tổng kết----------------------------------%
