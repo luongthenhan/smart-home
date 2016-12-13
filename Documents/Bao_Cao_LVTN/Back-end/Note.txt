@@ -11,3 +11,13 @@ Update 2.7-> 2.10 content
 
 9/12/16
 Update flowchart 2.7 -> 2.10
+
+13/12/16
+22h00
+Update concept of script conflict, potential conflict
+Update new image in .zip file (jpeg)
+
+14/12
+0h00
+Update Discussion section (2 topic first + 1 later on)
+Update references
