@@ -21,7 +21,7 @@
            ng-if="deviceScriptWhenThenCtrl.selectedCondition.hasParameter"
            ng-focus="deviceScriptWhenThenCtrl.oldConditionParam = deviceScriptWhenThenCtrl.selectedConditionParam"
            ng-model="deviceScriptWhenThenCtrl.selectedConditionParam"
-           ng-blur="deviceScriptWhenThenCtrl.updateConditionParamChange()"
+           ng-change="deviceScriptWhenThenCtrl.updateConditionParamChange()"
            type="number" step="0.1">
     <span>Then</span>
     <select class="script-condition-modify-input combobox"

@@ -623,13 +623,19 @@ app.service('MainService', function($http, $location, blockUI) {
         device = $.grep(self.selectedModeConditionableDevices, function(dev) {
             return dev.id == scriptInfo.actionDeviceId;
         })[0];
+        console.log(script);
         $http.put(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id, script,{
             headers: {
                 'X-Auth-Token': self.token
             }
         }).then(function(response){
             if (response.status == 200) {
-                console.log("Update script successfully");
+                console.log("Update script successfully: ");
+                console.log(script);
+                console.log(response.data.content);
+                if (response.data.content != "") {
+                    return false;
+                }
                 // Mark new device and Unmark old device if script is When/Then
                 if (script.type.id == 1 && oldSelectedOtherDevice != null && typeof oldSelectedOtherDevice != "undefined") {
 
@@ -725,6 +731,45 @@ app.service('MainService', function($http, $location, blockUI) {
         // })
 
         return result;
+    }
+
+    self.addCustomScript = function (script) {
+        console.log(script);
+        // $http.put(self.hostDomain + "/devices/" + self.hiddenDevice.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id, script,{
+        //     headers: {
+        //         'X-Auth-Token': self.token
+        //     }
+        // }).then(function(response){
+        //     if (response.status == 200) {
+        //         console.log("Update custom script successfully");
+        //         result = true;
+        //     } else {
+        //         window.alert("Update Failed !\n" + response.data.content);
+        //         result = false;
+        //     }
+        // }, function(error) {
+        //     window.alert("Update Failed !\n" + error.data.content);
+        //     result = false;
+        // })
+
+        $.ajax({
+            url: self.hostDomain + "/devices/" + self.hiddenDevice.id + "/modes/" + self.selectedMode.id + "/scripts/",
+            type: 'POST',
+            data: JSON.stringify(script),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                console.log("Add custom script successfully");
+                console.log(data);
+            },
+            error: function (data, textStatus, xhr) {
+                console.log("Error Add custom script");
+            }
+        })
     }
 
     self.updateCustomScript = function (script) {
@@ -947,6 +992,7 @@ app.service('MainService', function($http, $location, blockUI) {
                 console.log("Add script successfully");
                 // Set id for new script and add it to device
                 script.id = response.data.id;
+                console.log(response);
                 device.scripts.push(script);
 
                 if (device.refNum == 0) {
@@ -980,6 +1026,9 @@ app.service('MainService', function($http, $location, blockUI) {
 
             } else if (response.status == 400) {
                 window.alert("This script is conflicted with other script(s) !");
+            } else {
+                console.log("AAAAA");
+                console.log(response);
             }
         })
         return true;
