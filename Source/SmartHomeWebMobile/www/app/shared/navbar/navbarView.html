@@ -10,6 +10,7 @@
             <a class="navbar-brand" ng-if="navBarCtrl.home != null" href="#/home">
                 <span class="glyphicon glyphicon-home"></span>
                 <span>&nbsp;&nbsp;{{navBarCtrl.home.name}}</span>
+                <span ng-if="navBarCtrl.home.enabled == false"> (Disabled)</span>
             </a>
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">

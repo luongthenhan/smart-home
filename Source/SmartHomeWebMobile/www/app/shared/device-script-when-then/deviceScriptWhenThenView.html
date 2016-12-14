@@ -14,6 +14,7 @@
     </select>
     <select class="combobox script-condition-modify-input"
             ng-model="deviceScriptWhenThenCtrl.selectedCondition"
+            ng-click="deviceScriptWhenThenCtrl.oldSelectedCondition = deviceScriptWhenThenCtrl.selectedCondition"
             ng-options="condition.name for condition in deviceScriptWhenThenCtrl.selectedOtherDevice.conditions"
             ng-change="deviceScriptWhenThenCtrl.updateConditionChange()">
     </select>

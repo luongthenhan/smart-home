@@ -29,6 +29,7 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
 
             self.oldSelectedOtherDevice = null;
             self.oldConditionParam = null;
+            self.oldSelectedCondition = null;
 
             self.init = function() {
                 MainService.deviceScriptCtrlList.push(self);
@@ -116,6 +117,8 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
                     .replace("$DID$", "'" + self.selectedOtherDevice.id + "'")
                     .replace("[","")
                     .replace("]","");
+
+                var oldScriptContent = $scope.script.content;
                 if (self.selectedCondition.hasParameter) {
                     newCondInfo = newCondInfo.replace("$V$", "'" + self.selectedConditionParam + "'");
                 }
@@ -123,8 +126,12 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
                     .replace(/ /g, "")
                     .replace(self.scriptInfo.conditionContent, newCondInfo)
                     .replace(/ /g, "");
-                MainService.updateScript($scope.script);
-                self.scriptInfo = MainService.parseScriptInfo($scope.script);
+                if (MainService.updateScript($scope.script) == false) {
+                    self.selectedCondition = self.oldSelectedCondition;
+                    $scope.script.content = oldScriptContent;
+                } else {
+                    self.scriptInfo = MainService.parseScriptInfo($scope.script);
+                }
             }
 
             self.updateConditionParamChange = function () {

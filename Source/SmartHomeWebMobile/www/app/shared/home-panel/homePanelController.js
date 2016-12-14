@@ -16,6 +16,7 @@ app.directive("homePanel", ['MainService', function(MainService) {
                 MainService.selectedHome = $scope.home;
                 MainService.getHome(self);
                 $location.path("/home");
+
             }
 
             self.deleteHome = function() {

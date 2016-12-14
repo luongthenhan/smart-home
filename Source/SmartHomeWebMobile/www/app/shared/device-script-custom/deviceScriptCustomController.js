@@ -18,7 +18,7 @@ app.directive("deviceScriptCustom", ['MainService', function(MainService) {
             }
 
             self.deleteScript = function() {
-                MainService.deleteScript($scope.device, $scope.script);
+                MainService.deleteCustomScript($scope.script);
             }
 
             self.updateScript = function() {

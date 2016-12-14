@@ -1,4 +1,4 @@
-app.service('MainService', function($http, $location, blockUI) {
+app.service('MainService', function($http, $location) {
 
     var self = this;
 
@@ -30,6 +30,7 @@ app.service('MainService', function($http, $location, blockUI) {
     self.deviceScriptCtrlList = []; // Device Script Controller List used when in Device List page
 
     self.login = function(username, password, controller) {
+        $(".loading-component").css("visibility", "visible");
         $http.get(self.hostDomain + "login", {
             headers: {
                 'X-Username': username,
@@ -45,9 +46,11 @@ app.service('MainService', function($http, $location, blockUI) {
             }).then(function(response) {
                 self.allGpios = response.data;
                 controller.redirectToHome();
+                $(".loading-component").css("visibility", "hidden");
             })
         }, function(data) {
             window.alert("Username or password is incorrect !");
+            $(".loading-component").css("visibility", "hidden");
         });
     }
 
@@ -75,6 +78,7 @@ app.service('MainService', function($http, $location, blockUI) {
     }
 
     self.updateHome = function(home) {
+        $(".loading-component").css("visibility", "visible");
         $.ajax({
             url: self.hostDomain + "homes/" + home.id,
             type: 'PUT',
@@ -87,14 +91,17 @@ app.service('MainService', function($http, $location, blockUI) {
             async: false,
             success: function (data, textStatus, xhr) {
                 console.log("Update home successfully");
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
                 console.log("Error update home");
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
 
     self.getHomes = function(controller) {
+        $(".loading-component").css("visibility", "visibility");
         $http.get(self.hostDomain + "/homes", {
             headers: {
                 'X-Auth-Token': self.token
@@ -102,6 +109,7 @@ app.service('MainService', function($http, $location, blockUI) {
         }).then(function(response){
             controller.homes = response.data;
             console.log(controller.homes);
+            $(".loading-component").css("visibility", "hidden");
         })
     }
 
@@ -114,6 +122,7 @@ app.service('MainService', function($http, $location, blockUI) {
         self.selectedModeAvailableGpios = self.allGpios;
         self.selectedModeConditionableDevices = [];
 
+        $(".loading-component").css("visibility", "visible");
         $.ajax({
             url: self.hostDomain + "homes/" + self.selectedHome.id + "/device-types",
             type: 'GET',
@@ -176,9 +185,11 @@ app.service('MainService', function($http, $location, blockUI) {
                         })
                     }
                 })
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function(data, textStatus, xhr) {
                 console.log("error get devices");
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
@@ -208,6 +219,7 @@ app.service('MainService', function($http, $location, blockUI) {
     }
 
     self.getSelectedModeScripts = function(device) {
+        $(".loading-component").css("visibility", "visible");
         $.ajax({
             url: self.hostDomain + "devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts",
             type: 'GET',
@@ -223,9 +235,10 @@ app.service('MainService', function($http, $location, blockUI) {
                     }
                 })
                 device.scripts = scripts;
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
-
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
@@ -266,6 +279,7 @@ app.service('MainService', function($http, $location, blockUI) {
     }
 
     self.activateMode = function(mode) {
+        $(".loading-component").css("visibility", "visible");
         self.selectedHome.currentMode = mode;
         $.ajax({
             url: self.hostDomain + "homes/" + self.selectedHome.id,
@@ -281,14 +295,16 @@ app.service('MainService', function($http, $location, blockUI) {
                 if (xhr.status == 204) {
                     console.log("Activate mode successfully");
                 }
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
-
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
 
     self.addMode = function(mode) {
+        $(".loading-component").css("visibility", "visible");
         $.ajax({
             url: self.hostDomain + "homes/" + self.selectedHome.id + "/modes",
             type: 'POST',
@@ -305,15 +321,16 @@ app.service('MainService', function($http, $location, blockUI) {
                     mode.id = data.id;
                     self.selectedHome.modes.push(mode);
                 }
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
-
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
 
     self.deleteMode = function(mode) {
-
+        $(".loading-component").css("visibility", "visible");
         // Delete all scripts of mode
         $.each(self.allDevices, function(devIndex, devValue) {
             $.ajax({
@@ -349,14 +366,16 @@ app.service('MainService', function($http, $location, blockUI) {
                         return homeMode.id != mode.id;
                     })
                 }
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
-
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
 
     self.updateMode = function(mode) {
+        $(".loading-component").css("visibility", "visible");
         $.ajax({
             url: self.hostDomain + "homes/" + self.selectedHome.id + "/modes/" + mode.id,
             type: 'PUT',
@@ -369,15 +388,17 @@ app.service('MainService', function($http, $location, blockUI) {
             async: false,
             success: function (data, textStatus, xhr) {
                 console.log("Update mode successfully");
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
                 console.log("Error update mode");
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
 
     self.disableDevice = function(device) {
-
+        $(".loading-component").css("visibility", "visible");
         if (device.refNum > 0) {
             if (device.scripts.length > 0) {
                 $.each(device.scripts, function(scpIndex, scpValue) {
@@ -423,12 +444,13 @@ app.service('MainService', function($http, $location, blockUI) {
                     scpCtrlVal.initializeData();
                 })
             }
+            $(".loading-component").css("visibility", "hidden");
         })
         return true;
     }
 
     self.enableDevice = function(device) {
-
+        $(".loading-component").css("visibility", "visible");
         if (device.refNum > 0) {
             if (device.scripts.length > 0) {
                 $.each(device.scripts, function(scpIndex, scpValue) {
@@ -474,11 +496,13 @@ app.service('MainService', function($http, $location, blockUI) {
                     scpCtrlVal.initializeData();
                 })
             }
+            $(".loading-component").css("visibility", "hidden");
         })
         return true;
     }
 
     self.deleteDevice = function(device) {
+        $(".loading-component").css("visibility", "visible");
         if (device.refNum > 0) {
             if (device.scripts.length > 0) {
                 $.each(device.scripts, function(scpIndex, scpValue) {
@@ -534,12 +558,14 @@ app.service('MainService', function($http, $location, blockUI) {
                     scpCtrlVal.initializeData();
                 })
             }
+            $(".loading-component").css("visibility", "hidden");
         })
 
         return true;
     }
 
     self.addDevice = function(device) {
+        $(".loading-component").css("visibility", "visible");
         $http.post(self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices"
             , device, {
             headers: {
@@ -573,11 +599,13 @@ app.service('MainService', function($http, $location, blockUI) {
                     scpCtrlVal.initializeData();
                 })
             }
+            $(".loading-component").css("visibility", "hidden");
         })
         return true;
     }
 
     self.updateDevice = function(device) {
+        $(".loading-component").css("visibility", "visible");
         $.ajax({
             url: self.hostDomain + "homes/" + self.selectedHome.id + "/device-types/" + self.selectedDeviceType.id + "/devices/" + device.id,
             type: 'PUT',
@@ -590,9 +618,11 @@ app.service('MainService', function($http, $location, blockUI) {
             async: false,
             success: function (data, textStatus, xhr) {
                 console.log("Update device successfully");
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
                 console.log("Error update device");
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
@@ -614,6 +644,7 @@ app.service('MainService', function($http, $location, blockUI) {
     }
 
     self.updateScript = function(script, oldSelectedOtherDevice) {
+        $(".loading-component").css("visibility", "visible");
         var result = false;
 
         // Parse script info
@@ -623,128 +654,133 @@ app.service('MainService', function($http, $location, blockUI) {
         device = $.grep(self.selectedModeConditionableDevices, function(dev) {
             return dev.id == scriptInfo.actionDeviceId;
         })[0];
-        $http.put(self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id, script,{
-            headers: {
-                'X-Auth-Token': self.token
-            }
-        }).then(function(response){
-            if (response.status == 200) {
-                console.log("Update script successfully");
-                // Mark new device and Unmark old device if script is When/Then
-                if (script.type.id == 1 && oldSelectedOtherDevice != null && typeof oldSelectedOtherDevice != "undefined") {
 
-                    oldSelectedOtherDevice.refNum--;
-                    if (oldSelectedOtherDevice.refNum == 0) {
-                        self.unmarkDevice(oldSelectedOtherDevice);
+        $.ajax({
+            url: self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id,
+            type: 'PUT',
+            data: JSON.stringify(script),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                if (data.content.indexOf("conflict") == -1) {
+                    // Mark new device and Unmark old device if script is When/Then
+                    if (script.type.id == 1 && oldSelectedOtherDevice != null && typeof oldSelectedOtherDevice != "undefined") {
+
+                        oldSelectedOtherDevice.refNum--;
+                        if (oldSelectedOtherDevice.refNum == 0) {
+                            self.unmarkDevice(oldSelectedOtherDevice);
+                        }
+
+                        selectedOtherDevice = $.grep(self.selectedModeConditionableDevices, function (dev) {
+                            return dev.id == scriptInfo.conditionDeviceId;
+                        })[0];
+
+                        if (selectedOtherDevice.refNum == 0) {
+                            self.markDevice(selectedOtherDevice);
+                        }
+                        selectedOtherDevice.refNum++;
+
+                        // Reload Device List page
+                        self.deviceListCtrl.initializeData();
+
+                        // Reload each Device Panel
+                        $.each(self.devicePanelCtrlList, function (panelCtrlIndex, panelCtrlVal) {
+                            panelCtrlVal.initializeData();
+                        })
+
+                        // Reload each When Then Script
+                        $.each(self.deviceScriptCtrlList, function (scpCtrlIndex, scpCtrlVal) {
+                            scpCtrlVal.initializeData();
+                        })
                     }
-
-                    selectedOtherDevice = $.grep(self.selectedModeConditionableDevices, function (dev) {
-                        return dev.id == scriptInfo.conditionDeviceId;
-                    })[0];
-
-                    if (selectedOtherDevice.refNum == 0) {
-                        self.markDevice(selectedOtherDevice);
-                    }
-                    selectedOtherDevice.refNum++;
-
-                    // Reload Device List page
-                    self.deviceListCtrl.initializeData();
-
-                    // Reload each Device Panel
-                    $.each(self.devicePanelCtrlList, function (panelCtrlIndex, panelCtrlVal) {
-                        panelCtrlVal.initializeData();
-                    })
-
-                    // Reload each When Then Script
-                    $.each(self.deviceScriptCtrlList, function (scpCtrlIndex, scpCtrlVal) {
-                        scpCtrlVal.initializeData();
-                    })
+                    console.log("Update script successfully");
+                    result = true;
+                } else {
+                    window.alert("Update failed ! There are script conflictions.");
+                    result = false;
                 }
-                result = true;
-            } else {
-                window.alert("Update Failed !\n" + response.data.content);
+                $(".loading-component").css("visibility", "hidden");
+            },
+            error: function (data, textStatus, xhr) {
+                window.alert("Update Failed !\n" + data.content);
                 result = false;
+                $(".loading-component").css("visibility", "hidden");
             }
-        }, function(error) {
-            window.alert("Update Failed !\n" + error.data.content);
-            result = false;
         })
-
-        // $.ajax({
-        //     url: self.hostDomain + "/devices/" + device.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id,
-        //     type: 'PATCH',
-        //     data: JSON.stringify(script),
-        //     dataType: 'json',
-        //     contentType: 'application/json; charset=UTF-8',
-        //     beforeSend: function (request)
-        //     {
-        //         request.setRequestHeader("X-Auth-Token", self.token);
-        //     },
-        //     async: true,
-        //     success: function(data, textStatus, xhr) {
-        //         if (xhr.status == 200) {
-        //             console.log("Update script successfully");
-        //
-        //             // Mark new device and Unmark old device if script is When/Then
-        //             if (script.type.id == 1 && oldSelectedOtherDevice != null && typeof oldSelectedOtherDevice != "undefined") {
-        //
-        //                 oldSelectedOtherDevice.refNum--;
-        //                 if (oldSelectedOtherDevice.refNum == 0) {
-        //                     self.unmarkDevice(oldSelectedOtherDevice);
-        //                 }
-        //
-        //                 selectedOtherDevice = $.grep(self.selectedModeConditionableDevices, function (dev) {
-        //                     return dev.id == scriptInfo.conditionDeviceId;
-        //                 })[0];
-        //
-        //                 if (selectedOtherDevice.refNum == 0) {
-        //                     self.markDevice(selectedOtherDevice);
-        //                 }
-        //                 selectedOtherDevice.refNum++;
-        //
-        //                 // Reload Device List page
-        //                 self.deviceListCtrl.initializeData();
-        //
-        //                 // Reload each Device Panel
-        //                 $.each(self.devicePanelCtrlList, function(panelCtrlIndex, panelCtrlVal) {
-        //                     panelCtrlVal.initializeData();
-        //                 })
-        //
-        //                 // Reload each When Then Script
-        //                 $.each(self.deviceScriptCtrlList, function(scpCtrlIndex, scpCtrlVal) {
-        //                     scpCtrlVal.initializeData();
-        //                 })
-        //             }
-        //             result = true;
-        //         }
-        //     },
-        //     error: function(data, textStatus, xhr) {
-        //         window.alert("Update Failed !\n" + $.parseJSON(data.responseText).content);
-        //         result = false;
-        //     }
-        // })
 
         return result;
     }
 
+    self.addCustomScript = function (script) {
+        $(".loading-component").css("visibility", "visible");
+        $.ajax({
+            url: self.hostDomain + "/devices/" + self.hiddenDevice.id + "/modes/" + self.selectedMode.id + "/scripts/",
+            type: 'POST',
+            data: JSON.stringify(script),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                console.log(data);
+                $(".loading-component").css("visibility", "hidden");
+                if (data.content.indexOf("conflict") != -1) {
+                    window.alert("Add new script failed ! There are script conflictions.");
+                    return false;
+                } else if (data.content.indexOf("TypeError") != -1) {
+                    window.alert("Add new script failed ! Wrong syntax in script content.");
+                    return false;
+                } else if (data.content.indexOf("existed") != -1) {
+                    window.alert("Add new script failed ! This script content is already existed.");
+                    return false;
+                } else {
+                    console.log("Add custom script successfully");
+                    script.id = data.id;
+                    self.hiddenDevice.scripts.push(script);
+                    return true;
+                }
+            },
+            error: function (data, textStatus, xhr) {
+                console.log(data);
+                console.log("Error add custom script");
+                $(".loading-component").css("visibility", "hidden");
+                return false;
+            }
+        })
+    }
+
+    self.deleteCustomScript = function (script) {
+        $(".loading-component").css("visibility", "visible");
+        $.ajax({
+            url: self.hostDomain + "/devices/" + self.hiddenDevice.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id,
+            type: 'DELETE',
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", self.token);
+            },
+            async: false,
+            success: function (data, textStatus, xhr) {
+                console.log("Delete custom script successfully");
+                self.hiddenDevice.scripts = $.grep(self.hiddenDevice.scripts, function(scp) {
+                    return scp.id != script.id;
+                })
+                $(".loading-component").css("visibility", "hidden");
+            },
+            error: function (data, textStatus, xhr) {
+                console.log("Error delete custom script");
+                $(".loading-component").css("visibility", "hidden");
+            }
+        })
+    }
+
     self.updateCustomScript = function (script) {
+        $(".loading-component").css("visibility", "visible");
         console.log(script);
-        // $http.put(self.hostDomain + "/devices/" + self.hiddenDevice.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id, script,{
-        //     headers: {
-        //         'X-Auth-Token': self.token
-        //     }
-        // }).then(function(response){
-        //     if (response.status == 200) {
-        //         console.log("Update custom script successfully");
-        //         result = true;
-        //     } else {
-        //         window.alert("Update Failed !\n" + response.data.content);
-        //         result = false;
-        //     }
-        // }, function(error) {
-        //     window.alert("Update Failed !\n" + error.data.content);
-        //     result = false;
-        // })
 
         $.ajax({
             url: self.hostDomain + "/devices/" + self.hiddenDevice.id + "/modes/" + self.selectedMode.id + "/scripts/" + script.id,
@@ -758,9 +794,11 @@ app.service('MainService', function($http, $location, blockUI) {
             async: false,
             success: function (data, textStatus, xhr) {
                 console.log("Update custom script successfully");
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
                 console.log("Error update custom script");
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
@@ -860,6 +898,7 @@ app.service('MainService', function($http, $location, blockUI) {
     }
 
     self.deleteScript = function(script) {
+        $(".loading-component").css("visibility", "visible");
         // Parse script info
         scriptInfo = self.parseScriptInfo(script);
 
@@ -918,15 +957,18 @@ app.service('MainService', function($http, $location, blockUI) {
                         scpCtrlVal.initializeData();
                     })
                 }
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function(data, textStatus, xhr) {
                 console.log("error delete script");
+                $(".loading-component").css("visibility", "hidden");
             }
         })
 
     }
 
     self.addScript = function (script) {
+        $(".loading-component").css("visibility", "visible");
         console.log("Add script: " + script.content);
 
         // Parse script info
@@ -981,11 +1023,13 @@ app.service('MainService', function($http, $location, blockUI) {
             } else if (response.status == 400) {
                 window.alert("This script is conflicted with other script(s) !");
             }
+            $(".loading-component").css("visibility", "hidden");
         })
         return true;
     }
 
     self.register = function (controller) {
+        $(".loading-component").css("visibility", "visible");
         var user = {"usrName" : controller.username, "password" : controller.password,
             "name" : controller.fullname, "email" : controller.email};
 
@@ -995,6 +1039,7 @@ app.service('MainService', function($http, $location, blockUI) {
         var returnCode = 0;
         $http.post(self.hostDomain + "users/signup", user)
             .success(function (data, status, headers, config) {
+                $(".loading-component").css("visibility", "hidden");
                 $location.path("/register_success");
             })
             .error(function (data, status, header, config) {
@@ -1005,6 +1050,7 @@ app.service('MainService', function($http, $location, blockUI) {
                 else if (returnCode == USERNAME_ALREADY_EXISTS) {
                     controller.usernameExists = true;
                 }
+                $(".loading-component").css("visibility", "hidden");
             });
 
     }
@@ -1029,6 +1075,7 @@ app.service('MainService', function($http, $location, blockUI) {
     }
 
     self.addHome = function (home) {
+        $(".loading-component").css("visibility", "visible");
         $.ajax({
             url: self.hostDomain + "homes",
             type: 'POST',
@@ -1044,15 +1091,16 @@ app.service('MainService', function($http, $location, blockUI) {
                     console.log("Add home successfully");
                     home.id = data.id;
                 }
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
-
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
 
     self.deleteHome = function (home) {
-
+        $(".loading-component").css("visibility", "visible");
         self.selectedHome = home;
         self.getHome({});
 
@@ -1077,14 +1125,16 @@ app.service('MainService', function($http, $location, blockUI) {
                 if (xhr.status == 204) {
                     console.log("Delete home successfully");
                 }
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
-
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
 
     self.disableHome = function(home) {
+        $(".loading-component").css("visibility", "visible");
         home.enabled = false;
         $.ajax({
             url: self.hostDomain + "homes/" + home.id,
@@ -1100,14 +1150,16 @@ app.service('MainService', function($http, $location, blockUI) {
                 if (xhr.status == 204) {
                     console.log("Disable home successfully");
                 }
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
-
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
 
     self.enableHome = function(home) {
+        $(".loading-component").css("visibility", "visible");
         home.enabled = true;
         $.ajax({
             url: self.hostDomain + "homes/" + home.id,
@@ -1123,9 +1175,10 @@ app.service('MainService', function($http, $location, blockUI) {
                 if (xhr.status == 204) {
                     console.log("Enable home successfully");
                 }
+                $(".loading-component").css("visibility", "hidden");
             },
             error: function (data, textStatus, xhr) {
-
+                $(".loading-component").css("visibility", "hidden");
             }
         })
     }
