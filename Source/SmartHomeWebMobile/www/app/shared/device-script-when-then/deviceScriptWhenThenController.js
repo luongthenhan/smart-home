@@ -144,6 +144,7 @@ app.directive("deviceScriptWhenThen", ['MainService', function(MainService) {
                     .replace(self.scriptInfo.conditionContent, newCondInfo)
                     .replace(/ /g, "");
                 if (MainService.updateScript($scope.script) == false) {
+                    console.log("update fail, revert");
                     self.selectedConditionParam = self.oldConditionParam;
                     $scope.script.content = oldScriptContent;
                 } else {

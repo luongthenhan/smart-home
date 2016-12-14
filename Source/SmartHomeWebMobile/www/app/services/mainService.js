@@ -717,6 +717,7 @@ app.service('MainService', function($http, $location) {
 
     self.addCustomScript = function (script) {
         $(".loading-component").css("visibility", "visible");
+
         $.ajax({
             url: self.hostDomain + "/devices/" + self.hiddenDevice.id + "/modes/" + self.selectedMode.id + "/scripts/",
             type: 'POST',
@@ -989,6 +990,7 @@ app.service('MainService', function($http, $location) {
                 console.log("Add script successfully");
                 // Set id for new script and add it to device
                 script.id = response.data.id;
+                console.log(response);
                 device.scripts.push(script);
 
                 if (device.refNum == 0) {
@@ -1022,6 +1024,9 @@ app.service('MainService', function($http, $location) {
 
             } else if (response.status == 400) {
                 window.alert("This script is conflicted with other script(s) !");
+            } else {
+                console.log("AAAAA");
+                console.log(response);
             }
             $(".loading-component").css("visibility", "hidden");
         })

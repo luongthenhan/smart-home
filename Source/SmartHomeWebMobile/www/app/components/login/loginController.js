@@ -3,7 +3,7 @@ app.controller('LoginController', ['MainService', '$location', function(MainServ
 
     self.username = "";
     self.password = "";
-    self.hostDomain = "https://localhost:8443/smarthome/api/";
+    self.hostDomain = "https://192.168.1.129:8443/hcmut/api/";
 
     self.login = function() {
 
