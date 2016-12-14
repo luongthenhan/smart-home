@@ -13,7 +13,7 @@ app.controller('ManageCustomScriptsController', ['MainService', '$routeParams', 
 
     self.addNewCustomScript = function() {
         var newScript = {};
-        newScript.name = self.newCustomScriptName;
+		newScript.name = self.newCustomScriptName;
         newScript.content = self.newCustomScriptContent;
         newScript.type = {
             id: 3
