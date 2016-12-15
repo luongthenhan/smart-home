@@ -10,7 +10,9 @@
  left=20mm,
  top=20mm,
  } 
- 
+
+\usepackage{seqsplit}
+\usepackage{ragged2e}
 \usepackage{csquotes}
 \usepackage{enumitem}
 \setlist[itemize]{leftmargin=1.3cm}
@@ -1578,6 +1580,29 @@ Với việc hiện thực 6 trang giao diện chính cùng các thành phần c
 %-------------------------------------Tổng kết----------------------------------%
 \chapter{Tổng kết}
 
+Với mục tiêu của đề tài “Xây dựng hệ thống nhà thông minh sử dụng Raspberry Pi” là hướng tới phát triển một hệ thống điều khiển các thiết bị thông dụng trong nhà thông qua các kịch bản người dùng mong muốn một cách dễ dàng và tiện lợi, chúng tôi đã tìm hiểu được cách thức hoạt động và điều khiển các thiết bị phần cứng được gắn trên máy tính kích thước nhỏ Raspberry Pi, hiện thực một máy chủ với vai trò xử lý các kịch bản của người dùng và một ứng dụng di động cho phép người dùng dễ dàng truy cập và quản lý các thiết bị.
+
+Về mặt các thiết bị hỗ trợ, chúng tôi đã triển khai việc lắp đặt thành công các thiết bị: Bóng đèn, còi hú, cảm biến nhiệt độ, cảm biến chuyển động, cảm biến ánh sáng và cảm biến khí gas vào Raspberry Pi. Trong quá trình lắp đặt, có một số khó khăn xảy ra như các thiết bị có cách thức hoạt động khác nhau, <[ điền thêm vô nha Tùng ]>. Các khó khăn này đã được nhóm giải quyết thông qua <[ điền thêm vô nha Tùng ]>. Vì mục tiêu đề tài hướng trọng tâm vào việc xử lý các tác vụ trên phương diện phần mềm, nên việc lặp đặt các thiết bị phần cứng còn tồn tại một số hạn chế như là các thiết bị vẫn còn dừng ở mức thí nghiệm, chưa phải là các thiết bị thật được sử dụng trong thực tế cũng như số lượng chủng loại thiết bị chưa thực sự nhiều.
+
+Về các kịch bản điều khiển thiết bị, chúng tôi cung cấp cho người dùng 2 loại kịch bản với cấu trúc định sẵn là Khi/Thì và Từ/Đến thể hiện mặt luận lý đơn giản để người dùng có thể dễ dàng chỉnh sửa nhằm tạo nên mối liên hệ hoạt động giữa các thiết bị ở mức đơn giản. Ngoài ra, để có thể thiết lập các kịch bản liên hệ thiết bị phức tạp, chúng tôi còn cung cấp loại kịch bản tự tạo cho phép người dùng có thể kết hợp nhiều thiết bị với các cơ chế luận lý lồng nhau phức tạp thông qua hệ thống cú pháp định sẵn. Trong quá trình hiện thực, chúng tôi đã gặp phải khó khăn khi các kịch bản có sự mâu thuẫn lẫn nhau, <[ còn khó khăn gì nữa điền thêm vô nha Vinh ]>. Chúng tôi đã giải quyết được một phần khó khăn với <[ điền thêm vô nha Vinh ]>.
+
+Về ứng dụng di động, chúng tôi đã xây dựng được ứng dụng với thiết kế giao diện đơn giản cung cấp các tính năng cơ bản để người dùng có thể quản lý các ngôi nhà được lắp đặt hệ thống, các thiết bị cũng như các kịch bản điều khiển. Một số khó khăn nhóm gặp phải trong quá trình xây dựng ứng dụng như việc thiếu tính đồng nhất giữa ứng dụng và máy chủ, việc lọc các thiết bị cùng chân cắm khi có kịch bản liên hệ chưa thực sự chính xác đã được nhóm giải quyết tương đối triệt để. Ứng dụng còn tồn tại một số hạn chế như thời gian đáp ứng người dùng đôi khi còn chậm, chưa thực sự tối ưu hóa trải nghiệm vì hiện tại máy chủ được cài đặt trực tiếp trên máy tính nhỏ Raspberry Pi nên tốc độ xử lý các yêu cầu từ phía ứng dụng còn hạn hẹp.
+
+Nhìn chung, hệ thống chúng tôi phát triển đã đáp ứng được mục tiêu của đề tài về việc xây dựng hệ thống nhà thông minh sử dụng Raspberrry Pi điều khiển các thiết bị thông qua các kịch bản tuy vẫn còn một số hạn chế. Để phát triển hệ thống trong tương lai cũng như khắc phục các mặt còn hạn chế, chúng tôi dự định sẽ mở rộng và cải thiện hệ thống theo các hướng:
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Hỗ trợ thêm nhiều chủng loại thiết bị (như camera, khóa cửa,\dots) và triển khai lắp đặt các thiết bị thực tế.
+\item Xử lý tốt hơn các mâu thuẫn lẫn nhau giữa các kịch bản và mở rộng cấu trúc cú pháp kịch bản.
+\item Tăng cường hiệu năng đáp ứng của máy chủ với các thay đổi của kịch bản.
+
+\item Tối ưu hóa trải nghiệm và thời gian đáp ứng người dùng của ứng dụng di động.
+\item Đưa máy chủ lên nền tảng đám mây (Cloud Server) độc lập với Raspberry Pi.
+\item Áp dụng cơ chế bảo mật quét và diệt virus cho máy chủ cũng như Raspberry Pi để tăng cường bảo mật cho hệ thống và các ngôi nhà được lắp đặt hệ thống.
+\vspace{1mm}
+\end{itemize}
+
+Nhà thông minh hiện đang dần trở thành một xu hướng tất yếu của nền văn minh hiện đại ngày nay với sự phát triển không ngừng nghỉ trên toàn cầu cũng như trong nước. Với mong muốn mang đến một giải pháp nhà thông minh tiết kiệm, đầy đủ và thuận tiện cho người dùng, chúng tôi hy vọng hệ thống mà nhóm đã làm được sẽ đóng góp một phần vào trong sự phát triển đó.
+
 %-------------------------------------Tài liệu tham khảo------------------------%
 \newpage
 \bibliographystyle{abbrv}
@@ -1586,5 +1611,253 @@ Với việc hiện thực 6 trang giao diện chính cùng các thành phần c
 %--------------------------------------Phụ lục--------------------------------%
 \chapter*{Phụ lục}\label{appendix}
 \addcontentsline{toc}{chapter}{Phụ lục}
+
+\section*{Một số kịch bản thông dụng}
+
+Các điều kiện (condition) đang có:
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Đèn bật, đèn tắt.
+\item Còi bật, còi tắt.
+\item Nhiệt độ >, <, >=, <=.
+\item Có gas.
+\item Có người.
+\item Trời sáng, trời tối.
+\vspace{1mm}
+\end{itemize}
+
+Các hành động (action) đang có:
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Bật đèn, tắt đèn.
+\item Bật còi, tắt còi.
+\vspace{1mm}
+\end{itemize}
+
+Một vài kịch bản dạng If - Then thông dụng:
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item \textbf{If} (đèn ngủ bật) \textbf{Then} (tắt đèn phòng khách và nhà bếp).
+\item \textbf{If} (đèn cầu thang 1 bật) \textbf{Then} (tắt đèn cầu thang 2).
+\item \textbf{If} (đèn cầu thang 2 bật) \textbf{Then} (tắt đèn cầu thang 1).
+\item \textbf{If} (còi bật) \textbf{Then} (bật tắt cả các đèn).
+\item \textbf{If} (nhiệt độ > 50) \textbf{Then} (bật còi và bật tất cả đèn).
+\item \textbf{If} (có gas) \textbf{Then} (bật còi và bật tất cả các đèn).
+\item \textbf{If} (có người trước cửa và trời tối) \textbf{Then} (Bật đèn và hú còi).
+\item \textbf{If} (có người trước cửa và trời sáng) \textbf{Then} (Hú còi).
+\item \textbf{If} (có người vào nhà và trời tối) \textbf{Then} (Hú còi và bật tất cả đèn).
+\item \textbf{If} (có người vào nhà và trời sáng) \textbf{Then} (Hú còi).
+\item \textbf{If} (có người lên cầu thang) \textbf{Then} (bật đèn cầu thang).
+\item \textbf{If} (trời sáng) \textbf{Then} (tắt đèn).
+\item \textbf{If} (trời tối) \textbf{Then} (bật đèn).
+\vspace{1mm}
+\end{itemize}
+
+Một vài kịch bản dạng From - To thông dụng:
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item \textbf{From} (20h) \textbf{To} (6h) \textbf{Do} (Bật đèn ngủ).
+\item \textbf{From} (6h) \textbf{To} (20h) \textbf{Do} (Tắt đèn ngủ).
+\item \textbf{From} (20h) \textbf{To} (6h) \textbf{Do} (\textbf{When} (có người) \textbf{Then} (Hú còi + Bật đèn)).
+\item \textbf{From} (20h) \textbf{To} (6h) \textbf{Do} (\textbf{When} (có gas) \textbf{Then} (Hú còi + Bật đèn)).
+\item \textbf{From} (20h) \textbf{To} (6h) \textbf{Do} (\textbf{If} (nhiệt độ > 50) \textbf{Then} (Hú còi + Bật đèn)).
+\item \textbf{From} (20h) \textbf{To} (6h) \textbf{Do} (\textbf{If} (còi hú) \textbf{Then} (Bật tất cả các đèn)).
+\vspace{1mm}
+\end{itemize}
+
+\section*{Danh sách API cung cấp cho client}
+
+Danh sách API được liệt kê theo bảng sau:
+
+{\scriptsize
+\begin{longtable}{|p{2.5cm}|p{1.5cm}|p{3cm}|p{3cm}|p{4cm}|}
+
+\hline 
+\multicolumn{1}{|p{2.5cm}|}{\textbf{Page/Function}} & \multicolumn{1}{p{1.5cm}|}{\textbf{Method Type}} & \multicolumn{1}{p{3cm}|}{\textbf{URL}} & \multicolumn{1}{p{3cm}|}{\textbf{Input}} & \multicolumn{1}{p{4cm}|}{\textbf{Output}} \\ \hline 
+\endhead
+
+\hline
+Get list categories given home & GET &	homes/{homeId}/device-types	& 
+homeId: Long &
+HTTP Status OK 200 if successful\newline
+categories: List<Category>\\
+
+\hline
+Get all devices given category & 	GET &	homes/{homeId}/device-types/{deviceTypeId}/devices &	homeId: Long\newline
+deviceTypeId: Long &	HTTP Status OK 200 if successful
+Return: List<Device>\\
+
+\hline
+Enabled/
+Disabled device	& PATCH &	homes/{homeId}/device-types/{deviceTypeId}
+/devices/{deviceId} &	
+deviceId: Long\newline
+homeId: Long\newline
+deviceTypeId: Long\newline
+Pass json: {"enabled": true}
+to update enabled = true &	
+HTTP Status OK 204 if successful\\
+
+\hline
+Delete device in home &	DELETE &	/homes/{homeId}/device-types/{deviceTypeId}/
+devices/{deviceId} &	
+deviceId: Long\newline
+homeId: Long\newline
+deviceTypeId: Long &	HTTP Status OK 204 if successful\\
+
+\hline
+Get list scripts given mode	& GET &	devices/{deviceId}/modes/
+{modeId}/scripts &	deviceId: Long\newline
+modeId: Long &	
+HTTP Status OK 204 if successful\newline
+Return: List<Script>\\
+
+\hline
+Update script of one specific mode &	PATCH &	devices/{deviceId}/modes/
+{modeId}/scripts/{scriptId} &	
+deviceId: Long\newline
+modeId: Long\newline
+script: Script &	HTTP Status OK 204 if successful\\
+
+\hline
+Delete script in one specific mode &	DELETE &	devices/{deviceId}/modes/
+{modeId}/scripts/{scriptId} &	scriptId: Long &	HTTP Status OK 204 if successful\\
+
+\hline
+Add script to device given mode &	POST &	devices/{deviceId}/modes/
+{modeId}/scripts &	deviceId: Long\newline
+modeId: Long\newline
+script: Script &	
+HTTP Status OK 201 if successful\newline
+Also return the URI of new object.\newline
+E.g devices/5/modes/1/\newline
+scripts/3\\
+
+\hline
+Add device of specific category &	POST &	homes/{homeId}/device-types/{deviceTypeId}/devices &	
+homeId: Long\newline
+categoryId: Long\newline
+device: Device	& 
+HTTP Status OK 201 if successful\newline
+Also return the URI of new object. \newline
+E.g\newline
+homes/5/device-types/3/\newline
+devices/4\\
+
+\hline
+Get all valid GPIO pins	& GET &	homes/all-gpios & &		
+HTTP Status OK 200 if successful.\newline
+Return: List<Integer>\\
+
+\hline
+Get home &	GET	& homes/{homeId} &	homeId: Long &	
+HTTP Status OK 200 if successful.\newline
+Return: Home\\
+
+\hline
+Delete home	& DELETE &	homes/{homeId} &	homeId: Long	& HTTP Status OK 204 if successful\\
+
+\hline
+Add new home (also add default mode ) &	POST &	homes &	
+home: Home &
+HTTP Status OK 201 if successful\newline
+Also return the URI of new object. \newline
+E.g\newline
+homes/1\\
+
+\hline
+Update home (Enabled/ Disable / Current mode,\dots)	& PATCH	& homes/{homeId} &	
+homeId: Long\newline
+home: Home\newline
+Pass json: {"enabled": true}
+to update enabled = true &	HTTP Status OK 204 if successful\\
+
+\hline
+Get list home of one user	& GET &	homes & &		
+HTTP Status OK 200 if successful\newline
+Return: List<Home>\\
+
+\hline
+Get list mode in home &	GET &	homes/{homeId}/modes &	homeId: Long &	
+HTTP Status OK 200 if successful\newline
+Return: List<Mode>\\
+
+\hline
+Delete mode &	DELETE &	homes/{homeId}/modes/
+{modeId} &	homeId: Long
+modeId: Long &	HTTP Status OK 204 if successful\\
+
+\hline
+Add new mode &	POST &	homes/{homeId}/modes &	
+mode:Mode\newline
+homeId: Long & 
+HTTP Status OK 201 if successful\newline
+Also return the URI of new object. E.g
+homes/3/modes/3\\
+
+\hline
+Update existing mode & PATCH &	homes/{homeId}/modes/
+{modeId} &	
+homeId: Long\newline
+modeId: Long\newline
+mode: Mode & HTTP Status OK 204 if successful\\
+
+\hline
+Login &	POST & 	/login &	
+Add headers:\newline
+X-Username\newline
+X-Password & 
+HTTP Status:\newline
+200 OK\newline
+401 Unauthorized\\
+
+\hline
+Logout & POST &	/logout &	
+Add header:\newline
+X-Auth-Token \newline
+&	Http Status:\newline
+200 OK\newline
+401 Unauthorized\\
+
+\hline
+Sign up	& POST &	/users/signup &	
+User information:\newline
+Username\newline
+Password (encrypted)\newline
+Fullname\newline
+Email &	Return: User’s activation link\newline
+Return code:\newline
+-1: ERROR\_WHEN\_ADD\_USER\newline
+-2: USERNAME\_ALREADY\_EXISTED\newline
+-3: EMAIL\_ALREADY\_EXISTED\newline
+> 0: Successful\newline
+Http status:\newline
+200 OK\newline
+400 Bad request\\
+
+\hline
+Activate user &	GET &	/users/activation/{userId} &	User id &	
+Http status:\newline
+200 OK\newline
+400 Bad request\\
+
+\hline
+Get user information &	GET	& /users &
+X-Auth-Token &
+Http status:\newline
+200 Ok\newline
+400 Bad request\newline
+Return: User model\\
+
+\hline
+Get list device id in script &	POST &	/homes/{homeId}/scripts &	Script object with content and script type id &	
+Http status:\newline
+200 OK\newline
+400 BAD REQUEST\newline
+Return list device id in that script.\\
+
+\hline
+\end{longtable}
+}
 
 \end{document}
