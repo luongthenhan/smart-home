@@ -202,10 +202,26 @@ Trong khoảng những năm trở lại đây, chắc hẳn khái niệm IoT (In
 Hãy tưởng tượng một ngôi nhà trong đó có thể kết nối và tự động hóa một số thiết bị điện tử, điện gia dụng, như đèn chiếu sáng, còi báo động,\dots\hspace{0mm} hay đến thiết bị an ninh như camera chả hạn. Ta sẽ dễ dàng kiểm soát hoạt động của ngôi nhà ngay cả khi vắng mặt từ bất cứ đâu với máy tính hay smartphone, giảm thiểu những rủi ro ngoài ý muốn. Những kịch bản tự động hóa hoạt động của các thiết bị theo ngữ cảnh đem lại tiện nghi, thoải mái và an toàn cho cuộc sống \cite{smarthome-trend}.\\\\
 Theo Gartner, IoT dự kiến sẽ có khoảng 26 tỷ thiết bị vào năm 2020 \cite{gartner}. Tuy nhiên ở thời điểm hiện tại, IoT vẫn còn là khái niệm khá mới mẻ đối với các quốc gia đang trên đà phát triển như Việt Nam ta. Để ngôi nhà của mình sở hữu những tính năng thông minh kể trên, chắc hẳn chi phí cũng không hề nhỏ. Và đúng như thế, chi phí là một trong những rào cản lớn với sự phát triển IoT ở các nước đang phát triển, trong đó có cả Việt Nam.
 
+\section{Các thành tựu, công trình liên quan nhà thông minh}
+
+Nếu xếp hạng tốc độ đổi mới của các ngành phục vụ cho nhu cầu cuộc sống thì chắc chắn công nghệ luôn là một trong những vị trí dẫn đầu. Ngày nay rất nhiều ngành nghề đã ứng dụng công nghệ cao vào sản phẩm của mình, trong đó có mô hình nhà thông minh. Trong những năm gần đây nhà thông minh đang dần trở nên phổ biến hơn với người dân Việt Nam \cite{smarthome-trend-2016}. Nhiều sản phẩm nhà thông minh được đánh giá cao ở nước ngoài có thể kể tới như Moni, Crestron, Control4,… và ở Việt Nam như Bkav, Vinteli Home,\dots\hspace{0mm} \cite{the-best-smarthome}. Những ngôi nhà thông minh này được tích hợp công nghệ và nhiều tiện ích đi kèm. Sau đây là một số hướng phát triển nhà thông minh chính ở thời điểm hiện tại:
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Xu hướng nhà thông minh với các cơ chế bảo mật.
+\item Xu hướng nhà thông minh tiết kiệm năng lượng và kiểm soát môi trường.
+\item Hệ thống ánh sáng thông minh.
+\item Xu hướng nhà thông minh sử dụng công nghệ không dây.
+\item Xu hướng tự động hóa, toàn quyền kiểm soát nhà thông minh \cite{top-4-smarthome}.
+\vspace{1mm}
+\end{itemize}
+
+\noindent
+Trong luận văn này, hệ thống nhóm sắp xây dựng cũng đi theo xu hướng tự động hóa nhà thông minh. Tuy nhiên, một điểm khác biệt đó là hệ thống cho phép người dùng có thể “lập trình” cho nhà thông minh hoạt động tự động dựa theo các kịch bản. Đây không hoàn toàn là xu hướng mới với các nước phát triển, nhưng ở một số nước đang phát triển như Việt Nam, giải pháp này có thể giúp cho một số hộ gia đình được tiếp cận gần hơn xu hướng nhà thông minh với mức chi phí phù hợp, có khả năng đáp ứng một số nhu cầu thực tế đơn giản.
+
 \section{Nhà thông minh với Raspberry Pi}
 Có rất nhiều tùy chọn trong việc tiếp cận với IoT nhưng không có gì tốt hơn ngoài những trải nghiệm thực tế. Một trong những nển tảng quan trọng cho việc học IoT là mạch tính toán nhỏ và đơn giản, nhắm đến khả năng tạo một chiếc máy tính nhỏ gọn, giá rẻ phục vụ cho công tác học tập, nghiên cứu và thử nghiệm. Raspberry Pi không chỉ là một nền tảng phần cứng thú vị để ứng dụng cho các dự án IoT mà còn là công cụ giúp các nhà phát triển học hỏi và hoàn thiện kĩ năng Internet kết nối vạn vật. Một trong những ứng dụng tốt nhất của Raspberry Pi chính là trở thành trung tâm điều khiển dành cho các thiết bị sử dụng nguồn điện áp thấp.
 
-\section{Mục tiêu và phạm vi đề tài}
+\section{Mục tiêu và phạm vi đề tài}\label{thesis-target}
 Từ những nhu cầu thực tế phát sinh, nhóm mong muốn được thực hiện một hệ thống nhà thông minh được quản lý tự động bởi các kịch bản định sẵn, tương tác với ứng dụng nền tảng web hay ứng dụng thiết bị di động. Trong đó, Raspberry Pi sẽ đóng vai trò là “bộ não” trung tâm, quản lý thiết bị trong nhà, đồng thời cũng là nơi vận hành, xử lý các kịch bản người dùng.\\\\
 Mục tiêu của đề tài trong việc xây dựng hệ thống này đó là:
 
@@ -229,7 +245,7 @@ Toàn bộ nội dung luận văn được nhóm trình bày trong bảy chươn
 
 \section{Các yêu cầu chức năng}
 
->>>>>>>>>>>>>>>>Wating >>>>>>>>>>>>>>>>>
+Từ các mục tiêu đề tài đã được đặt ra ở phần \ref{thesis-target} về việc xây dựng một hệ thống nhà thông minh cho phép người dùng quản lý các thiết bị bằng kịch bản mong muốn bên trong một hoặc nhiều ngôi nhà của mình, các yêu cầu chức năng chính được xác định cho hệ thống chúng tôi phát triển sẽ bao gồm các máy tính kích thước nhỏ Raspberry Pi ứng với từng ngôi nhà được lắp đặt hệ thống nơi người dùng sẽ kết nối các thiết bị trong nhà thông qua các chân cắm GPIO. Một ứng dụng di động nơi người dùng sẽ đăng ký cũng như chỉnh sửa thông tin các ngôi nhà, khai báo và quản lý thông tin các thiết bị bên trong ngôi nhà. Ứng dụng cần cung cấp cho người dùng một cơ chế kịch bản hoạt động thiết bị vừa đơn giản để người dùng có thể thêm mới, thiết lập dễ dàng đồng thời vừa có khả năng tùy biến cao khi người dùng muốn kết hợp hoạt động của nhiều thiết bị trong những ngữ cảnh phức tạp. Ngoài ra, ứng dụng còn cần cho phép người dùng tạo nên các chế độ hoạt động khác nhau của ngôi nhà ứng với từng trường hợp thực tế như vắng nhà, tiệc tùng, trời mưa… Trong đó, từng chế độ là từng nhóm các kịch bản riêng biệt để người dùng có thể dễ dàng chuyển đổi qua lại một cách nhanh chóng và thuận tiện khi cần thiết.
 
 \section{Các yêu cầu phi chức năng}
 
@@ -268,7 +284,13 @@ Với sơ đồ usecase đã trình bày, hệ thống đã đáp ứng được
 
 \section{Tổng quan hệ thống}
 
-Để đáp ứng mục tiêu và yêu cầu đặt ra của đề tài về việc xây dựng hệ thống điều khiển các thiết bị thông dụng trong nhà thông qua các kịch bản, nhóm chúng tôi quyết định thiết kế hệ thống với 3 bộ phận chính: Module điều khiển thiết bị (Module Controller) đảm nhiệm việc kết nối và điều khiển các thiết bị được gắn với máy tính siêu nhỏ Raspberry Pi, máy chủ hệ thống (Server) với vai trò trung tâm xử lý các nghiệp vụ liên quan đến quản lý nhà, thiết bị, kịch bản trong hệ thống và ứng dụng di động (Mobile Application) cung cấp giao diện để người dùng truy cập và sử dụng hệ thống. Mối liên hệ của 3 bộ phận này được thể hiện ở Hình ....\\
+\begin{figure}[h!]
+  \centering
+     \includegraphics[width=12cm]{2-overview}
+  \caption{Tổng quan hệ thống}\label{fig:2-overview}
+\end{figure}
+
+Để đáp ứng mục tiêu và yêu cầu đặt ra của đề tài về việc xây dựng hệ thống điều khiển các thiết bị thông dụng trong nhà thông qua các kịch bản, nhóm chúng tôi quyết định thiết kế hệ thống với 3 bộ phận chính: Module điều khiển thiết bị (Module Controller) đảm nhiệm việc kết nối và điều khiển các thiết bị được gắn với máy tính siêu nhỏ Raspberry Pi, máy chủ hệ thống (Server) với vai trò trung tâm xử lý các nghiệp vụ liên quan đến quản lý nhà, thiết bị, kịch bản trong hệ thống và ứng dụng di động (Mobile Application) cung cấp giao diện để người dùng truy cập và sử dụng hệ thống. Mối liên hệ của 3 bộ phận này được thể hiện ở hình \ref{fig:2-overview}.\\
 
 \noindent
 \textbf{Module điều khiển thiết bị (Module Controller):} Bộ phận này là một bộ điều khiển liên kết trực tiếp với máy tính siêu nhỏ Raspberry Pi nhằm gửi tín hiệu điều khiển đến các thiết bị phần cứng được kết nối cũng như nhận tín hiệu thông tin trả về từ các thiết bị này. Tùy vào chủng loại thiết bị phần cứng mà bộ điều khiển sẽ có cơ chế xử lý thông tin riêng. Module điều khiển thiết bị cung cấp API cho phía máy chủ hệ thống để máy chủ có thể gián tiếp truy cập, gửi nhận thông tin và điều khiển các thiết bị phần cứng một cách dễ dàng.\\
@@ -286,7 +308,7 @@ Với 3 bộ phận như trên, hệ thống được chia tách thành các th�
 \chapter{Back-end}
 Ở mục này, nhóm sẽ tập trung vào phần thiết kế database cho ứng dụng. Tiếp đến, nhóm sẽ đi vào giới thiệu tổng quan về các công nghệ mà nhóm đã tìm kiếm và ứng dụng trong việc xây dựng hệ thống này. Cuối cùng, dựa trên những phân tích về yêu cầu hệ thống, nhóm đề xuất và thiết kế ra mô hình kiến trúc của back-end để đáp ứng các nhu cầu đó.
 
-\section{DB Design}
+\section{Thiết kế cơ sở dữ liệu}
 
 \begin{figure}[h]
   \centering
@@ -673,7 +695,7 @@ Với mục tiêu hỗ trợ người dùng dễ dàng quản lý các ngôi nh�
 Với cách thiết kế như trên, kiến trúc ứng dụng di động cung cấp một giao diện tương đối đơn giản nhưng vẫn đáp ứng được các nhu cầu cơ bản về việc quản lý các ngôi nhà, thiết bị, chế độ và các kịch bản điều khiển thiết bị của người dùng.
 
 %-----------------------------------Hiện thực và đánh giá------------------%
-\chapter{Hiện thực và đánh giá}
+\chapter{Hiện thực hệ thống}
 
 \section{Hiện thực back-end}\label{back-end-implementation}
 
@@ -880,7 +902,7 @@ Kịch bản hệ thống sẽ được lưu trữ trong bộ nhớ hệ thống
 
 	\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
 	\item RUNNING: đang được thực thi
-	\item STOPPING: đã dừng lại (tạm thời và sau đó có thể được khởi động chạy lại)
+	\item STOP: đã dừng lại (tạm thời và sau đó có thể được khởi động chạy lại)
 	\item STOP\textunderscore FOREVER: dừng lại vĩnh viễn, trạng thái này dùng để kiểm soát những kịch bản trong hàng chờ được gỡ bỏ
 	\vspace{1mm}
 	\end{itemize}
@@ -1152,13 +1174,13 @@ Tiếp theo, thuật toán còn kiểm tra cả việc nếu như kịch bản c
 \end{figure}
 
 \noindent
-Việc xây dựng kịch bản, cách thức tổ chức, cấu trúc dữ liệu kịch bản, … đều là tiền đề cho việc thực thi kịch bản đó. Nhóm đã phải đắn đó trong việc chọn cách thiết kế cấu trúc dữ liệu để việc quản lý, cũng như thực thi kịch bản dễ dàng và suôn sẻ hơn. Đáp ứng cho nhu cầu quản lý ấy, nhóm tạo ra module Scenario Runner. Đầu vào của module này sẽ là một kịch bản hệ thống với mong muốn là hệ thống sẽ thực thi, “chạy” kịch bản ấy. Hình \ref{fig:6-Flowchart-Scenario-Runner} mô tả thuật toán quản lý trạng thái các kịch bản trong hệ thống. Đầu vào thuật toán nhận kịch bản hệ thống với trạng thái xác định. Nếu trạng thái là dừng (STOPPING), module lập tức cập nhật ngay trạng thái đó vào kịch bản tương ứng trong hàng chờ hệ thống và làm nó dừng thật sự. Nếu trạng thái là chạy (RUNNING), ta cần kiểm tra thêm 1 điều kiện đó là kịch bản này có thể chạy ở chế độ hiện tại hay không. Nếu có thì cứ sau khoảng thời gian mặc định, tầm 5 giây, kịch bản được kích hoạt hàm chạy một lần. Và ngược lại, nếu kịch bản không thuộc về chế độ hiện tại của nhà này, trạng thái kịch bản sẽ cập nhật thành dừng và nằm trong hàng chờ hệ thống. Trường hợp mà người dùng mong muốn xóa đi kịch bản, trạng thái của nó sẽ trở thành dừng vĩnh viễn và được loại bỏ khỏi hàng chờ.\\
+Việc xây dựng kịch bản, cách thức tổ chức, cấu trúc dữ liệu kịch bản, … đều là tiền đề cho việc thực thi kịch bản đó. Nhóm đã phải đắn đó trong việc chọn cách thiết kế cấu trúc dữ liệu để việc quản lý, cũng như thực thi kịch bản dễ dàng và suôn sẻ hơn. Đáp ứng cho nhu cầu quản lý ấy, nhóm tạo ra module Scenario Runner. Đầu vào của module này sẽ là một kịch bản hệ thống với mong muốn là hệ thống sẽ thực thi, “chạy” kịch bản ấy. Hình \ref{fig:6-Flowchart-Scenario-Runner} mô tả thuật toán quản lý trạng thái các kịch bản trong hệ thống. Đầu vào thuật toán nhận kịch bản hệ thống với trạng thái xác định. Nếu trạng thái là dừng (STOP), module lập tức cập nhật ngay trạng thái đó vào kịch bản tương ứng trong hàng chờ hệ thống và làm nó dừng thật sự. Nếu trạng thái là chạy (RUNNING), ta cần kiểm tra thêm 1 điều kiện đó là kịch bản này có thể chạy ở chế độ hiện tại hay không. Nếu có thì cứ sau khoảng thời gian mặc định, tầm 5 giây, kịch bản được kích hoạt hàm chạy một lần. Và ngược lại, nếu kịch bản không thuộc về chế độ hiện tại của nhà này, trạng thái kịch bản sẽ cập nhật thành dừng và nằm trong hàng chờ hệ thống. Trường hợp mà người dùng mong muốn xóa đi kịch bản, trạng thái của nó sẽ trở thành dừng vĩnh viễn và được loại bỏ khỏi hàng chờ.\\
 
 \noindent
 Module Scenario Runner quản lý mỗi kịch bản bởi 1 thread khác nhau, nói cách khác là chịu trách nhiệm xử lý multi-thread. Mỗi kịch bản cứ sau khoảng 5 giây sẽ được chạy lại một lần, nhằm đảm bảo mọi cập nhật mới nhất với kịch bản ấy có hiệu lực gàn như lập tức. Kịch bản thì có chứa thông tin về trạng thái: chạy, dừng, dừng vĩnh viễn. Nhiệm vụ module này cũng là kiểm soát trạng thái các kịch bản ấy.\\
 
 \noindent
-Sau khi một kịch bản mới được thêm vào hệ thống, trạng thái của nó sẽ là chạy (RUNNING). Khi kịch bản ấy được cập nhật, trạng thái của nó cũng được cập nhật lại. Nếu như người dùng muốn cho phép (enable) hoặc vô hiệu hóa (disable) ngôi nhà, hay thiết bị có liên quan kịch bản ấy thì thao tác đó cũng làm ảnh hưởng đến trạng thái của kịch bản. Ví dụ người dùng cho phép dùng (enable) thiết bị ấy thì các kịch bản liện quan thiết bị đó sẽ mang trạng thái chạy (RUNNING). Khi người dùng vô hiệu hóa thiết bị, các kịch bản liên quan sẽ chuyển sang trạng thái dừng (STOPPING). Tương tự với việc cho phép sử dụng nhà hay vô hiệu hóa nhà thì kịch bản thuộc nhà ấy cũng có trạng thái chạy hay dừng tương ứng.\\
+Sau khi một kịch bản mới được thêm vào hệ thống, trạng thái của nó sẽ là chạy (RUNNING). Khi kịch bản ấy được cập nhật, trạng thái của nó cũng được cập nhật lại. Nếu như người dùng muốn cho phép (enable) hoặc vô hiệu hóa (disable) ngôi nhà, hay thiết bị có liên quan kịch bản ấy thì thao tác đó cũng làm ảnh hưởng đến trạng thái của kịch bản. Ví dụ người dùng cho phép dùng (enable) thiết bị ấy thì các kịch bản liện quan thiết bị đó sẽ mang trạng thái đang chạy (RUNNING). Khi người dùng vô hiệu hóa thiết bị, các kịch bản liên quan sẽ chuyển sang trạng thái dừng (STOP). Tương tự với việc cho phép sử dụng nhà hay vô hiệu hóa nhà thì kịch bản thuộc nhà ấy cũng có trạng thái chạy hay dừng tương ứng.\\
 
 \noindent
 Tuy nhiên, vấn đề quản lý multi-thread hiệu quả khi số lượng kịch bản tăng lên cũng là một khó khăn mà nhóm đang đối mặt và sẽ được đề cập tới trong mục thảo luận.
@@ -1167,6 +1189,7 @@ Tuy nhiên, vấn đề quản lý multi-thread hiệu quả khi số lượng k
 
 >>>>>>>>>>>>>>>>>>>>>>>>> Wating <<<<<<<<<<<<<<<<
 
+\noindent
 Kết thúc chương này, ta có được một cái nhìn chi tiết hơn, sâu hơn về phần thiết kế hệ thống back-end. Back-end đóng vai trò là trung tâm, là “bộ não” của toàn hệ thống, lưu trữ các dữ liệu quan trọng của người dùng,\dots\hspace{0mm} cho nên khâu thiết kế, xây dựng và hiện thực cần tiến hành kĩ lưỡng, cân nhắc đến nhiều vấn đề liên quan. Hệ thống back-end được xây dựng theo hướng module hóa, mỗi module đảm nhận nhiệm vụ chuyên biệt. Trong đó, quan trọng nhất chính là các module chuyển đổi sang kịch bản hệ thống, module kiểm tra tính hợp lệ và module quản lý, khởi chạy các kịch bản. Tuy rằng hệ thống chưa thực sự hoàn thiện, việc quản lý tài nguyên, quản lý kịch bản chưa được tối ưu, dạng kịch bản chưa phong phú, đa dạng,\dots\hspace{0mm} nhưng với bước khởi điểm này cùng những định hướng mở rộng trong tương lai thì hệ thống sẽ có tính khả thi và thực tiễn cao hơn.
 
 \section{Xây dựng module điều khiển thiết bị}
@@ -1750,7 +1773,7 @@ Trang đăng ký (Registration Page) ở hình \ref{fig:6-RegisterPage} cung c�
   \caption{Trang danh sách các ngôi nhà}\label{fig:6-HomeListPage}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[h!]
   \centering
      \includegraphics[width=10cm]{6-AddHome}
   \caption{Bảng hộp thoại tạo ngôi nhà mới}\label{fig:6-AddHome}
@@ -1804,7 +1827,7 @@ Trang danh sách các kiểu thiết bị (Device Category List Page) ở hình 
   \caption{Trang danh sách các thiết bị}\label{fig:6-DeviceListPage}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[h!]
   \centering
      \includegraphics[width=10cm]{6-AddDevice}
   \caption{Bảng hộp thoại tạo thiết bị mới}\label{fig:6-AddDevice}
@@ -1846,8 +1869,104 @@ Trang danh sách các kịch bản tự tạo (Custom Script List Page) ở hìn
 \noindent
 Với việc hiện thực 6 trang giao diện chính cùng các thành phần chia sẻ như trên, ứng dụng di động cung cấp đầy đủ các chức năng cần thiết để người dùng có thể dễ dàng quản lý các ngôi nhà, thiết bị và kịch bản của hệ thống cũng như phản ánh được kiến trúc tổng quát đã được trình bày ở Chương 5.
 
-%------------------------------------
-\section{Đánh giá tích hợp hệ thống}
+%-----------------------------------
+\chapter{Thí nghiệm và đánh giá hệ thống}
+\section{Phương pháp thực nghiệm}
+
+Nhóm tiến hành lắp đặt lần lượt các thiết bị gồm: cảm biến nhiệt, cảm biến ánh sáng, cảm biến khí gas, cảm biến chuyển động, đèn và còi hú vào Raspberry Pi. Hình XX mô tả thiết bị demo của nhóm được gắn trên Raspberry Pi. Sau đó, nhóm cho thiết bị mobile cùng Raspberry Pi kết nối đến cùng 1 mạng local qua sử dụng máy tính làm Wifi hotspot. Nhóm tiến hành đăng ký thông qua giao diện ứng dụng và tạo mới nhà, tạo mới chế độ, thiết bị, thêm kịch bản. Một vài kịch bản mà nhóm chuẩn bị cho thí nghiệm.
+
+\noindent
+Chế độ 1 (kiểm tra cảm biến ánh sáng):
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Nếu cảm biến ánh sáng phát hiện xung quanh sáng thì đèn tắt.
+\item Nếu cảm biến ánh sáng phát hiện xung quanh tối thì đèn bật.
+\vspace{1mm}
+\end{itemize}
+
+\noindent
+Chế độ 2 (kiểm tra cảm biến khí gas):
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Nếu cảm biến khí gas phát hiện nồng độ gas vượt quá một ngưỡng cho phép (có thể điều chỉnh thông qua cảm biến khí gas) thì còi hú.
+\item Nếu cảm biến khí gas phát hiện nồng độ gas ở mức bình thường thì còi tắt.
+\item Chuẩn bị kịch bản có khả năng mâu thuẫn: Trong khoảng 19h00 đến 20h00 thì còi tắt.
+\vspace{1mm}
+\end{itemize}
+
+\noindent
+Chế độ 3 (kịch bản thời gian):
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Trong khoảng thời gian từ 18h00 đến 22h00 thì đèn bật.
+\item Trong khoảng thời gian từ 22h01 đến 17h59 thì đèn tắt.
+\item Chuẩn bị kịch bản mâu thuẫn: Trong khoảng 19h00 đến 20h00 thì đèn tắt.
+\vspace{1mm}
+\end{itemize}
+
+\noindent
+Chế độ 4 (nhiều kịch bản phối hợp):
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Nếu nhiệt độ thu được từ cảm biến nhiệt lớn hơn 31 độ thì đèn bật.
+\item Nếu nhiệt độ thu được từ cảm biến nhiệt bé hơn 31 độ thì đèn tắt.
+\item Nếu đèn bật thì còi hú.
+\item Nếu đèn tắt thì còi tắt.
+\vspace{1mm}
+\end{itemize}
+
+\noindent
+Chế độ 5 (kiểm tra cảm biến chuyển động cùng phối hợp kịch bản thời gian):
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Nếu phát hiện vật thể chuyển động thì đèn bật và nếu trong khoảng thời gian từ 22h00 đến 06h00 thì còi hú.
+\item Nếu không còn phát hiện vật thể chuyển động nữa thì đèn và còi tắt.
+\vspace{1mm}
+\end{itemize}
+
+\noindent
+Chế độ 6 (kịch bản phức tạp):
+
+\noindent
+\hspace{1.2cm} \textbf{Nếu} (cảm biến ánh sáng phát hiện xung quanh tối) \textbf{thì}
+
+\hspace{2cm}(bật đèn và nếu (phát hiện khí gas) \textbf{thì}
+
+\hspace{3cm}(đồng thời tắt đèn, mở còi hú)\
+
+\hspace{3cm}hoặc không mà trong thời gian \textbf{từ} 09h00 \textbf{đến} 14h00 \textbf{thì}
+
+\hspace{3cm}(tắt đèn và tắt còi)
+
+\noindent\hspace{2cm} )\\
+
+\noindent
+Ngôi nhà sẽ có lần lượt 5 chế độ với các kịch bản dành cho các thiết bị như trên. Việc đánh giá hệ thống được thực hiện thủ công bằng cách so sánh kết quả mong đợi từ kịch bản với kết quả thực tế quan sát thông qua thiết bị trong cùng điều kiện. Ngoài ra, nhóm còn thực hiện unit test cho việc kiểm tra kịch bản hợp lệ (trùng tên, kịch bản mâu thuẫn, kịch bản có khả năng mâu thuẫn, kịch bản trùng nội dung nhưng đảo thứ tự điều kiện, hành động,\dots).
+
+\section{Kết quả và đánh giá}
+
+Sau khi tiến hành các thực nghiệm trên, nhóm rút ra một số đánh giá sơ bộ về hệ thống:
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Các thiết bị hoạt động tốt với Raspberry Pi.
+\item Với hầu hết các kịch bản mô tả từ đơn giản đến phức tạp thì hệ thống vẫn có thể xử lý tốt, chạy đúng kết quả mong muốn (ví dụ như các kịch bản ở phần thực nghiệm trên) miễn rằng nó là kịch bản hợp lệ.
+\item Việc kiểm tra các kịch bản mâu thuẫn, có khả năng mâu thuẫn để loại trừ ra khỏi hệ thống hoạt động ổn định và tốt.
+\item Hệ thống hỗ trợ bảo mật tài khoản người dùng, bảo mật tài nguyên hệ thống (chỉ có người dùng sở hữu ngôi nhà mới được truy xuất đến các tài nguyên thuộc nhà ấy).
+\item Khi thực hiện việc vô hiệu hóa (disable) ngôi nhà, hay thiết bị thì các kịch bản lần lượt thuộc nhà và thiết bị ấy sẽ vào trạng thái dừng như mong đợi. Cũng như thực hiện thao tác kích hoạt (enable) nhà, thiết bị trở lại thì kịch bản sẽ chạy lại như bình thường.
+\item Giao diện ứng dụng đơn giản, cung cấp nhiều chức năng cho người dùng thao tác, chỉnh sửa và xem thông tin về ngôi nhà và các thiết bị, kịch bản trong nó. Ngoài ra, ứng dụng cho phép tạo nhanh kịch bản với vài mẫu đơn giản.
+\vspace{1mm}
+\end{itemize}
+
+\noindent
+Tuy nhiên, còn một số khó khăn mà hệ thống đang gặp phải:
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+\item Giao diện chưa hỗ trợ tối đa người dùng trong việc xây dựng các kịch bản tùy ý (custom).
+\item Trải nghiệm người dùng chưa thực sự tốt với thời gian phản hồi hệ thống còn khá cao.
+\item Các mẫu kịch bản hỗ trợ sẵn còn ít, chưa thỏa mãn được nhiều nhu cầu thực tế người dùng.
+\item Khi số lượng kịch bản tăng lên (tầm 30-35) thì hiệu năng hệ thống giảm đi khá nhiều, do máy tính Raspberry Pi có bộ nhớ khá “khiêm tốn” và việc quản lý kịch bản chưa thực sự tốt lắm.
+\vspace{1mm}
+\end{itemize}
 
 %------------------------------------
 
@@ -1919,7 +2038,18 @@ Kịch bản là một khái niệm quan trọng trong hệ thống này. Như t
 \noindent
 Sau thời gian tìm hiểu và thảo luận, nhóm xin đề xuất một thuật toán cải tiến nhỏ giúp cho việc quản lý trên hiệu quả hơn. Ta sẽ vẫn giữ mỗi thread quản lý một kịch bản, tuy nhiên điểm khác biệt đó là việc chạy kịch bản chỉ được thực hiện 1 lần khi tạo, hay 1 lần sau khi cập nhật mới nội dung kịch bản. Trong module “Scenario Runner”, ta hiện thực thêm 1 hashmap “scenario mapping” chả hạn, để ánh xạ kịch bản với thread quản lý nó. Nếu như có bất kì thay đổi nào tới kịch bản, dựa trên hashmap “scenario mapping” trên để thông báo đến thread tương ứng và chạy lại kịch bản mới ấy. Với cách hiện thực này, việc lãng phí tài nguyên CPU sẽ giảm đi đáng kể và chỉ còn chi phí khi lưu thread trên bộ nhớ thôi.
 
-\section{Giải pháp xây dựng hệ thống trên cloud phục vụ nhiều người dùng}
+\section{Giải pháp xây dựng hệ thống ứng dụng điện toán đám mây phục vụ nhiều người dùng}
+
+Trong luận văn này, ứng dụng hệ thống chỉ dừng lại ở mức demo với các thiết bị đơn giản và mọi dịch vụ được cung cấp bởi Raspberry Pi. Tuy nhiên, khi hệ thống này đươc áp dụng vào thực tế, nhóm đề xuất sẽ đưa các dịch vụ lên trên đám mây (cloud). Cụ thể, ta sẽ có 1 cloud server, cung cấp các dịch vụ liên quan việc quản lý thông tin các ngôi nhà, chế độ, thiết bị, kịch bản người dùng và cả Raspeberry Pi trong nhà.\\
+
+\begin{figure}[h]
+  \centering
+     \includegraphics[width=15cm]{6-Communicate-among-client-server-and-Pi}
+  \caption{Cách thức giao tiếp giữa client, server và Raspberry Pi}\label{fig:6-Communicate-among-client-server-and-Pi}
+\end{figure}
+
+\noindent
+Hình \ref{fig:6-Communicate-among-client-server-and-Pi} mô tả cách giao tiếp giữa người dùng, Pi và cloud server. Khi người dùng đăng ký sử dụng dịch vụ của hệ thống, họ sẽ được cấp 1 con Pi với mã code do ta quy định và được lưu trên cloud. Sau đó, người dùng được trợ giúp lắp đặt thiết bị vào con Pi đó và tiến hành đăng ký với hệ thống (thông qua giao diện ứng dụng) để xác nhận việc muốn gắn Pi vào ngôi nhà của mình. Hệ thống nhận được yêu cầu đăng kí và dựa trên mã code gửi kèm sẽ kích hoạt con Pi có mã tương ứng. Kể từ lúc này, thông qua giao diện ứng dụng, người dùng có thể thêm nhà, thiết bị, kịch bản,\dots\hspace{0mm} Mọi thông tin này được lưu trữ và quản lý trên cloud. Raspberry Pi sau khi đã kích hoạt cũng sẽ kết nối với cloud và nhận các thông tin về kịch bản gửi từ cloud server. Nhiệm vụ của Pi giờ chỉ là thực thi những kịch bản đó cùng với việc điều khiển các thiết bị theo như kịch bản đã định.
 
 %-------------------------------------Tổng kết----------------------------------%
 \chapter{Tổng kết}
@@ -1930,17 +2060,18 @@ Với mục tiêu của đề tài “Xây dựng hệ thống nhà thông minh 
 Về mặt các thiết bị hỗ trợ, chúng tôi đã triển khai việc lắp đặt thành công các thiết bị: Bóng đèn, còi hú, cảm biến nhiệt độ, cảm biến chuyển động, cảm biến ánh sáng và cảm biến khí gas vào Raspberry Pi. Trong quá trình lắp đặt, có một số khó khăn xảy ra như các thiết bị có cách thức hoạt động khác nhau, <[ điền thêm vô nha Tùng ]>. Các khó khăn này đã được nhóm giải quyết thông qua <[ điền thêm vô nha Tùng ]>. Vì mục tiêu đề tài hướng trọng tâm vào việc xử lý các tác vụ trên phương diện phần mềm, nên việc lặp đặt các thiết bị phần cứng còn tồn tại một số hạn chế như là các thiết bị vẫn còn dừng ở mức thí nghiệm, chưa phải là các thiết bị thật được sử dụng trong thực tế cũng như số lượng chủng loại thiết bị chưa thực sự nhiều.\\
 
 \noindent
-Về các kịch bản điều khiển thiết bị, chúng tôi cung cấp cho người dùng 2 loại kịch bản với cấu trúc định sẵn là Khi/Thì và Từ/Đến thể hiện mặt luận lý đơn giản để người dùng có thể dễ dàng chỉnh sửa nhằm tạo nên mối liên hệ hoạt động giữa các thiết bị ở mức đơn giản. Ngoài ra, để có thể thiết lập các kịch bản liên hệ thiết bị phức tạp, chúng tôi còn cung cấp loại kịch bản tự tạo cho phép người dùng có thể kết hợp nhiều thiết bị với các cơ chế luận lý lồng nhau phức tạp thông qua hệ thống cú pháp định sẵn. Trong quá trình hiện thực, chúng tôi đã gặp phải khó khăn khi các kịch bản có sự mâu thuẫn lẫn nhau, <[ còn khó khăn gì nữa điền thêm vô nha Vinh ]>. Chúng tôi đã giải quyết được một phần khó khăn với <[ điền thêm vô nha Vinh ]>.\\
+Về các kịch bản điều khiển thiết bị, nhóm chúng tôi cung cấp cho người dùng 2 dạng kịch bản với cấu trúc được định sẵn là Khi/Thì (If/Then) và Từ/Đến (From/To), thể hiện mặt luận lý đơn giản và người dùng có thể dễ dàng chỉnh sửa. Ngoài ra, để có thể thiết lập các kịch bản với cấu trúc phức tạp hơn, nhóm chúng tôi còn cung cấp dạng kịch bản tự tạo (custom) cho phép người dùng có thể kết hợp nhiều thiết bị với nhiều điều kiện khác nhau thông qua hệ thống cú pháp định sẵn. Trong quá trình hiện thực, nhóm đã gặp phải khó khăn trong việc xử lý các kịch bản mâu thuẫn, kịch bản có khả năng mâu thuẫn. Hơn nữa, về mặt hiệu năng hệ thống, các kịch bản vẫn chưa được quản lý tối ưu và cần cải thiện để tăng sức tải của hệ thống để đáp ứng số lượng lớn kịch bản người dùng.\\
 
 \noindent
-Về ứng dụng di động, chúng tôi đã xây dựng được ứng dụng với thiết kế giao diện đơn giản cung cấp các tính năng cơ bản để người dùng có thể quản lý các ngôi nhà được lắp đặt hệ thống, các thiết bị cũng như các kịch bản điều khiển. Một số khó khăn nhóm gặp phải trong quá trình xây dựng ứng dụng như việc thiếu tính đồng nhất giữa ứng dụng và máy chủ, việc lọc các thiết bị cùng chân cắm khi có kịch bản liên hệ chưa thực sự chính xác đã được nhóm giải quyết tương đối triệt để. Ứng dụng còn tồn tại một số hạn chế như thời gian đáp ứng người dùng đôi khi còn chậm, chưa thực sự tối ưu hóa trải nghiệm vì hiện tại máy chủ được cài đặt trực tiếp trên máy tính nhỏ Raspberry Pi nên tốc độ xử lý các yêu cầu từ phía ứng dụng còn hạn hẹp.\\
+Về ứng dụng di động, chúng tôi đã xây dựng được ứng dụng với thiết kế giao diện đơn giản cung cấp các tính năng cơ bản để người dùng có thể quản lý các ngôi nhà, các thiết bị cũng như các kịch bản điều khiển trong hệ thống. Một số khó khăn nhóm gặp phải trong quá trình xây dựng ứng dụng như việc thiếu tính đồng nhất giữa ứng dụng và máy chủ, việc lọc các thiết bị cùng chân cắm khi có kịch bản liên hệ chưa thực sự chính xác đã được nhóm giải quyết tương đối triệt để. Ứng dụng còn tồn tại một số hạn chế như thời gian đáp ứng người dùng đôi khi còn chậm, chưa thực sự tối ưu hóa trải nghiệm vì hiện tại máy chủ được cài đặt trực tiếp trên máy tính Raspberry Pi nên tốc độ xử lý các yêu cầu từ phía ứng dụng còn hạn hẹp.\\
 
 \noindent
 Nhìn chung, hệ thống chúng tôi phát triển đã đáp ứng được mục tiêu của đề tài về việc xây dựng hệ thống nhà thông minh sử dụng Raspberrry Pi điều khiển các thiết bị thông qua các kịch bản tuy vẫn còn một số hạn chế. Để phát triển hệ thống trong tương lai cũng như khắc phục các mặt còn hạn chế, chúng tôi dự định sẽ mở rộng và cải thiện hệ thống theo các hướng:
 
 \begin{itemize}[topsep=1mm,itemsep=-0.5mm]
 \item Hỗ trợ thêm nhiều chủng loại thiết bị (như camera, khóa cửa,\dots) và triển khai lắp đặt các thiết bị thực tế.
-\item Xử lý tốt hơn các mâu thuẫn lẫn nhau giữa các kịch bản và mở rộng cấu trúc cú pháp kịch bản.
+\item Xử lý và quản lý tốt hơn các kịch bản mâu thuẫn, kịch bản có khả năng mâu thuẫn.
+\item Hỗ trợ thêm các dạng kịch bản mới sát với mục đích thực tế, mở rộng cấu trúc cú pháp kịch bản.
 \item Tăng cường hiệu năng đáp ứng của máy chủ với các thay đổi của kịch bản.
 \item Tối ưu hóa trải nghiệm và thời gian đáp ứng người dùng của ứng dụng di động.
 \item Đưa máy chủ lên nền tảng đám mây (Cloud Server) độc lập với Raspberry Pi.
