@@ -1184,9 +1184,38 @@ Sau khi một kịch bản mới được thêm vào hệ thống, trạng thái
 \noindent
 Tuy nhiên, vấn đề quản lý multi-thread hiệu quả khi số lượng kịch bản tăng lên cũng là một khó khăn mà nhóm đang đối mặt và sẽ được đề cập tới trong mục thảo luận.
 
-\subsection{Module hỗ trợ bảo mật, xác thực và phân quyền (authorization and authentication)}
+\subsection{Module hỗ trợ xác thực và phân quyền (authorization and authentication)}
 
->>>>>>>>>>>>>>>>>>>>>>>>> Wating <<<<<<<<<<<<<<<<
+Xác thực (authentication) và phân quyền (authorization) là một vấn đề không thể thiếu trong nhà thông minh, làm thế nào để có thể xây dựng một ngôi nhà mang tính bảo mật cao, không cho phép người ngoài có thể xâm nhập vào ngôi nhà của mình là một đề tài khó.\\
+
+\noindent
+Trong hệ thống của chúng tôi, việc bảo mật (security) cho ngôi nhà được chia làm hai bước:
+
+\begin{itemize}[topsep=1mm,itemsep=-0.5mm]
+	\item Xác thực: Người dùng cần nhập đúng tên đăng nhập và mật khẩu đã đăng ký trước đó để có thể đăng nhập vào hệ thống.
+	\item Phân quyền: Sau khi đã xác thực thành công, tại mỗi yêu cầu truy xuất tài nguyên mà người dùng gửi lên, hệ thống sẽ kiểm tra xem người dùng có quyền để truy xuất tài nguyên đó hay không, tức kiểm tra người dùng có đúng là chủ nhân thật sự của ngôi nhà đó hay không. Hệ thống chúng tôi thiết kế cho phép một người có thể sở hữu nhiều căn nhà khác nhau.
+	\vspace{1mm}
+	\end{itemize}
+	
+Do client tương tác với server chủ yếu bằng các web service mà server cung cấp, nên phương pháp xác thực thường được sử dụng phổ biến là sử dụng mã xác thực (token). Sau khi người dùng đã đăng nhập thành công, tức nhập đúng tên đăng nhập và mật khẩu, hệ thống sẽ gửi một mã xác thực đến người dùng. Từ đó về sau, khi muốn gửi một yêu cầu đến server, client cần gửi lại đúng mã xác thực mà server đã gửi trước đó, nếu sai, hệ thống sẽ báo lỗi không có quyền truy cập (unauthorized). Mô hình xác thực giữa client và server được mô tả tại hình \ref{fig:6-authentication}.\\
+
+\begin{figure}[h]
+  \centering
+     \includegraphics[width=15cm]{6-authentication}
+  \caption{Mô hình xác thực người sử dụng}\label{fig:6-authentication}
+\end{figure}
+
+\noindent
+Sau khi người dùng đã gửi đúng mã xác thực, server sẽ tiến hành kiểm tra xem người dùng có quyền đối với căn nhà hay không. Từ tên đăng nhập của người dùng mà client gửi liên, server sẽ tìm ra danh sách tất cả ngôi nhà thuộc sở hữu của người sử dụng. Nếu ngôi nhà mà người dùng đang muốn điều khiển nằm trong danh sách những ngôi nhà thuộc quyền sở hữu của người sử dụng, hệ thống sẽ cho phép người dùng truy xuất tài nguyên của căn nhà, ngược lại, hệ thống sẽ báo lỗi không có quyền truy cập. Hình \ref{fig:6-authorization} mô tả chi tiết bước phân quyền của hệ thống nhà thông minh.
+
+\begin{figure}[h]
+  \centering
+     \includegraphics[width=15cm]{6-authorization}
+  \caption{Mô hình phân quyền người sử dụng}\label{fig:6-authorization}
+\end{figure}
+
+\noindent
+Bên cạnh đó, phương thức giao tiếp giữa client và server là https nên dữ liệu trao đổi qua lại trên đường truyền đều được mã hóa, tránh trường hợp hacker đánh cắp tài khoản người dùng hoặc thực hiện hành vi xấu.
 
 \subsection{Đánh giá hiện thực back-end}
 \noindent
