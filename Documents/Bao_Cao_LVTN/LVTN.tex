@@ -10,6 +10,8 @@
  top=20mm,
  } 
  
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
 \usepackage{titlesec}
 \usepackage[hyphens]{url}
 \usepackage[hidelinks]{hyperref}
@@ -166,6 +168,30 @@
 \end{center}
 \end{titlepage}
 
+%--------------------Promise
+\chapter*{Lời cam đoan}
+
+“Chúng tôi cam đoan rằng, ngoại trừ kết quả tham khảo từ các công trình khác như đã ghi rõ trong luận văn, các nội dung được trình bày trong luận văn này là do chính chúng tôi thực hiện và chưa có phần nội dung nào được nộp để lấy bằng cấp ở một trường khác.”\\
+
+\hspace{10cm}Tp. Hồ Chí Minh, 12/2016\\
+
+\hspace{11cm}Nhóm tác giả
+
+%------------------Thanks
+\chapter*{Lời cảm ơn}
+Sau khoảng thời gian được học tập và rèn luyện tại trường Đại Học Bách Khoa TP.HCM, dưới sự chỉ bảo tận tình của các thầy cô trong các phòng, khoa, nay chúng tôi đã gần mãn khoá học, đang trong giai đoạn hoàn thành luận văn tốt nghiệp. Để được như ngày hôm nay chúng tôi vô cùng biết ơn tất cả các thầy cô trong Khoa Khoa Học và Kỹ Thuật Máy Tính đã tận tình giảng dạy, hướng dẫn, truyền đạt những kiến thức, kinh nghiệm quý báu trong khoảng thời gian được học tập, rèn luyện tại trường.\\
+
+\noindent
+Chúng tôi xin gửi lời cảm ơn chân thành nhất đến TS. Nguyễn Đức Dũng và TS. Lương Thế Nhân, các thầy đã định hướng và tận tình hướng dẫn nhóm, cũng như cho nhóm những góp ý, nhận xét chân tình và động viên nhóm để hoàn thành luận văn này.\\
+
+\noindent
+Với lòng biết ơn chân thành, chúng tôi xin gởi lời chúc sức khoẻ và những gì tốt đẹp nhất đến các thầy cô trong khoa, trong nhà trường, những bậc cha mẹ, anh chị đáng kính và toàn thể các bạn bè đã hỗ trợ nhóm về mặt tinh thần rất nhiều trong suốt khoảng thời gian vừa qua.\\
+
+\hspace{10cm}Tp. Hồ Chí Minh, 12/2016\\
+
+\hspace{11cm}Nhóm tác giả
+
+
 %------------------------------ Abstract --------------------------------------------------%
 \chapter*{Tóm tắt luận văn}
 \addcontentsline{toc}{chapter}{Tóm tắt luận văn}
@@ -212,7 +238,7 @@ Theo Gartner, IoT dự kiến sẽ có khoảng 26 tỷ thiết bị vào năm 2
 
 \section{Các thành tựu, công trình liên quan nhà thông minh}
 
-Nếu xếp hạng tốc độ đổi mới của các ngành phục vụ cho nhu cầu cuộc sống thì chắc chắn công nghệ luôn là một trong những vị trí dẫn đầu. Ngày nay rất nhiều ngành nghề đã ứng dụng công nghệ cao vào sản phẩm của mình, trong đó có mô hình nhà thông minh. Trong những năm gần đây nhà thông minh đang dần trở nên phổ biến hơn với người dân Việt Nam \cite{smarthome-trend-2016}. Nhiều sản phẩm nhà thông minh được đánh giá cao ở nước ngoài có thể kể tới như Moni, Crestron, Control4,… và ở Việt Nam như Bkav, Vinteli Home,\dots\hspace{0mm} \cite{the-best-smarthome}. Những ngôi nhà thông minh này được tích hợp công nghệ và nhiều tiện ích đi kèm. Sau đây là một số hướng phát triển nhà thông minh chính ở thời điểm hiện tại:
+Nếu xếp hạng tốc độ đổi mới của các ngành phục vụ cho nhu cầu cuộc sống thì chắc chắn công nghệ luôn là một trong những vị trí dẫn đầu. Ngày nay rất nhiều ngành nghề đã ứng dụng công nghệ cao vào sản phẩm của mình, trong đó có mô hình nhà thông minh. Trong những năm gần đây nhà thông minh đang dần trở nên phổ biến hơn với người dân Việt Nam \cite{smarthome-trend-2016}. Nhiều sản phẩm nhà thông minh được đánh giá cao ở nước ngoài có thể kể tới như Moni, Crestron, Control4,\dots\hspace{0mm} và ở Việt Nam như Bkav, Vinteli Home,\dots\hspace{0mm} \cite{the-best-smarthome}. Những ngôi nhà thông minh này được tích hợp công nghệ và nhiều tiện ích đi kèm. Sau đây là một số hướng phát triển nhà thông minh chính ở thời điểm hiện tại:
 
 \begin{itemize}[topsep=1mm,itemsep=-0.5mm]
 \item Xu hướng nhà thông minh với các cơ chế bảo mật.
@@ -265,7 +291,7 @@ Từ những yêu cầu chức năng và phi chức năng đã được phân t�
 
 \begin{figure}[h!]
   \centering
-     \includegraphics[width=15cm]{2-Usecase}
+     \includegraphics[width=15.5cm]{2-Usecase}
   \caption{Sơ đồ usecase của hệ thống}\label{fig:2-Usecase}
 \end{figure}
 
@@ -320,7 +346,7 @@ Phần này chúng ta sẽ thảo luận về thiết kế cơ sở dữ liệu 
 
 \begin{figure}[h]
   \centering
-     \includegraphics[width=15cm]{3-smart-home-db}
+     \includegraphics[width=15.5cm]{3-smart-home-db}
   \caption{Thiết kế database cho ứng dụng}\label{fig:3-smart-home-db}
 \end{figure}
 
@@ -492,7 +518,7 @@ Những lợi ích mà Hibernate đem lại
 \end{figure} 
 
 \noindent
-Hình 5 mô tả kiến trúc hệ thống ở back-end, bao gồm các module nhỏ như sau:
+Hình \ref{fig:3-architecture-back-end} mô tả kiến trúc hệ thống ở back-end, bao gồm các module nhỏ như sau:
 
 \begin{itemize}[topsep=1mm,itemsep=-0.5mm]
 \item Authorization và Authentication service: phục vụ mục đích bảo mật hệ thống, chỉ những người dùng hợp lệ (có tài khoản hợp lệ, có quyền truy xuất với tài nguyên yêu cầu), quản lý token.
@@ -571,16 +597,13 @@ Một trong những yếu tố quan trọng của Raspberry Pi là các cổng G
 Mỗi cổng GPIO đều có hai trạng thái là High và Low tương ứng với mức điện áp lần lượt là 3.3V và 0V. Có thể xem các cổng GPIO như một cầu nối giữa Raspberry Pi và thế giới bên ngoài, mỗi cổng cũng có thể là input, cũng có thể là output cho tín hiệu số. Nói một cách đơn giản, mỗi cổng GPIO như một công tắc, người bên ngoài có thể tắt hoặc bật, tức thay đổi trạng thái cổng GPIO, lúc này, GPIO thực hiện chức năng là một cổng input. Các chương trình trên Raspberry Pi cũng có thể thay đổi trạng thái các cổng GPIO, GPIO lúc này thực hiện chức năng là một cổng output, truyền tín hiệu từ các trương trình ra ngoài \cite{raspberry-gpio}.\\
 
 \noindent
-Trong số 40 cổng của Raspberry Pi 3 Model B, có 26 cổng GPIO, 4 cổng nguồn có điện áp luôn luôn là 3.3V hoặc 5V, 8 cổng đất và 2 cổng ID EEPROM được dùng trong các mục đích đặt biệt. Hình \ref{fig:4-vi-tri-phan-bo-gpio} mô tả chi tiết phân bố của các cổng trên Raspberry Pi.
+Trong số 40 cổng của Raspberry Pi 3 Model B, có 26 cổng GPIO, 4 cổng nguồn có điện áp luôn luôn là 3.3V hoặc 5V, 8 cổng đất và 2 cổng ID EEPROM được dùng trong các mục đích đặt biệt. Trong số 26 cổng GPIO, một vài cổng có thêm những những chức năng khác ngoài việc thay đổi trạng thái giữa High và Low. Những cổng có thêm những chức năng đặc biệt này được gắn thêm một nhãn tên phía sau như mô tả trong hình \ref{fig:4-pi3-gpio}: 
 
 \begin{figure}[h]
   \centering
-     \includegraphics[scale=0.3]{4-vi-tri-phan-bo-gpio}
-  \caption{Vị trí phân bố các cổng GPIO}\label{fig:4-vi-tri-phan-bo-gpio}
+     \includegraphics[width=11cm]{4-pi3-gpio}
+  \caption{Vị trí phân bố các cổng GPIO}\label{fig:4-pi3-gpio}
 \end{figure}
-
-\noindent
-Trong số 26 cổng GPIO, một vài cổng có thêm những những chức năng khác ngoài việc thay đổi trạng thái giữa High và Low. Những cổng có thêm những chức năng đặc biệt này được gắn thêm một nhãn tên phía sau như mô tả trong hình \ref{fig:4-pi3-gpio}: 
 
 \begin{itemize}[topsep=1mm,itemsep=-0.5mm]
 \item UART (Universal Asynchronous Receiver/Transmitter) Serial Bus: Giả sử như chúng ta cắm một thiết bị vào mà nó có khả năng hiển thị dữ liệu lên thì khi cắm vào hai chân này, ta có thể đọc được những thông báo từ kernel của Raspberry Pi. Ví dụ như Pi không thể khởi động lên được, ta dùng cách này như một công cụ chẩn đoán lỗi. Có hai GPIO hỗ trợ chức năng này là GPIO 15 và 16.
@@ -590,12 +613,6 @@ Trong số 26 cổng GPIO, một vài cổng có thêm những những chức n�
 \item SPI (Serial Peripheral Interface) Bus: phục vụ cho in-system programming (ISP). Các GPIO sau hỗ trợ SPI : GPIO 10,11, 12, 13, 14.
 \vspace{1mm}
 \end{itemize}
-
-\begin{figure}[h]
-  \centering
-     \includegraphics[width=11cm]{4-pi3-gpio}
-  \caption{Vị trí phân bố các cổng GPIO}\label{fig:4-pi3-gpio}
-\end{figure}
 
 %---------------------------------Thiết kế chi tiết-------------------------%
 \section{Thiết kế chi tiết}
@@ -662,7 +679,7 @@ Với thiết kế của module điều khiển thiết bị đã được nêu 
 
 Với mục tiêu hỗ trợ người dùng dễ dàng quản lý các ngôi nhà thông minh của mình, cùng với các thiết bị và kịch bản của ngôi nhà, ứng dụng di động được thiết kế để cho phép người dùng đăng ký và đăng nhập vào hệ thống, quản lý và chỉnh sửa thông tin các ngôi nhà được lắp đặt hệ thống và các thiết bị bên trong. Đồng thời, ứng dụng còn cho phép người dùng tạo ra nhiều chế độ khác nhau ứng với từng ngữ cảnh khác nhau (như vắng nhà, trời mưa, trời nóng…) với một bộ các kịch bản định sẵn hay tự tạo riêng biệt và chúng có thể được chuyển đổi qua lại một cách dễ dàng.
 
--------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 \section{Kiến trúc tổng quát}
 Ứng dụng có kiến trúc bao gồm 6 trang giao diện (Page) chính là trang đăng nhập, trang đăng ký, trang danh sách các ngôi nhà, trang danh sách các kiểu thiết bị, trang danh sách các thiết bị và trang danh sách các kịch bản tự tạo. Trong mỗi trang có các bảng hộp thoại (Dialog) hỗ trợ người dùng thực hiện các chức năng của ứng dụng. Hình \ref{fig:5-UI-Flow} thể hiện luồng chạy và mối liên hệ giữ các trang và bảng hộp thoại trong ứng dụng.
 
@@ -736,7 +753,7 @@ Thiết kế này giúp tăng khả năng tái sử dụng (reuse), cũng như v
 \noindent
 Nếu những thao tác với database gây ra lỗi, dữ liệu sẽ được rollback ngay thời điểm đó (ví dụ như vi phạm ràng buộc, khóa ngoại,\dots\hspace{0mm} ), nhằm đảm bảo tính nhất quán của dữ liệu.
 
-\subsection{Giới thiệu về kịch bản(scenario)}
+\subsection{Giới thiệu về kịch bản (scenario)}
 
 Kịch bản là một bản phác thảo, diễn tả những hành vi mình mong muốn thiết bị trong nhà sẽ tự động thực hiện trong hoàn cảnh nhất định hay điều kiện nào đó thỏa mãn. 
 
@@ -1298,7 +1315,7 @@ Module điều khiển thiết bị được chia làm nhiều bộ điều khi�
 
 \begin{figure}[h]
   \centering
-     \includegraphics[scale=0.5]{6-module-dieu-khien-class-diagram}
+     \includegraphics[width=15.5cm]{6-module-dieu-khien-class-diagram}
   \caption{Sơ đồ lớp (class diagram) của module điều khiển thiết bị}\label{fig:6-module-dieu-khien-class-diagram}
 \end{figure}
 
@@ -1387,7 +1404,7 @@ Vì ứng dụng được phát triển hoàn toàn trong môi trường dành r
 
 \begin{table}[!htbp]
 \centering
-\caption{So sánh điểm mạnh, điểm yếu của Phát triển ứng dụng di động thuần túy và Phát triển ứng dụng di động lai [4]}\label{tab:compare-native-and-hybrid}
+\caption{So sánh điểm mạnh, điểm yếu của Phát triển ứng dụng di động thuần túy và Phát triển ứng dụng di động lai \cite{hybrid-vs-native-vn}}\label{tab:compare-native-and-hybrid}
 \small
 \begin{tabular}{ |p{2cm}|p{6cm}|p{6cm}| }
 \hline
@@ -1705,6 +1722,7 @@ Các trang giao diện chính trong ứng dụng bao gồm 6 trang:
 \noindent
 Các trang giao diện chính này là các trang HTML, với mỗi trang có một bộ quản lý (controller) của AngularJS đảm nhận các xử lý nghiệp vụ riêng.
 
+\noindent
 \underline{Trang đăng nhập (Login Page)}
 
 \begin{figure}[h]
@@ -1850,7 +1868,13 @@ Với việc hiện thực 6 trang giao diện chính cùng các thành phần c
 \chapter{Thí nghiệm và đánh giá hệ thống}
 \section{Phương pháp thực nghiệm}
 
-Nhóm tiến hành lắp đặt lần lượt các thiết bị gồm: cảm biến nhiệt, cảm biến ánh sáng, cảm biến khí gas, cảm biến chuyển động, đèn và còi hú vào Raspberry Pi. Hình XX mô tả thiết bị demo của nhóm được gắn trên Raspberry Pi. Sau đó, nhóm cho thiết bị mobile cùng Raspberry Pi kết nối đến cùng 1 mạng local qua sử dụng máy tính làm Wifi hotspot. Nhóm tiến hành đăng ký thông qua giao diện ứng dụng và tạo mới nhà, tạo mới chế độ, thiết bị, thêm kịch bản. Một vài kịch bản mà nhóm chuẩn bị cho thí nghiệm.
+Nhóm tiến hành lắp đặt lần lượt các thiết bị gồm: cảm biến nhiệt, cảm biến ánh sáng, cảm biến khí gas, cảm biến chuyển động, đèn và còi hú vào Raspberry Pi. Hình \ref{fig:7-real-system} mô tả thiết bị demo của nhóm được gắn trên Raspberry Pi. Sau đó, nhóm cho thiết bị mobile cùng Raspberry Pi kết nối đến cùng 1 mạng local qua sử dụng máy tính làm Wifi hotspot. Nhóm tiến hành đăng ký thông qua giao diện ứng dụng và tạo mới nhà, tạo mới chế độ, thiết bị, thêm kịch bản. Một vài kịch bản mà nhóm chuẩn bị cho thí nghiệm.
+
+\begin{figure}[h]
+  \centering
+     \includegraphics[width=15cm]{7-real-system}
+  \caption{Mô hình thí nghiệm thực tế}\label{fig:7-real-system}
+\end{figure}
 
 \noindent
 Chế độ 1 (kiểm tra cảm biến ánh sáng):
@@ -1941,7 +1965,7 @@ Tuy nhiên, còn một số khó khăn mà hệ thống đang gặp phải:
 \item Giao diện chưa hỗ trợ tối đa người dùng trong việc xây dựng các kịch bản tùy ý (custom).
 \item Trải nghiệm người dùng chưa thực sự tốt với thời gian phản hồi hệ thống còn khá cao.
 \item Các mẫu kịch bản hỗ trợ sẵn còn ít, chưa thỏa mãn được nhiều nhu cầu thực tế người dùng.
-\item Khi số lượng kịch bản tăng lên (tầm 30-35) thì hiệu năng hệ thống giảm đi khá nhiều, do máy tính Raspberry Pi có bộ nhớ khá “khiêm tốn” và việc quản lý kịch bản chưa thực sự tốt lắm.
+\item Khi số lượng kịch bản tăng lên (tầm 30-35) thì hiệu năng hệ thống giảm đi khá nhiều, do máy tính Raspberry Pi có bộ nhớ khá “khiêm tốn” và việc quản lý kịch bản chưa thực sự tốt.
 \vspace{1mm}
 \end{itemize}
 
@@ -2135,10 +2159,10 @@ Một vài kịch bản dạng From - To thông dụng:
 Danh sách API được liệt kê theo bảng sau:
 
 {\scriptsize
-\begin{longtable}{|p{2.5cm}|p{1.5cm}|p{3cm}|p{3cm}|p{4cm}|}
+\begin{longtable}{|p{2.5cm}|p{1.2cm}|p{3.3cm}|p{3cm}|p{4cm}|}
 
 \hline 
-\multicolumn{1}{|p{2.5cm}|}{\textbf{Page/Function}} & \multicolumn{1}{p{1.5cm}|}{\textbf{Method Type}} & \multicolumn{1}{p{3cm}|}{\textbf{URL}} & \multicolumn{1}{p{3cm}|}{\textbf{Input}} & \multicolumn{1}{p{4cm}|}{\textbf{Output}} \\ \hline 
+\multicolumn{1}{|p{2.5cm}|}{\textbf{Page/Function}} & \multicolumn{1}{p{1.2cm}|}{\textbf{Method Type}} & \multicolumn{1}{p{3.3cm}|}{\textbf{URL}} & \multicolumn{1}{p{3cm}|}{\textbf{Input}} & \multicolumn{1}{p{4cm}|}{\textbf{Output}} \\ \hline 
 \endhead
 
 \hline
@@ -2148,7 +2172,7 @@ HTTP Status OK 200 if successful\newline
 categories: List<Category>\\
 
 \hline
-Get all devices given category & 	GET &	homes/{homeId}/device-types/{deviceTypeId}/devices &	homeId: Long\newline
+Get all devices given category & 	GET &	homes/{homeId}/device-types/{deviceTypeId}/\newline devices &	homeId: Long\newline
 deviceTypeId: Long &	HTTP Status OK 200 if successful
 Return: List<Device>\\
 
@@ -2199,7 +2223,7 @@ E.g devices/5/modes/1/\newline
 scripts/3\\
 
 \hline
-Add device of specific category &	POST &	homes/{homeId}/device-types/{deviceTypeId}/devices &	
+Add device of specific category &	POST &	homes/{homeId}/device-types/{deviceTypeId}/\newline devices &	
 homeId: Long\newline
 categoryId: Long\newline
 device: Device	& 
