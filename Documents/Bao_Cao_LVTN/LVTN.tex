@@ -9,6 +9,12 @@
  left=20mm,
  top=20mm,
  } 
+ 
+\usepackage[hyphens]{url}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{breaklinks=true}
+\urlstyle{same}
+\usepackage{cite}
 
 \usepackage{seqsplit}
 \usepackage{ragged2e}
@@ -239,13 +245,13 @@ Vì giới hạn thời gian, hệ thống chưa thực sự hoàn thiện và t
 Toàn bộ nội dung luận văn được nhóm trình bày trong bảy chương. Các chương này lần lượt nêu lên những kiến thức cần thiết, chi tiết cách hiện thực để xây dựng và hoàn thiện hệ thống. Ở chương cuối, nhóm đưa ra kết quả tổng kết về những vấn đề đã được giải quyết ở đề tài này, song song đó là những hạn chế còn tồn đọng cũng như là hướng phát triển trong tương lai.\\
 
 \noindent
-Đầu tiên ta đến với chương \textbf{Tổng quan hệ thống}, nguời đọc sẽ có cái nhìn toàn cảnh về lý do nhóm tiến hành thực hiện đề tài, vai trò và vị trí của đề tài trong xu thế phát triển nhà thông minh ở Việt Nam cũng như phạm vi của luận án này. Kế đến chương \textbf{Phân tích và thiết kế hệ thống} sẽ nêu lên những yêu cầu được đặt ra cho hệ thống, từ đó nhóm đề xuất những phương pháp thiết kể phù hợp. Sau khi có được cái nhìn tổng thể về hệ thống, chương \textbf{Tổng quan về hệ thống back-end} giúp người đọc hiểu thêm về cách xây dựng, tổ chức, thiết kế ở phía back-end. Đồng thời các công nghệ sử dụng để xây dụng back-end cũng sẽ được giới thiệu. Đồng thời để hiểu thêm về cách mà back-end tương tác với Raspberry Pi, cũng như việc điều khiển các thiết bị gắn trên nó, ta sẽ đến với chương \textbf{Module điều khiển thiết bị}. Qua đó, một dịch vụ (service) được xây dựng để back-end có thể tương tác được với các thiết bị. Tiếp đến chương \textbf{Tổng quan giao diện ứng dụng} sẽ giới thiệu cho ta về mặt giao diện ứng dụng của hệ thống đã thiết kế, cũng như cách tổ chức và cách sử dụng cho việc quản lý nhà, chế độ, thiết bị và kịch bản người dùng. Các công nghệ sử dụng để xây dựng giao diện cũng sẽ được giới thiệu tại đây. Sau khi trình bày tổng quan hệ thống, chúng ta đi đến với chi tiết hiện thực back-end, giao diện ứng dụng, module điều khiển thiết bị. Những thông tin này sẽ được trình bày rõ trong chương kế tiếp \textbf{Hiện thực và đánh giá}. Cuối cùng, chương \textbf{Tổng kết} sẽ tóm tắt lại các kết quả đã đạt được sau quá trình thực hiện luận án, cũng như hạn chế còn chưa giải quyết, từ đó đề xuất hướng phát triển mở rộng trong tương lai.
+Đầu tiên ta đến với chương \textbf{Giới thiệu}, nguời đọc sẽ có cái nhìn toàn cảnh về lý do nhóm tiến hành thực hiện đề tài, vai trò và vị trí của đề tài trong xu thế phát triển nhà thông minh ở Việt Nam cũng như phạm vi của luận án này. Kế đến chương \textbf{Phân tích và thiết kế hệ thống} sẽ nêu lên những yêu cầu được đặt ra cho hệ thống, từ đó nhóm đề xuất những phương pháp thiết kể phù hợp. Sau khi có được cái nhìn tổng thể về hệ thống, chương \textbf{Back-end} giúp người đọc hiểu thêm về cách xây dựng, tổ chức, thiết kế ở phía back-end. Đồng thời các công nghệ sử dụng để xây dụng back-end cũng sẽ được giới thiệu. Đồng thời để hiểu thêm về cách mà back-end tương tác với Raspberry Pi, cũng như việc điều khiển các thiết bị gắn trên nó, ta sẽ đến với chương \textbf{Module điều khiển thiết bị}. Qua đó, một dịch vụ (service) được xây dựng để back-end có thể tương tác được với các thiết bị. Tiếp đến chương \textbf{Ứng dụng di động} sẽ giới thiệu cho ta về mặt giao diện ứng dụng của hệ thống đã thiết kế, cũng như cách tổ chức và cách sử dụng cho việc quản lý nhà, chế độ, thiết bị và kịch bản người dùng. Các công nghệ sử dụng để xây dựng giao diện cũng sẽ được giới thiệu tại đây. Sau khi trình bày tổng quan hệ thống, chúng ta đi đến với chi tiết hiện thực back-end, giao diện ứng dụng, module điều khiển thiết bị. Những thông tin này sẽ được trình bày rõ trong chương kế tiếp \textbf{Hiện thực hệ thống}. Cuối cùng, chương \textbf{Tổng kết} sẽ tóm tắt lại các kết quả đã đạt được sau quá trình thực hiện luận án, cũng như hạn chế còn chưa giải quyết, từ đó đề xuất hướng phát triển mở rộng trong tương lai.
 %----------------------------------Phân tích và thiết kế hệ thống---------------------------------%
 \chapter{Phân tích và thiết kế hệ thống}
 
 \section{Các yêu cầu chức năng}
 
-Từ các mục tiêu đề tài đã được đặt ra ở phần \ref{thesis-target} về việc xây dựng một hệ thống nhà thông minh cho phép người dùng quản lý các thiết bị bằng kịch bản mong muốn bên trong một hoặc nhiều ngôi nhà của mình, các yêu cầu chức năng chính được xác định cho hệ thống chúng tôi phát triển sẽ bao gồm các máy tính kích thước nhỏ Raspberry Pi ứng với từng ngôi nhà được lắp đặt hệ thống nơi người dùng sẽ kết nối các thiết bị trong nhà thông qua các chân cắm GPIO. Một ứng dụng di động nơi người dùng sẽ đăng ký cũng như chỉnh sửa thông tin các ngôi nhà, khai báo và quản lý thông tin các thiết bị bên trong ngôi nhà. Ứng dụng cần cung cấp cho người dùng một cơ chế kịch bản hoạt động thiết bị vừa đơn giản để người dùng có thể thêm mới, thiết lập dễ dàng đồng thời vừa có khả năng tùy biến cao khi người dùng muốn kết hợp hoạt động của nhiều thiết bị trong những ngữ cảnh phức tạp. Ngoài ra, ứng dụng còn cần cho phép người dùng tạo nên các chế độ hoạt động khác nhau của ngôi nhà ứng với từng trường hợp thực tế như vắng nhà, tiệc tùng, trời mưa… Trong đó, từng chế độ là từng nhóm các kịch bản riêng biệt để người dùng có thể dễ dàng chuyển đổi qua lại một cách nhanh chóng và thuận tiện khi cần thiết.
+Từ các mục tiêu đề tài đã được đặt ra ở phần \ref{thesis-target} về việc xây dựng một hệ thống nhà thông minh cho phép người dùng quản lý các thiết bị bằng kịch bản mong muốn bên trong một hoặc nhiều ngôi nhà của mình, các yêu cầu chức năng chính được xác định cho hệ thống chúng tôi phát triển sẽ bao gồm các máy tính kích thước nhỏ Raspberry Pi ứng với từng ngôi nhà được lắp đặt hệ thống nơi người dùng sẽ kết nối các thiết bị trong nhà thông qua các chân cắm GPIO. Một ứng dụng di động nơi người dùng sẽ đăng ký cũng như chỉnh sửa thông tin các ngôi nhà, khai báo và quản lý thông tin các thiết bị bên trong ngôi nhà. Ứng dụng cần cung cấp cho người dùng một cơ chế kịch bản hoạt động thiết bị vừa đơn giản để người dùng có thể thêm mới, thiết lập dễ dàng đồng thời vừa có khả năng tùy biến cao khi người dùng muốn kết hợp hoạt động của nhiều thiết bị trong những ngữ cảnh phức tạp. Ngoài ra, ứng dụng còn cần cho phép người dùng tạo nên các chế độ hoạt động khác nhau của ngôi nhà ứng với từng trường hợp thực tế như vắng nhà, tiệc tùng, trời mưa,\dots\hspace{0mm} Trong đó, từng chế độ là từng nhóm các kịch bản riêng biệt để người dùng có thể dễ dàng chuyển đổi qua lại một cách nhanh chóng và thuận tiện khi cần thiết.
 
 \section{Các yêu cầu phi chức năng}
 
@@ -498,7 +504,7 @@ Chi tiết về hiện thực các module này sẽ nằm trong mục \ref{back-
 
 %-----------------------------------Device controller---------------------%
 \chapter{Module điều khiển thiết bị}
-Điều khiển các thiết bị điện trong nhà là một phần không thể thiếu trong hệ thống nhà thông minh. Server cần một bộ điều khiển có thể lấy được dữ liệu từ các cảm biến đặt tại các nơi khác nhau trong nhà, chụp ảnh từ các camera, bật hoặc tắt các thiết bị điện,\dots\hspace{0mm} Trong chương này, chúng tôi đưa ra các công trình liên quan trong việc sử dụng máy tính siêu nhỏ Raspberry Pi để giải quyết nhiều vấn đề khác nhau trong cuộc sống. Tiếp đến, nhóm trình bày tổng quan thiết kế của module điều khiển thiết bị sử dụng Raspberry Pi và các công nghệ có thể hỗ trợ để hiện thực module.
+Điều khiển các thiết bị điện trong nhà là một phần không thể thiếu trong hệ thống nhà thông minh. Server cần một bộ điều khiển có thể lấy được dữ liệu từ các cảm biến đặt tại các nơi khác nhau trong nhà, bật hoặc tắt các thiết bị điện,\dots\hspace{0mm} Trong chương này, chúng tôi đưa ra các công trình liên quan trong việc sử dụng máy tính siêu nhỏ Raspberry Pi để giải quyết nhiều vấn đề khác nhau trong cuộc sống. Tiếp đến, nhóm trình bày tổng quan thiết kế của module điều khiển thiết bị sử dụng Raspberry Pi và các công nghệ có thể hỗ trợ để hiện thực module.
 
 \section{Tổng quan về Raspberry Pi}
 Raspberry Pi được phát triển tại anh bởi Raspberry Pi Foundation với mục đích giúp sinh viên có thể thực hành nhiều hơn trong môn Khoa học máy tính. Nó được thiết kế nhỏ gọn và phải đủ bền để sinh viên có thể giữ trong cặp. Hình \ref{fig:4-pi3-model-b} mô tả cấu trúc bên ngoài của máy tính Raspberry Pi 3 Model B \cite{pi-for-dummies}\cite{pi-wiki}.
@@ -577,7 +583,7 @@ Trong số 26 cổng GPIO, một vài cổng có thêm những những chức n�
 \begin{itemize}[topsep=1mm,itemsep=-0.5mm]
 \item UART (Universal Asynchronous Receiver/Transmitter) Serial Bus: Giả sử như chúng ta cắm một thiết bị vào mà nó có khả năng hiển thị dữ liệu lên thì khi cắm vào hai chân này, ta có thể đọc được những thông báo từ kernel của Raspberry Pi. Ví dụ như Pi không thể khởi động lên được, ta dùng cách này như một công cụ chẩn đoán lỗi. Có hai GPIO hỗ trợ chức năng này là GPIO 15 và 16.
 
-\item I2C (Inter-Integrated Circuit) Bus: cung cấp phương thức giao tiếp giữa nhiều ICs với nhau. Đối với Pi, một IC có thể nhắc đến ngay đó là mạch vi xử lý của nó. I2C bus có thể được truy cập từ GPIO 8 (SDA – Serial Data Line) và GPIO 9 (SCL- Serial Clock). Nó được dùng khá phổ biến để kết nối đến các thiết bị ngoại vi như cảm biến nhiệt độ hay màn hình LCD.
+\item I2C (Inter - Integrated Circuit) Bus: cung cấp phương thức giao tiếp giữa nhiều ICs với nhau. Đối với Pi, một IC có thể nhắc đến ngay đó là mạch vi xử lý của nó. I2C bus có thể được truy cập từ GPIO 8 (SDA – Serial Data Line) và GPIO 9 (SCL - Serial Clock). Nó được dùng khá phổ biến để kết nối đến các thiết bị ngoại vi như cảm biến nhiệt độ hay màn hình LCD.
 
 \item SPI (Serial Peripheral Interface) Bus: phục vụ cho in-system programming (ISP). Các GPIO sau hỗ trợ SPI : GPIO 10 ,11, 12, 13, 14.
 \vspace{1mm}
@@ -616,10 +622,7 @@ Module điều khiển thiết bị được thiết kế gồm hai phần chín
 \textbf{Bộ điều khiển tổng quát (General controller):} vai trò của bộ điều khiển tổng quát là nhận tất cả yêu cầu được gửi đến từ server và xử lý tất cả yêu cầu này, xác định xem đây là yêu cầu dành cho loại thiết bị nào và sử dụng đúng bộ điều khiển dành cho loại thiết bị đó. Trong bộ điều khiển tổng quát có chứa nhiều bộ điều khiển con dành cho từng loại thiết bị, tùy vào yêu cầu của server mà bộ điều khiển tổng quát sẽ quyết định sử dụng bộ điều khiển con nào. \\
 
 \noindent
-Bộ điều khiển camera (Camera controller) được dùng để chụp ảnh với camera chuyên dụng của Raspberry Pi. Với sự hỗ trợ của thư viện JRPiCam, bộ điều khiển camera có thể dễ dàng điều chỉnh các thông số từ chất lượng ảnh cho đến độ sáng, độ nét và độ tương phản. Các bộ điều khiển cảm biến (Gas sensor controller, Light sensor controller,\dots) lấy dữ liệu từ các cảm biến thông qua các cổng GPIO. Dữ liệu trả về có thể thuộc dạng số thực, như nhiệt độ hoặc dạng đúng/sai như có gas hay không, trời sáng hay không,\dots ?\\
-
-\noindent
-Hai bộ điều khiển còn lại là bộ điều khiển đèn (Lightbulb controller) và bộ điều khiển còi (Buzzer controller) có vai trò như một công tắt đóng/mở. Mỗi thiết bị đèn hoặc còi sẽ được điều khiển bởi một cổng GPIO. Như đã trình bày, mỗi cổng GPIO đều có hai trạng thái là Low và High, tùy thuộc vào người thiết kế hệ thống mà từng trạng thái của GPIO sẽ tương ứng với bật hay tắt thiết bị. Trong dự dán của mình, nhóm sử dụng trạng thái Low là bật và trạng thái High là tắt.\\
+Bộ điều khiển đèn (Lightbulb controller) và bộ điều khiển còi (Buzzer controller) có vai trò như một công tắt đóng/mở. Mỗi thiết bị đèn hoặc còi sẽ được điều khiển bởi một cổng GPIO. Như đã trình bày, mỗi cổng GPIO đều có hai trạng thái là Low và High, tùy thuộc vào người thiết kế hệ thống mà từng trạng thái của GPIO sẽ tương ứng với bật hay tắt thiết bị. Trong dự dán của mình, nhóm sử dụng trạng thái Low là bật và trạng thái High là tắt.\\
 
 \noindent
 \textbf{Bộ cung cấp GPIO (GPIO provider):} bộ cung cấp GPIO có vai trò khai báo và cung cấp chính xác loại cổng mà bộ điều khiển thiết bị cần. Với các bộ điều khiển thiết bị dành cho cảm biến, bộ cung cấp GPIO cần khởi tạo cổng nhập (input pin) có chức năng nhận dữ liệu từ cảm biến. Đối với bộ điều khiển thiết bị cho đèn hoặc còi, bộ cung cấp GPIO cần khởi tạo cổng xuất (output pin) sử dụng cho việc điều khiển trạng thái bật/tắt.
@@ -639,16 +642,10 @@ Có rất nhiều thư viện được viết bằng nhiều ngôn ngữ khác n
 \textbf{Thư viện RPi.GPIO:} là một thư viện được viết bằng ngôn ngữ Python, RPi.GPIO được tạo ra với mục đích cung cấp những API cần thiết cho người lập trình Python có thể điều khiển các cổng GPIO của Raspberry Pi một cách dễ dàng.\\
 
 \noindent
-\textbf{Thư viện JRPiCam:} được tạo ra với mục đích cung cấp các API dành cho việc sử dụng camera chuyên dụng của Raspberry Pi, giúp người lập trình dễ dàng hơn trong việc sử dụng và cấu hình camera. JRPiCam được viết bằng ngôn ngữ Java, mã nguồn được công bố công khai tại GitHub.\\
+Sau khi tìm hiểu các công nghệ có thể hỗ trợ, chúng tôi quyết định chọn thư viện Pi4J sử dụng cho việc lấy dữ liệu và điều khiển trạng thái các cổng GPIO. Lý do nhóm quyết định lựa chọn thư viện này vì đây là thư viện mã nguồn mở, được công bố công khai tại GitHub. Vì vậy, nhóm có thể tùy chỉnh lại mã nguồn nếu cần thiết để tăng hiệu suất của hệ thống. Bên cạnh đó, phương pháp lập trình nhóm hướng đến là lập trình hướng đối tượng, nên chúng tôi ưu tiên sử dụng những thư viện được viết bằng ngôn ngữ Java.\\
 
 \noindent
-\textbf{Thư viện Picamera:} giống như JRPiCam, Picamera cung cấp các API sử dụng cho việc điều khiển và cấu hình camera của Raspberry. Tuy nhiên, Picamera được viết bằng ngôn ngữ Python.\\
-
-\noindent
-Sau khi tìm hiểu các công nghệ có thể hỗ trợ, chúng tôi quyết định chọn thư viện Pi4J sử dụng cho việc lấy dữ liệu và điều khiển trạng thái các cổng GPIO, thư viện JRPiCam sẽ được dùng để hiện thực bộ điều khiển camera. Lý do nhóm quyết định lựa chọn hai thư viện này vì đây đều là những thư viện mã nguồn mở, được công bố công khai tại GitHub. Vì vậy, nhóm có thể tùy chỉnh lại mã nguồn nếu cần thiết để tăng hiệu suất của hệ thống. Bên cạnh đó, phương pháp lập trình nhóm hướng đến là lập trình hướng đối tượng, nên chúng tôi ưu tiên sử dụng những thư viện được viết bằng ngôn ngữ Java.\\
-
-\noindent
-Với thiết kế của module điều khiển thiết bị đã được nêu ở những phần trên, tuy không thể điều khiển được tất cả các thiết bị có trong nhà, nhưng đủ để nhóm có thể tạo ra một mô hình thí nghiệm với đầy đủ các thiết bị cần thiết như các cảm biến, đèn, còi và camera. Server được cung cấp đầy đủ các API để điều khiển tất cả các thiết bị hiện có phục vụ cho các mục đích khác nhau như bật/tắt đèn hoặc còi, lấy nhiệt độ, kiểm tra khí gas,\dots\hspace{0mm} Chi tiết hiện thực module điều khiển thiết bị sẽ được trình bày tại phần 6.2.
+Với thiết kế của module điều khiển thiết bị đã được nêu ở những phần trên, tuy không thể điều khiển được tất cả các thiết bị có trong nhà, nhưng đủ để nhóm có thể tạo ra một mô hình thí nghiệm với đầy đủ các thiết bị cần thiết như các cảm biến, đèn và còi. Server được cung cấp đầy đủ các API để điều khiển tất cả các thiết bị hiện có phục vụ cho các mục đích khác nhau như bật/tắt đèn hoặc còi, lấy nhiệt độ, kiểm tra khí gas,\dots\hspace{0mm} Chi tiết hiện thực module điều khiển thiết bị sẽ được trình bày tại phần \ref{device-controller-implementation}.
 
 %------------------------------------------------------------------------%
 
@@ -1192,14 +1189,14 @@ Tuy nhiên, vấn đề quản lý multi-thread hiệu quả khi số lượng k
 \noindent
 Kết thúc chương này, ta có được một cái nhìn chi tiết hơn, sâu hơn về phần thiết kế hệ thống back-end. Back-end đóng vai trò là trung tâm, là “bộ não” của toàn hệ thống, lưu trữ các dữ liệu quan trọng của người dùng,\dots\hspace{0mm} cho nên khâu thiết kế, xây dựng và hiện thực cần tiến hành kĩ lưỡng, cân nhắc đến nhiều vấn đề liên quan. Hệ thống back-end được xây dựng theo hướng module hóa, mỗi module đảm nhận nhiệm vụ chuyên biệt. Trong đó, quan trọng nhất chính là các module chuyển đổi sang kịch bản hệ thống, module kiểm tra tính hợp lệ và module quản lý, khởi chạy các kịch bản. Tuy rằng hệ thống chưa thực sự hoàn thiện, việc quản lý tài nguyên, quản lý kịch bản chưa được tối ưu, dạng kịch bản chưa phong phú, đa dạng,\dots\hspace{0mm} nhưng với bước khởi điểm này cùng những định hướng mở rộng trong tương lai thì hệ thống sẽ có tính khả thi và thực tiễn cao hơn.
 
-\section{Xây dựng module điều khiển thiết bị}
+\section{Xây dựng module điều khiển thiết bị}\label{device-controller-implementation}
 \subsection{Lắp đặt thiết bị}
 Để Raspberry Pi có thể điều khiển được các thiết bị thông qua các chân GPIO, đầu tiên, chúng ta phải lắp đặt đúng cách thiết bị đó vào Raspberry Pi. Nhằm mục đích đảm bảo an toàn và thuận tiện trong việc tiến hành thí nghiệm, chúng tôi ưu tiên sử dụng những thiết bị điện yêu cầu hiệu điện thế thấp (từ 5V trở xuống).
 
 \begin{figure}[h]
   \centering
      \includegraphics[width=10cm]{6-rgb-led}
-  \caption{Thông tin các chân của đèn led [1]}\label{fig:6-rgb-led}
+  \caption{Thông tin các chân của đèn led}\label{fig:6-rgb-led}
 \end{figure}
 
 \noindent
@@ -1211,16 +1208,7 @@ Kết thúc chương này, ta có được một cái nhìn chi tiết hơn, sâ
 \begin{figure}[h]
   \centering
      \includegraphics[width=5cm]{6-buzzer}
-  \caption{Module còi gồm 3 chân: VCC, GND và Signal (nằm giữa) [2]}\label{fig:6-buzzer}
-\end{figure}
-
-\noindent
-\textbf{Lắp đặt camera:} Nhóm sử dụng camera chuyên dụng của Rasperry Pi để dùng cho việc chụp ảnh. Cách lắp đặt camera cũng khá đơn giản, trên Raspberry Pi có một cổng cắm camera nằm giữa cổng HDMI và cổng Ethernet. Hình \ref{fig:6-camera} mô tả vị trí cổng cắm camera. Chỉ cần gắn dây camera vào đúng cổng trên Raspberry Pi là việc lắp đặt hoàn tất.
-
-\begin{figure}[h]
-  \centering
-     \includegraphics[width=5cm]{6-camera}
-  \caption{Raspberry Pi được lắp đặt camera chuyên dụng}\label{fig:6-camera}
+  \caption{Module còi gồm 3 chân: VCC, GND và Signal (nằm giữa)}\label{fig:6-buzzer}
 \end{figure}
 
 \noindent
@@ -1229,26 +1217,26 @@ Kết thúc chương này, ta có được một cái nhìn chi tiết hơn, sâ
 \begin{figure}[h]
   \centering
      \includegraphics[width=5cm]{6-gas-sensor}
-  \caption{Module cảm biến khí gas MQ-2 [4]}\label{fig:6-gas-sensor}
+  \caption{Module cảm biến khí gas MQ-2}\label{fig:6-gas-sensor}
 \end{figure}
 
 \noindent
-Do đặc tính các chân GPIO của Raspberry Pi chỉ nhận được tín hiệu số, nên chúng tôi chỉ sử dụng chân DOUT của cảm biến để phát hiện khí gas. Chân DOUT sẽ được đấu nối với một cổng GPIO của Raspberry PI. Bình thường, chân DOUT của cảm biến sẽ ở trạng thái High, tức có mức điện áp là 3.3V, khi phát hiện khí gas, chân DOUT sẽ ngay lập tức chuyển từ trạng thái High thành Low (0V), và trạng thái này kéo dài cho đến khi cảm biến không còn phát hiện khí gas trong không khí. Độ nhạy của cảm biến sẽ được điều chỉnh bằng tay thông qua bộ điều chỉnh màu xanh đặc bên dưới cảm biến [3].\\
+Do đặc tính các chân GPIO của Raspberry Pi chỉ nhận được tín hiệu số, nên chúng tôi chỉ sử dụng chân DOUT của cảm biến để phát hiện khí gas. Chân DOUT sẽ được đấu nối với một cổng GPIO của Raspberry PI. Bình thường, chân DOUT của cảm biến sẽ ở trạng thái High, tức có mức điện áp là 3.3V, khi phát hiện khí gas, chân DOUT sẽ ngay lập tức chuyển từ trạng thái High thành Low (0V), và trạng thái này kéo dài cho đến khi cảm biến không còn phát hiện khí gas trong không khí. Độ nhạy của cảm biến sẽ được điều chỉnh bằng tay thông qua bộ điều chỉnh màu xanh đặc bên dưới cảm biến \cite{gas-sensor}.\\
 
 \noindent
 \textbf{Lắp đặt cảm biến ánh sáng:} Module cảm biến ánh sáng sử dụng quang trở được lựa chọn sử dụng để phát hiện thời gian hiện tại là ban ngày hay ban đêm. Khi cường độ ánh sáng tăng, điện trở của quang trở sẽ giảm và ngược lại, khi cường độ ánh sáng giảm, điện trở sẽ tăng. Giống module cảm biến khí gas MQ-2, module cảm biến ánh sáng sử dụng quang trở cũng có ba chân: VCC, GND và Signal. VCC và GND cũng sẽ được nối vào hai cổng có hiệu điện thế lần lượt là 3.3V và 0V, chân Signal được nối vào một công GPIO của Raspberry Pi.\\
 
 \noindent
-Khi cường độ ánh sáng thấp hơn giá trị ngưỡng, cổng Signal sẽ ở trạng thái High, tức có hiệu điện thế là 3.3V. Khi cường độ ánh sáng vượt quá giá trị ngưỡng, cổng Signal sẽ ở trạng thái Low, tức có hiệu điện thế là 0V. Giá trị ngưỡng được điều chỉnh bằng  tay sử dụng nút vặn màu xanh nằm phía dưới cảm biến. Hình \ref{fig:6-light-sensor} mô tả một con Raspberry Pi đã được kết nối với module cảm biến ánh sáng quang trở [5][6].
+Khi cường độ ánh sáng thấp hơn giá trị ngưỡng, cổng Signal sẽ ở trạng thái High, tức có hiệu điện thế là 3.3V. Khi cường độ ánh sáng vượt quá giá trị ngưỡng, cổng Signal sẽ ở trạng thái Low, tức có hiệu điện thế là 0V. Giá trị ngưỡng được điều chỉnh bằng  tay sử dụng nút vặn màu xanh nằm phía dưới cảm biến. Hình \ref{fig:6-light-sensor} mô tả một con Raspberry Pi đã được kết nối với module cảm biến ánh sáng quang trở \cite{light-sensor}\cite{light-sensor-2}.
 
 \begin{figure}[h]
   \centering
      \includegraphics[width=6cm]{6-light-sensor}
-  \caption{Module cảm biến ánh sáng quang trở được gán vào Raspberry Pi [6]}\label{fig:6-light-sensor}
+  \caption{Module cảm biến ánh sáng quang trở được gán vào Raspberry Pi}\label{fig:6-light-sensor}
 \end{figure}
 
 \noindent
-\textbf{Lắp đặt cảm biến chuyển động:} Chức năng chống trộm cũng là một chức năng không thể thiếu của một ngôi nhà thông minh. Nhóm sử dụng module cảm biến chuyển động PIR (Passive InfraRed) để nhận biết có người hay có trộm vừa đi ngang qua. Nguyên lý hoạt động của cảm biến là dựa vào bức xạ nhiệt mà con người phát ra. Mỗi người trong chúng ta đều có thân nhiệt lúc bình thường khoảng 37 độ C và đều phát ra các bức xạ nhiệt. Khi một người đi qua, các tia bức xạ nhiệt phát ra từ người đó sẽ kích hoạt cảm biến. Hình \ref{fig:6-pir-sensor} mô tả cấu trúc bên ngoài cảm biến chuyển động PIR [7].
+\textbf{Lắp đặt cảm biến chuyển động:} Chức năng chống trộm cũng là một chức năng không thể thiếu của một ngôi nhà thông minh. Nhóm sử dụng module cảm biến chuyển động PIR (Passive InfraRed) để nhận biết có người hay có trộm vừa đi ngang qua. Nguyên lý hoạt động của cảm biến là dựa vào bức xạ nhiệt mà con người phát ra. Mỗi người trong chúng ta đều có thân nhiệt lúc bình thường khoảng 37 độ C và đều phát ra các bức xạ nhiệt. Khi một người đi qua, các tia bức xạ nhiệt phát ra từ người đó sẽ kích hoạt cảm biến. Hình \ref{fig:6-pir-sensor} mô tả cấu trúc bên ngoài cảm biến chuyển động PIR \cite{pir-sensor}.
 
 \begin{figure}[h]
   \centering
@@ -1269,7 +1257,7 @@ Cảm biến có ba chân: VCC, GND và OUT. Cổng VCC và GND sẽ lần lư�
 \end{figure}
 
 \noindent
-Do cảm biến DS18B20 sử dụng cơ chế truyền tín hiệu 1-Wire nên cho phép người sử dụng có thể kết nhiều cảm biến vào cùng một chân trên Raspberry Pi. Cách kết nối cũng vô cùng đơn giản, chỉ cần kết nối tất cả cổng OUT của tất cả cảm biến vào cùng chân GPIO số 4 của Raspberry Pi [9].
+Do cảm biến DS18B20 sử dụng cơ chế truyền tín hiệu 1-Wire nên cho phép người sử dụng có thể kết nhiều cảm biến vào cùng một chân trên Raspberry Pi. Cách kết nối cũng vô cùng đơn giản, chỉ cần kết nối tất cả cổng OUT của tất cả cảm biến vào cùng chân GPIO số 4 của Raspberry Pi \cite{temp-sensor}.
 
 %------------------------------Hiện thực module----------------------------%
 \subsection{Hiện thực module}
@@ -1283,7 +1271,7 @@ Module điều khiển thiết bị được chia làm nhiều bộ điều khi�
 \end{figure}
 
 \noindent
-\textbf{Bộ điều khiển chung (GPIO Controller):} Như đã trình bày, bộ điều khiển chung sẽ nhận tất cả yêu cầu từ server. Bộ điều khiển chung cung cấp tất cả các phương thức mà server cần để lấy dữ liệu từ cảm biến cũng như điều khiển các thiết bị điện. Để sử dụng một hàm, server cần truyền vào một thực thể device. Thực thể device sẽ cung cấp tất cả các thông tin mà bộ điều khiển chung cần để thực hiện đúng hành động vào đúng thiết bị mà server cần như loại thiết bị, số thứ tự cổng GPIO,... Bộ điều khiển chung sẽ dựa vào thông tin loại thiết bị và quyết định nên sử dụng bộ điều khiển thiết bị nào phù hợp. Ví dụ, server gửi yêu cầu tắt một thiết bị, trong yêu cầu của server sẽ chứa thông tin loại thiết bị mà server muốn tắt (đèn, còi,\dots) kèm theo số thứ tự của cổng GPIO đang điều khiển thiết bị đó. Nếu loại thiết bị là đèn, bộ điều khiển chung sử dụng bộ điều khiển đèn (Light bulb controller) để thực hiện phương thức tắt.\\
+\textbf{Bộ điều khiển chung (GPIO Controller):} Như đã trình bày, bộ điều khiển chung sẽ nhận tất cả yêu cầu từ server. Bộ điều khiển chung cung cấp tất cả các phương thức mà server cần để lấy dữ liệu từ cảm biến cũng như điều khiển các thiết bị điện. Để sử dụng một hàm, server cần truyền vào một thực thể device. Thực thể device sẽ cung cấp tất cả các thông tin mà bộ điều khiển chung cần để thực hiện đúng hành động vào đúng thiết bị mà server cần như loại thiết bị, số thứ tự cổng GPIO,\dots\hspace{0mm} Bộ điều khiển chung sẽ dựa vào thông tin loại thiết bị và quyết định nên sử dụng bộ điều khiển thiết bị nào phù hợp. Ví dụ, server gửi yêu cầu tắt một thiết bị, trong yêu cầu của server sẽ chứa thông tin loại thiết bị mà server muốn tắt (đèn, còi,\dots) kèm theo số thứ tự của cổng GPIO đang điều khiển thiết bị đó. Nếu loại thiết bị là đèn, bộ điều khiển chung sử dụng bộ điều khiển đèn (Light bulb controller) để thực hiện phương thức tắt.\\
 
 \noindent
 \textbf{Bộ cung cấp GPIO (GPIO Provider):} Trong thư viện Pi4J, để sử dụng một cổng GPIO, bước đầu tiên là khai báo cổng cần sử dụng. Bộ cung cấp GPIO có nhiệm vụ hỗ trợ các bộ điều khiển thiết bị thực hiện thao tác khai báo một cổng GPIO. Tùy thuộc vào mục đích mà một cổng GPIO có thể được khai báo là cổng nhập (input pin) hay cổng xuất (output pin). Cổng nhập (input pin) được các bộ điều khiển cảm biến sử dụng để lấy dữ liệu từ các cổng GPIO. Cổng xuất (output pin) được bộ điều khiển đèn và còi sử dụng để điều khiển việc bật hoặc tắt. Cú pháp khai báo một cổng GPIO được trình bày ở đoạn code sau:
@@ -1300,7 +1288,7 @@ Module điều khiển thiết bị được chia làm nhiều bộ điều khi�
 \end{figure}
 
 \noindent
-Để tránh những sự thay đổi về phần cứng sẽ ảnh hưởng đến phần mềm sử dụng các chân GPIO của Raspberry Pi, Pi4J sử dụng bộ quy tắc đánh số riêng cho những cổng GPIO. Vì thế, bộ cung cấp GPIO còn giữ vai trò chuyển đổi số thứ tự một cổng GPIO trên Raspberry Pi về số thứ tự hợp lệ trên Pi4J. Hình \ref{fig:4-pi4j-danh-so} mô tả cách đánh số của thư viện Pi4J trên Raspberry Pi 3 Model B. Ví dụ, cổng GPIO ở vị trí 11 trên Raspberry Pi khi chuyển đổi sang cách đánh số của thư viện Pi4J sẽ có số thứ tự là GPIO 0.\\
+Để tránh những sự thay đổi về phần cứng sẽ ảnh hưởng đến phần mềm sử dụng các chân GPIO của Raspberry Pi, Pi4J sử dụng bộ quy tắc đánh số riêng cho những cổng GPIO. Vì thế, bộ cung cấp GPIO còn giữ vai trò chuyển đổi số thứ tự một cổng GPIO trên Raspberry Pi về số thứ tự hợp lệ trên Pi4J. Hình \ref{fig:4-pi4j-danh-so} mô tả cách đánh số của thư viện Pi4J trên Raspberry Pi 3 Model B. Ví dụ, cổng GPIO ở vị trí 11 trên Raspberry Pi khi chuyển đổi sang cách đánh số của thư viện Pi4J sẽ có số thứ tự là GPIO 0 \cite{pi4j-numbering}.\\
 
 \noindent
 \textbf{Bộ điều khiển đèn và bộ điều khiển còi:} Hai bộ điều khiển này được sử dụng bởi bộ điều khiển chung khi server có các yêu cầu liên quan đến đèn và còi. Sau khi nhận yêu cầu từ server, bộ điều khiển chung sẽ truyền thông tin về thiết bị đến đúng bộ điều khiển thích hợp. Khi nhận thông tin về thiết bị bao gồm số thứ tự cổng GPIO, bộ điều khiển đèn hoặc còi sẽ sử dụng bộ cung cấp GPIO để khởi tạo đúng loại cổng, input pin hay output pin.\\
@@ -1345,50 +1333,6 @@ Trong đó, \textit{<temperature-sensor-id>} là thư mục riêng của mỗi c
 \noindent
 Trong đó, \textit{t=29562} chính là giá trị mà cảm biến đo được. Theo ví dụ trên, nhiệt độ hiện tại là 29.562 độ C và đây cũng chính là giá trị mà bộ điều khiển cảm biến nhiệt độ trả về cho server.\\
 
-\noindent
-Bộ điều khiển camera: Raspberry Pi cung cấp một chân cắm đặc biệt để kết nối camera chuyên dụng vào Raspberry Pi. Vì vậy, khác với các bộ điều khiển khác sử dụng GPIO để lấy dữ liệu từ cảm biến hoặc điều khiển hoạt động bật tắt, bộ điều khiển camera điều khiển hoạt động chụp hình thông qua chân cắm được dành riêng cho camera. Do thư viện Pi4J không hỗ trợ điều khiển camera, nên bộ điều khiển camera sử dụng một thư viện khác là JRPiCam. Để sử dụng JRPiCam, đầu tiên chúng ta cần khởi tạo đối tượng RPiCamera. Cú pháp khởi tạo được thể hiện trong đoạn code sau:
-
-\begin{lstlisting}[language=Java, label={lst:declare-camera}]
-	RPiCamera piCamera = new RPiCamera();
-\end{lstlisting}
-
-\noindent
-Bộ điều khiển camera cung cấp một chức năng chính là chụp hình khi cần thiết. Khi server muốn chụp một tấm ảnh từ camera, server sẽ gửi một yêu cầu đến một điều khiển chung và bộ điều khiển chung sẽ tiếp tục gửi yêu cầu đến bộ điều khiển thiết bị. Khi nhận được yêu cầu, bộ điều khiển camera sẽ tiến hành chụp ảnh với sự trợ giúp của thư viện JRPiCam. Cú pháp sử dụng thư viện để chụp ảnh được mô tả qua đoạn code sau:
-
-\begin{lstlisting}[language=Java, label={lst:camera-take-picture}]
-	//Take image and store in BufferedImage
-	BufferedImage bufferedImage = piCamera.takeBufferedStill();
-\end{lstlisting}
-
-\noindent
-Ngoài chụp ảnh, bộ điều khiển camera còn cung cấp các phương thức hỗ trợ trong việc cấu hình camera. Các thông số của camera đều có thể được tùy chỉnh như kích thước ảnh, độ sáng, độ tương phản, độ nét, độ trễ,\dots\hspace{0mm} Cách tùy chỉnh thông số khi sử dụng JRPiCam được thể hiện qua đoạn code sau:
-
-\begin{lstlisting}[language=Java, label={lst:camera-take-picture}]
-	// Change Automatic White Balance setting to automatic 
-	piCamera.setAWB(AWB.AUTO);
-	// Turn off Dynamic Range Compression
-	piCamera.setDRC(DRC.OFF);
-	// Set maximum contrast
-	piCamera.setContrast(contrast);
-	// Set maximum sharpness
-	piCamera.setSharpness(sharpness);
-	// Set brightness
-	piCamera.setBrightness(brightness);
-	// Set maximum quality
-	piCamera.setQuality(quality);
-	// Wait 1 second to take the image
-	piCamera.setTimeout(timeout);
-	// Set image width
-	piCamera.setWidth(width);
-	// Set image height
-	piCamera.setHeight(height);
-	// Turn on image preview
-	piCamera.turnOnPreview();
-	// Change encoding of images to PNG
-	piCamera.setEncoding(Encoding.PNG);
-\end{lstlisting}
-
-\subsection{Đánh giá}
 Đối với cách thiết kế và hiện thực như trên, module điều khiển thiết bị đã cung cấp đầy đủ các phương thức cần thiết giúp server có thể điều khiển các thiết bị như đèn, còi, camera và lấy dữ liệu từ các cảm biến. Bên cạnh đó, module đã được hiện thực đúng với cách thiết kế ban đầu là điều khiển thiết bị thông qua các chân GPIO của Raspberry Pi, cung cấp cho server cách thức đơn giản để điều khiển thiết bị mà không cần quan tâm đến thiết bị thuộc loại gì.\\
 
 \noindent
@@ -2085,7 +2029,8 @@ Nhà thông minh hiện đang dần trở thành một xu hướng tất yếu c
 
 %-------------------------------------Tài liệu tham khảo------------------------%
 \newpage
-\bibliographystyle{abbrv}
+\Urlmuskip=0mu plus 1mu\relax
+\bibliographystyle{unsrt}
 \bibliography{references}
 
 %--------------------------------------Phụ lục--------------------------------%
