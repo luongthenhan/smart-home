@@ -268,13 +268,34 @@ public class DeviceService implements IDeviceService {
 		Scenario updatedScenario = scenarioService.scriptToScenario(homeId, scriptToUpdate);
 		
 		boolean isValid = scenarioService.isValid(homeId, modeId, scriptToUpdate, updatedScenario);
-		if( isValid )
+		if( isValid ){
+			if( checkHomeOrDevicesDisabled(homeId, deviceId, updatedScenario) )
+				scriptToUpdate.setEnabled(false);
 			return handleWhenScriptIsValid(scriptId, scriptToUpdate, currentScriptEntity, updatedScenario);
+		}
 		
 		// Not found or not valid
 		return false;
 	}
 
+	@Override
+	public boolean checkHomeOrDevicesDisabled(int homeId, int deviceId, Scenario scenario) throws Exception{
+		boolean isHomeOrDeviceDisabled = !homeDao.isEnabled(homeId) || !deviceDao.isEnabled(deviceId);
+		if( isHomeOrDeviceDisabled )
+			return true;
+		
+		// In case of hidden device, it always be enabled so that we need to check devices referenced by scenario
+		boolean areAnyDevicesReferencedByScenarioDisabled = false; 
+		Set<Integer> deviceIdsInScenario = scenarioService.getListDeviceIdInScenario(scenario);
+		for (Integer deviceIdInScenario : deviceIdsInScenario) {
+			areAnyDevicesReferencedByScenarioDisabled = !deviceDao.isEnabled(deviceIdInScenario);
+			if( areAnyDevicesReferencedByScenarioDisabled )
+				return true;
+		}
+		
+		return false;
+	}
+	
 	private boolean handleWhenScriptIsValid(int scriptId, Script scriptToUpdate,
 			ScriptEntity currentScriptEntity, Scenario updatedScenario) throws Exception {
 		boolean isScriptContentChanged = isScriptContentChanged(scriptToUpdate, currentScriptEntity);

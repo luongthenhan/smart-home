@@ -250,7 +250,6 @@ public class ScenarioCreator {
 	 * @return
 	 * @throws Exception 
 	 */
-	@SuppressWarnings("unchecked")
 	private IBlock createBlocksInsideArray(int homeId, JSONArray objects) throws Exception {
 		Action action = new Action();
 		action.setName("LIST of ACTION | BLOCK");

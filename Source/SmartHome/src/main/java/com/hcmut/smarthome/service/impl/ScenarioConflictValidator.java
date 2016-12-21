@@ -53,42 +53,50 @@ public class ScenarioConflictValidator {
 		Stack<Condition> stackConditions = new Stack<>();
 		// Find out pair of action & condition of the inputScenario to be compared to existed list
 		// of scenario's blocks
-		List<Pair<Condition, SimpleAction>> listActionsAndConditionsToCompare = 
+		List<Pair<List<Condition>, SimpleAction>> listActionsAndConditionsToCompare = 
 				getPairActionsAndMergedConditions(inputScenario.getBlocks(), stackConditions);
 
+		// TODO: Check here
 		// Check stupid script here
-		checkBothIfElseBlocksHaveSameAction(listActionsAndConditionsToCompare);
+		//checkBothIfElseBlocksHaveSameAction(listActionsAndConditionsToCompare);
 		
 		if( existedScenarios == null || existedScenarios.isEmpty())
 			return true;
 		
 		// Check for each pair
-		for (Pair<Condition, SimpleAction> actionAndConditionsGroup : listActionsAndConditionsToCompare) {
+		for (Pair<List<Condition>, SimpleAction> actionAndConditionsGroup : listActionsAndConditionsToCompare) {
 			for (Scenario existedScenario : existedScenarios) {
-				Condition conditionToCompare = actionAndConditionsGroup
-						.getFirst();
+				
 				SimpleAction actionToCompare = actionAndConditionsGroup
 						.getSecond();
-
-				// Check existed counter action first, if any then we trace back
-				// to see whether condition is matching or not
-					// If counter action is found out
-						// if condition to be compared is null , we make no sense to
-						// call areNestedConditionMatching
-						// because this action always happen -> not valid script
-					// else we need to call areNestedCondtionMatching to find out if
-						// any conditions are matching -> not valid script
 				if (isCounteractionExisted(actionToCompare,
 						existedScenario.getBlocks())) {
 					
-					// Because only TreeRangeSet support remove function for not equal case
-					Map<String,Boolean> checkedRange = new HashMap<>();
-					
-					if (conditionToCompare == null
-							|| areNestedConditionsMatching(conditionToCompare,
-									existedScenario.getBlocks(), checkedRange))
+					if( actionAndConditionsGroup.getFirst().isEmpty()  )
 						throw new ConflictConditionException(SCRIPT_CONFLICT);
+					
+					for (Condition conditionToCompare : actionAndConditionsGroup.getFirst()) {
+						// Check existed counter action first, if any then we trace back
+						// to see whether condition is matching or not
+							// If counter action is found out
+								// if condition to be compared is null , we make no sense to
+								// call areNestedConditionMatching
+								// because this action always happen -> not valid script
+							// else we need to call areNestedCondtionMatching to find out if
+								// any conditions are matching -> not valid script
+						
+							
+							// Because only TreeRangeSet support remove function for not equal case
+							Map<String,Boolean> checkedRange = new HashMap<>();
+							
+							if (conditionToCompare == null
+									|| areNestedConditionsMatching(conditionToCompare,
+											existedScenario.getBlocks(), checkedRange))
+								throw new ConflictConditionException(SCRIPT_CONFLICT);
+						
+					}
 				}
+				
 			}
 		}
 		return true;
@@ -193,11 +201,11 @@ public class ScenarioConflictValidator {
 	 * @throws NotSupportedException
 	 * @throws ConflictConditionException 
 	 */
-	public List<Pair<Condition, SimpleAction>> getPairActionsAndMergedConditions(
+	public List<Pair<List<Condition>, SimpleAction>> getPairActionsAndMergedConditions(
 			List<IBlock> blocks, Stack<Condition> stackOuterConditions)
 			throws NotSupportedException, ConflictConditionException {
 
-		List<Pair<Condition, SimpleAction>> pairs = new ArrayList<>();
+		List<Pair<List<Condition>, SimpleAction>> pairs = new ArrayList<>();
 
 		if (blocks == null)
 			return pairs;
@@ -228,7 +236,7 @@ public class ScenarioConflictValidator {
 
 	private void getPairActionAndMergedConditionInOtherControlBlocks(
 			Stack<Condition> stackOuterConditions,
-			List<Pair<Condition, SimpleAction>> pair, IBlock block)
+			List<Pair<List<Condition>, SimpleAction>> pair, IBlock block)
 			throws ConflictConditionException, NotSupportedException {
 		// Push If condition to stack and continue finding out in block
 		// If actions
@@ -257,7 +265,7 @@ public class ScenarioConflictValidator {
 
 	private void getPairActionAndMergedConditionInControlBlockFromTo(
 			Stack<Condition> stackOuterConditions,
-			List<Pair<Condition, SimpleAction>> pair, IBlock block)
+			List<Pair<List<Condition>, SimpleAction>> pair, IBlock block)
 			throws ConflictConditionException, NotSupportedException {
 		ControlBlockFromTo blocksFromTo = (ControlBlockFromTo) block;
 		Condition innerFromToCondition = blocksFromTo.getCondition();
@@ -271,13 +279,13 @@ public class ScenarioConflictValidator {
 
 	private void getPairActionAndMergedConditionInSimpleActionBlock(
 			Stack<Condition> stackOuterConditions,
-			List<Pair<Condition, SimpleAction>> pair, IBlock block) {
+			List<Pair<List<Condition>, SimpleAction>> pair, IBlock block) {
 		Condition conditionNearestToCurrentAction = null;
 		if (stackOuterConditions != null && !stackOuterConditions.empty())
 			conditionNearestToCurrentAction = stackOuterConditions.peek();
 		
-		pair.add(new Pair<Condition, SimpleAction>(
-				conditionNearestToCurrentAction, (SimpleAction) block));
+		pair.add(new Pair<List<Condition>, SimpleAction>(
+				new ArrayList<>(stackOuterConditions), (SimpleAction) block));
 	}
 
 	private void mergeInnerWithOuterConditionControlBlockFromTo(Condition innerCondition, Stack<Condition> stackOuterConditions)

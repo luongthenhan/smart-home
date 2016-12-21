@@ -24,6 +24,7 @@ import com.hcmut.smarthome.scenario.model.IBlock;
 import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.scenario.model.Scenario.ScenarioStatus;
 import com.hcmut.smarthome.scenario.model.SimpleAction;
+import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
 import com.hcmut.smarthome.utils.NotFoundException;
 
@@ -39,6 +40,9 @@ public class ScenarioRunner {
 	
 	@Autowired
 	private IHomeService homeService;
+	
+	@Autowired
+	private IDeviceService deviceService;
 
 	
 	public void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario) throws Exception{
@@ -59,7 +63,8 @@ public class ScenarioRunner {
 			throw new Exception(NOT_ENOUGH_INFORMATION_OF_SCRIPT_TO_RUN);
 
 		// Mark scenario as running
-		scenario.setStatus(ScenarioStatus.RUNNING);
+		ScenarioStatus status = determineStatusScenario(scenario.getHomeId(), scenario.getDeviceId(), scenario);
+		scenario.setStatus(status);
 		mapScenarioController.put(scenario.getId(), scenario);
 		
 		if( checkIfScenarioCanRunInCurrentModeOrStopIt(scenario) ){
@@ -69,6 +74,12 @@ public class ScenarioRunner {
 		
 	}
 
+	private ScenarioStatus determineStatusScenario(int homeId, int deviceId, Scenario scenario) throws Exception{
+		if( deviceService.checkHomeOrDevicesDisabled(homeId, deviceId, scenario) )
+			return ScenarioStatus.STOPPING;
+		return ScenarioStatus.RUNNING;
+	}
+	
 	private boolean checkIfScenarioCanRunInCurrentModeOrStopIt(Scenario scenario){
 		if( homeService.getCurrentModeIdGivenHome(scenario.getHomeId()) != scenario.getModeId() ){
 			LOGGER.debug(String.format("The script %s can only run in mode %s", scenario.getId(), scenario.getModeId()));
@@ -99,11 +110,6 @@ public class ScenarioRunner {
 					ScenarioStatus status) throws Exception {
 				switch (status) {
 					case RUNNING:
-						// NOTE: Only do action when home is enabled || device is enabled
-						/*if( checkIfScenarioCanRunInCurrentModeOrStopIt(scenario) 
-							&& homeService.isEnabled(scenario.getHomeId()) 
-							&& deviceService.isDeviceEnabled(scenario.getDeviceId()))
-							 */
 						runBlocks(scenario.getBlocks());
 						break;
 					case STOPPING:
@@ -147,7 +153,7 @@ public class ScenarioRunner {
 	 * @param controlBlock
 	 */
 	private void runControlBlock(ControlBlock<?> controlBlock) {
-		if ( controlBlock.getClass().equals(ControlBlockFromTo.class) ){
+		if ( ControlBlockFromTo.class.equals(controlBlock.getClass())){
 			runControlBlockFromTo(controlBlock);
 		} else if (controlBlock.getCondition().check()) {
 			runBlocks(controlBlock.getAction().getBlocks());

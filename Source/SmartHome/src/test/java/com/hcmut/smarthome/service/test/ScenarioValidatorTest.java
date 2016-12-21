@@ -197,7 +197,6 @@ public class ScenarioValidatorTest {
 	
 	@Test
 	public void testCase3_5() throws Exception{
-		expectedException.expect(ConflictConditionException.class);
 		
 		String input = new ScriptBuilder()
 		.begin()
@@ -210,7 +209,7 @@ public class ScenarioValidatorTest {
 		
 		List<String> existedScritps = new ArrayList<>();
 		
-		boolean expectedResult = false;
+		boolean expectedResult = true;
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
@@ -1007,12 +1006,33 @@ public class ScenarioValidatorTest {
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	
+	@Test
+	public void testFromToWithLightSensorTurnOnLight() throws Exception{
+		String input = ScriptBuilderTemplate.blockIfOneAction(LSENSOR_4, EQUAL, true, TURN_OFF, LIGHT_2);
+		
+		List<String> existedScritps = new ArrayList<>();
+		String existedScript = new ScriptBuilder()
+		.begin()
+			.FromTo("05:00", "23:00")
+				.action(TURN_OFF, LIGHT_2)
+			.endFromTo()
+		.end().build();
+		existedScritps.add(existedScript);
+		
+		boolean expectedResult = true;
+		runTestScriptValidation(input, existedScritps, expectedResult);
+	}
+	
 	/**
-	 * VALID
+	 * INVALID
 	 * @throws Exception 
 	 */
 	@Test
 	public void testCase12_3() throws Exception{
+		
+		expectedException.expect(ConflictConditionException.class);
+		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
+		
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -1031,7 +1051,7 @@ public class ScenarioValidatorTest {
 		.end().build();
 		existedScritps.add(existedScript);
 		
-		boolean expectedResult = true;
+		boolean expectedResult = false;
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	

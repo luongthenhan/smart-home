@@ -6,6 +6,7 @@ import java.util.Set;
 import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.model.Script;
 import com.hcmut.smarthome.model.ScriptMoreDetail;
+import com.hcmut.smarthome.scenario.model.Scenario;
 import com.hcmut.smarthome.utils.NotFoundException;
 
 public interface IDeviceService {
@@ -54,4 +55,7 @@ public interface IDeviceService {
 	List<Script> getAllScriptsGivenMode(int modeId) throws Exception;
 
 	List<ScriptMoreDetail> getAllScripts() throws Exception;
+
+	boolean checkHomeOrDevicesDisabled(int homeId, int deviceId,
+			Scenario scenario) throws Exception;
 }
