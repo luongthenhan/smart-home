@@ -32,8 +32,6 @@ public class Device implements Serializable {
 	
 	protected Integer GPIOPin;
 	
-	protected String GPIOType; 
-	
 	protected String status;
 	
 	protected List<Script> scripts;
@@ -53,7 +51,6 @@ public class Device implements Serializable {
 		this.code = that.getCode();
 		this.deviceType = that.getDeviceType();
 		this.home = that.getHome();
-		this.GPIOType = that.getGPIOType();
 		this.scripts = that.getScripts();
 		this.timeout = that.getTimeout();
 	}
@@ -69,7 +66,6 @@ public class Device implements Serializable {
 		this.code = that.getCode();
 		this.deviceType = DeviceTypeConverter.toBriefDeviceType(that.getDeviceType());
 		this.home = HomeConverter.toModel(that.getHome());
-		this.GPIOType = that.getGPIOType();
 		this.timeout = that.getTimeout();
 		this.scripts = ScriptConverter.toListModel(that.getScripts());
 	}
@@ -128,12 +124,6 @@ public class Device implements Serializable {
 	}
 	public void setGPIO(Integer gPIOPin) {
 		GPIOPin = gPIOPin;
-	}
-	public String getGPIOType() {
-		return GPIOType;
-	}
-	public void setGPIOType(String gPIOType) {
-		GPIOType = gPIOType;
 	}
 
 	public List<Script> getScripts() {

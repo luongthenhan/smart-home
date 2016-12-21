@@ -10,6 +10,8 @@ public class BriefDeviceType implements Serializable{
 	
 	protected String name;
 	
+	protected String GPIOType;
+	
 	public BriefDeviceType(){
 		super();
 	}
@@ -28,6 +30,14 @@ public class BriefDeviceType implements Serializable{
 
 	public void setName(String typeName) {
 		this.name = typeName;
+	}
+
+	public String getGPIOType() {
+		return GPIOType;
+	}
+
+	public void setGPIOType(String gPIOType) {
+		GPIOType = gPIOType;
 	}
 	
 }

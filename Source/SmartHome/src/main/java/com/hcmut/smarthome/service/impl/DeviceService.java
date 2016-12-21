@@ -412,9 +412,6 @@ public class DeviceService implements IDeviceService {
 		if( updatedDevice.getGPIO() != null && updatedDevice.getGPIO() > 0 )
 			deviceEntity.setGPIOPin(updatedDevice.getGPIO());
 
-		if( updatedDevice.getGPIOType() != null )
-			deviceEntity.setGPIOType(updatedDevice.getGPIOType());
-		
 		if( updatedDevice.getLocation() != null )
 			deviceEntity.setLocation(updatedDevice.getLocation());
 		

@@ -41,6 +41,9 @@ public class DeviceTypeEntity implements Serializable{
 	@Column(name="main_action_id", nullable=true)
 	private Integer mainAction;
 	
+	@Column(name="gpio_type", nullable=true)
+	private String GPIOType;
+	
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true,mappedBy="deviceType")
 	private List<DeviceEntity> devices;
 	
@@ -118,6 +121,14 @@ public class DeviceTypeEntity implements Serializable{
 
 	public void setMainAction(Integer mainAction) {
 		this.mainAction = mainAction;
+	}
+
+	public String getGPIOType() {
+		return GPIOType;
+	}
+
+	public void setGPIOType(String gPIOType) {
+		GPIOType = gPIOType;
 	}
 
 }

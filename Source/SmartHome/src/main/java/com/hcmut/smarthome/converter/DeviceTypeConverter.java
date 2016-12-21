@@ -53,6 +53,7 @@ public class DeviceTypeConverter {
 		BriefDeviceType deviceType = new BriefDeviceType();
 		deviceType.setId(deviceTypeEntity.getId());
 		deviceType.setName(deviceTypeEntity.getTypeName());
+		deviceType.setGPIOType(deviceTypeEntity.getGPIOType());
 		
 		return deviceType;
 	}
