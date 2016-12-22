@@ -23,7 +23,9 @@ public class DeviceTypeDaoImpl extends CommonDaoImpl<DeviceTypeEntity> implement
 		query.append("SELECT DISTINCT ").append("device_type.id,")
 				.append("device_type.description, ")
 				.append("device_type.main_action_id, ")
-				.append("device_type.image_url, ").append("device_type.name ")
+				.append("device_type.image_url, ")
+				.append("device_type.name, ")
+				.append("device_type.gpio_type ")
 				.append("FROM ").append("device, ")
 				.append("device_type ");
 				/*.append("WHERE ")
