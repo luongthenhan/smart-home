@@ -62,20 +62,20 @@ public class ScenarioRunner {
 				|| scenario.getDeviceId() <= 0)
 			throw new Exception(NOT_ENOUGH_INFORMATION_OF_SCRIPT_TO_RUN);
 
-		// Mark scenario as running
+		// Put new scenario to queue
 		ScenarioStatus status = determineStatusScenario(scenario.getHomeId(), scenario.getDeviceId(), scenario);
 		scenario.setStatus(status);
-		mapScenarioController.put(scenario.getId(), scenario);
 		
-		if( checkIfScenarioCanRunInCurrentModeOrStopIt(scenario) ){
-			LOGGER.debug(String.format("New scenario with id %s is running", scenario.getId() ));
-			scheduleTask(scenario);
-		}
+		mapScenarioController.put(scenario.getId(), scenario);
+		scheduleTask(scenario);
+		
+		LOGGER.debug(String.format("New scenario with id %s is put to queue with status %s", scenario.getId(), scenario.getStatus() ));
 		
 	}
 
 	private ScenarioStatus determineStatusScenario(int homeId, int deviceId, Scenario scenario) throws Exception{
-		if( deviceService.checkHomeOrDevicesDisabled(homeId, deviceId, scenario) )
+		if( deviceService.checkHomeOrDevicesDisabled(homeId, deviceId, scenario)
+				|| !checkIfScenarioCanRunInCurrentModeOrStopIt(scenario))
 			return ScenarioStatus.STOPPING;
 		return ScenarioStatus.RUNNING;
 	}

@@ -561,7 +561,7 @@ public class ScenarioConflictValidator {
 			 intersection = conditionRange.intersection(existedConditionRange);
 			}
 			catch(IllegalArgumentException e){
-				return true;
+				return false;
 			}
 			
 			
