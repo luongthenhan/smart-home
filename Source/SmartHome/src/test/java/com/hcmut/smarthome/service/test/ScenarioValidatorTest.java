@@ -1084,7 +1084,7 @@ public class ScenarioValidatorTest {
 	
 	@Test
 	public void testCase12_2() throws Exception{
-		
+
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
