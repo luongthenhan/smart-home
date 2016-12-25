@@ -42,6 +42,7 @@ import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
 import com.hcmut.smarthome.utils.ConstantUtil;
 import com.hcmut.smarthome.utils.NotFoundException;
+import com.hcmut.smarthome.utils.ScenarioUtils;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @Service
@@ -286,7 +287,7 @@ public class DeviceService implements IDeviceService {
 		
 		// In case of hidden device, it always be enabled so that we need to check devices referenced by scenario
 		boolean areAnyDevicesReferencedByScenarioDisabled = false; 
-		Set<Integer> deviceIdsInScenario = scenarioService.getListDeviceIdInScenario(scenario);
+		Set<Integer> deviceIdsInScenario = ScenarioUtils.getListDeviceIdInScenario(scenario);
 		for (Integer deviceIdInScenario : deviceIdsInScenario) {
 			areAnyDevicesReferencedByScenarioDisabled = !deviceDao.isEnabled(deviceIdInScenario);
 			if( areAnyDevicesReferencedByScenarioDisabled )
@@ -495,7 +496,7 @@ public class DeviceService implements IDeviceService {
 		Scenario scenario = scenarioService.scriptToScenario(homeId, script);
 		if( scenario == null )
 			return Collections.emptySet();
-		return scenarioService.getListDeviceIdInScenario(scenario);
+		return ScenarioUtils.getListDeviceIdInScenario(scenario);
 	}
 	
 	@Override

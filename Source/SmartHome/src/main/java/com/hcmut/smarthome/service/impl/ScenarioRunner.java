@@ -7,16 +7,21 @@ import static com.hcmut.smarthome.utils.ConstantUtil.DELAY;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hcmut.smarthome.device.controller.IGeneralController;
+import com.hcmut.smarthome.model.Device;
 import com.hcmut.smarthome.scenario.model.ControlBlock;
 import com.hcmut.smarthome.scenario.model.ControlBlockFromTo;
 import com.hcmut.smarthome.scenario.model.ControlBlockIfElse;
@@ -27,6 +32,8 @@ import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IHomeService;
 import com.hcmut.smarthome.utils.NotFoundException;
+import com.hcmut.smarthome.utils.Pair;
+import com.hcmut.smarthome.utils.ScenarioUtils;
 
 @Service
 public class ScenarioRunner {
@@ -36,13 +43,18 @@ public class ScenarioRunner {
 
 	private final static Logger LOGGER = Logger.getLogger(ScenarioRunner.class);
 	
-	private Map<Integer, Scenario> mapScenarioController = new HashMap<>();
+	private Map<Integer, Scenario> mapScenarioController = new ConcurrentHashMap<>();
 	
 	@Autowired
 	private IHomeService homeService;
 	
 	@Autowired
 	private IDeviceService deviceService;
+	
+	@Autowired
+	private IGeneralController deviceController;
+	
+	private Map<Pair<Integer,Integer>, Supplier<?>> mapOriginalDeviceStatusBeforeRunScript = new ConcurrentHashMap<>();
 
 	
 	public void runScenario(int scenarioId, int homeId, int deviceId, int modeId, Scenario scenario) throws Exception{
@@ -65,12 +77,31 @@ public class ScenarioRunner {
 		// Put new scenario to queue
 		ScenarioStatus status = determineStatusScenario(scenario.getHomeId(), scenario.getDeviceId(), scenario);
 		scenario.setStatus(status);
+		storeOriginalDeviceStatusBeforeRunScript(scenario);
 		
 		mapScenarioController.put(scenario.getId(), scenario);
 		scheduleTask(scenario);
 		
 		LOGGER.debug(String.format("New scenario with id %s is put to queue with status %s", scenario.getId(), scenario.getStatus() ));
 		
+	}
+
+	private void storeOriginalDeviceStatusBeforeRunScript(Scenario scenario) throws Exception {
+		Set<Integer> deviceIdsInScenario = ScenarioUtils.getListDeviceIdInScenario(scenario);
+		for (Integer deviceIdInScenario : deviceIdsInScenario) {
+			try{
+				Device device = deviceService.getDevice(scenario.getHomeId(), deviceIdInScenario);
+				Supplier<?> reversedAction = null; 
+				if( deviceController.isOn(device) )
+					reversedAction = () -> { try{deviceController.turnOn(device);}catch(Exception e){} return true;};
+				else reversedAction = () -> { try{deviceController.turnOff(device);}catch(Exception e){} return true;};
+					
+				Pair<Integer,Integer> key = new Pair<>(deviceIdInScenario, scenario.getId());
+				
+				getMapOriginalDeviceStatusBeforeRunScript().put(key, reversedAction);
+			}
+			catch(Exception e){}
+		}
 	}
 
 	private ScenarioStatus determineStatusScenario(int homeId, int deviceId, Scenario scenario) throws Exception{
@@ -110,12 +141,28 @@ public class ScenarioRunner {
 					ScenarioStatus status) throws Exception {
 				switch (status) {
 					case RUNNING:
-						runBlocks(scenario.getBlocks());
+						storeOriginalDeviceStatusBeforeRunScript(scenario);
+						boolean noConditionsMatch = !runBlocks(scenario.getBlocks());
+						if( noConditionsMatch ){
+							changeBackDeviceStatusToOriginalOne(scenario, false);
+							scenario.setStatus(ScenarioStatus.RUNNING_BUT_NO_CONDITIONS_MATCH);
+						}
+						break;
+					case RUNNING_BUT_NO_CONDITIONS_MATCH:
+						storeOriginalDeviceStatusBeforeRunScript(scenario);
+						boolean atLeastOneConditionSatisfied = runBlocks(scenario.getBlocks());
+						if( atLeastOneConditionSatisfied )
+							scenario.setStatus(ScenarioStatus.RUNNING);
 						break;
 					case STOPPING:
+						changeBackDeviceStatusToOriginalOne(scenario, false);
+						scenario.setStatus(ScenarioStatus.STOPPING_BUT_NO_NEED_CHANGE_BACK_TO_ORIGINAL_DEVICE_STATUS);
+						break;
+					case STOPPING_BUT_NO_NEED_CHANGE_BACK_TO_ORIGINAL_DEVICE_STATUS:
 						// Just skip
 						break;
 					case STOP_FOREVER:
+						changeBackDeviceStatusToOriginalOne(scenario, true);
 						mapScenarioController.remove(scenario.getId());
 						LOGGER.debug("Stop forever scenario " + scenario.getId() );
 						this.cancel(); 
@@ -123,6 +170,21 @@ public class ScenarioRunner {
 					default:
 						break;
 				}
+			}
+
+			private void changeBackDeviceStatusToOriginalOne(Scenario scenario, boolean needToDelete) {	
+				for(Entry<?, ?> entry : getMapOriginalDeviceStatusBeforeRunScript().entrySet()){
+					Pair<?,?> key = (Pair<?, ?>) entry.getKey();
+					Supplier<?> value = (Supplier<?>) entry.getValue();
+					
+					if( key != null && key.getSecond().equals(scenario.getId())){
+						value.get();
+						if( needToDelete )
+							getMapOriginalDeviceStatusBeforeRunScript().remove(key);
+					}
+						
+				}
+				
 			}
 			
 		}, 0, CONDITION_CHECKING_PERIOD);
@@ -134,17 +196,18 @@ public class ScenarioRunner {
 	 * 
 	 * @param blocks
 	 */
-	private void runBlocks(List<IBlock> blocks) {
+	private boolean runBlocks(List<IBlock> blocks) {
+		boolean atLeastOneConditionSatisfied = false;
 		for (IBlock block : blocks) {
 			if (block instanceof SimpleAction) {
 				SimpleAction action = (SimpleAction) block;
 				action.doAction();
-
 			} else if (block instanceof ControlBlock) {
-				runControlBlock((ControlBlock<?>) block);
-				// TODO: Move timeout to each model
+				atLeastOneConditionSatisfied = runControlBlock((ControlBlock<?>) block) || atLeastOneConditionSatisfied;
 			}
 		}
+		
+		return atLeastOneConditionSatisfied;
 	}
 
 	/**
@@ -152,19 +215,24 @@ public class ScenarioRunner {
 	 * 
 	 * @param controlBlock
 	 */
-	private void runControlBlock(ControlBlock<?> controlBlock) {
+	private boolean runControlBlock(ControlBlock<?> controlBlock) {
+		
+		boolean atLeastOneConditionSatisfied = false;
 		if ( ControlBlockFromTo.class.equals(controlBlock.getClass())){
-			runControlBlockFromTo(controlBlock);
+			atLeastOneConditionSatisfied = runControlBlockFromTo(controlBlock);
 		} else if (controlBlock.getCondition().check()) {
+			atLeastOneConditionSatisfied = true;
 			runBlocks(controlBlock.getAction().getBlocks());
 		} else if (CONTROL_BLOCK_IF_ELSE.equals(controlBlock.getName())) {
 			ControlBlockIfElse controlBlockIfElse = (ControlBlockIfElse) controlBlock;
-			runBlocks(controlBlockIfElse.getElseAction().getBlocks());
+			atLeastOneConditionSatisfied = runBlocks(controlBlockIfElse.getElseAction().getBlocks());
 		}
-		
+		return atLeastOneConditionSatisfied;
 	}
 
-	private void runControlBlockFromTo(ControlBlock<?> controlBlock) {
+	private boolean runControlBlockFromTo(ControlBlock<?> controlBlock) {
+		
+		boolean atLeastOneConditionSatisfied = false;
 		ControlBlockFromTo controlBlockFromTo = (ControlBlockFromTo) controlBlock; 
 		// NOTE: Consider locale of time
 		LocalDateTime dateTimeToCheck = LocalDateTime.now(DEFAULT_ZONE_ID);
@@ -178,9 +246,12 @@ public class ScenarioRunner {
 			dateTimeToCheck = dateTimeToCheck.with(dateMustBeIgnored);
 			
 			if( controlBlockFromTo.getCondition().getRange().contains(dateTimeToCheck) 
-					|| controlBlockFromTo.getCondition().getRange().contains(dateTimeToCheck.plusDays(1)))
+					|| controlBlockFromTo.getCondition().getRange().contains(dateTimeToCheck.plusDays(1))){
+				atLeastOneConditionSatisfied = true;
 				runBlocks(controlBlockFromTo.getAction().getBlocks());
+			}
 		}
+		return atLeastOneConditionSatisfied;
 	}
 	
 	public void updateScenarioStatus(int scenarioId, ScenarioStatus status){
@@ -233,5 +304,9 @@ public class ScenarioRunner {
 		runScenario(oldScenario.getId(), oldScenario.getHomeId(), oldScenario.getDeviceId(), oldScenario.getModeId(), newScenario);
 		
 		return true;
+	}
+
+	public Map<Pair<Integer, Integer>, Supplier<?>> getMapOriginalDeviceStatusBeforeRunScript() {
+		return mapOriginalDeviceStatusBeforeRunScript;
 	}
 }

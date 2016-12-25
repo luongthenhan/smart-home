@@ -540,7 +540,7 @@ public class ScenarioConflictValidator {
 				ControlBlockFromTo blockFromTo = (ControlBlockFromTo) block;
 				return areNestedConditionsMatching(conditionToCompare,
 						blockFromTo.getAction().getBlocks(),mapRange)
-						|| checkConditionRangeControlBlockFromTo(conditionToCompare, blockFromTo.getCondition()) ;
+						|| checkConditionRangeConflictedControlBlockFromTo(conditionToCompare, blockFromTo.getCondition()) ;
 			}
 
 		}
@@ -548,7 +548,7 @@ public class ScenarioConflictValidator {
 		return false;
 	}
 
-	private boolean checkConditionRangeControlBlockFromTo(Condition conditionToCompare, Condition existedCondition){
+	private boolean checkConditionRangeConflictedControlBlockFromTo(Condition conditionToCompare, Condition existedCondition){
 		// Basic case
 		if (conditionToCompare == null || existedCondition == null)
 			return false;

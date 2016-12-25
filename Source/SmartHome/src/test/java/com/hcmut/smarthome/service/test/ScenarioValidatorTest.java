@@ -1085,9 +1085,6 @@ public class ScenarioValidatorTest {
 	@Test
 	public void testCase12_2() throws Exception{
 		
-		expectedException.expect(ConflictConditionException.class);
-		expectedException.expectMessage(ConstantUtil.SCRIPT_CONFLICT);
-		
 		String input = new ScriptBuilder()
 		.begin()
 			.FromTo("04:00", "12:00")
@@ -1104,7 +1101,7 @@ public class ScenarioValidatorTest {
 		.end().build();
 		existedScritps.add(existedScript);
 		
-		boolean expectedResult = false;
+		boolean expectedResult = true;
 		runTestScriptValidation(input, existedScritps, expectedResult);
 	}
 	

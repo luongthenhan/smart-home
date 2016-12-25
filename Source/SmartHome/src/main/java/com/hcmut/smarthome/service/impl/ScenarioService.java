@@ -12,7 +12,6 @@ import java.util.Set;
 import javax.transaction.NotSupportedException;
 
 import org.apache.log4j.Logger;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +26,12 @@ import com.hcmut.smarthome.scenario.model.SimpleAction;
 import com.hcmut.smarthome.service.IDeviceService;
 import com.hcmut.smarthome.service.IScenarioService;
 import com.hcmut.smarthome.utils.ConflictConditionException;
+import com.hcmut.smarthome.utils.ScenarioUtils;
 import com.hcmut.smarthome.utils.ScriptBuilder;
 
 @Service
 public class ScenarioService implements IScenarioService {
 
-	private static final String CAN_NOT_GET_LIST_DEVICE_ID_FROM_EMPTY_SCENARIO = "Can't get list device id from empty scenario";
 	private static final String INPUT_SCRIPT_IS_NULL = "Input script is null";
 	private static final String REQUIRED_SCRIPT_TYPE_TO_UPDATE = "Required script type to update";
 	private static final Logger LOGGER = Logger.getLogger(ScenarioService.class);
@@ -170,45 +169,6 @@ public class ScenarioService implements IScenarioService {
 	@Override
 	public boolean replaceOldScenarioWithNewOne(int scenarioId, Scenario newScenario) throws Exception{
 		return scenarioRunner.replaceOldScenarioWithNewOne(scenarioId, newScenario);
-	}
-	
-	@Override
-	public Set<Integer> getListDeviceIdInScenario(Scenario scenario) throws Exception {
-		if( scenario == null )
-			throw new Exception(CAN_NOT_GET_LIST_DEVICE_ID_FROM_EMPTY_SCENARIO);
-		return getListDeviceIdInScenario(scenario.getBlocks());
-	}
-	
-	private Set<Integer> getListDeviceIdInScenario(List<IBlock> blocks) {
-
-		Set<Integer> set = new HashSet<>();
-
-		if (blocks == null)
-			return set;
-
-		for (IBlock block : blocks) {
-			if (block instanceof SimpleAction) {
-				set.add(((SimpleAction) block).getDeviceId());
-			}
-			else if ( block instanceof ControlBlockFromTo ){
-				ControlBlockFromTo blockFromTo = (ControlBlockFromTo) block;
-				set.addAll(getListDeviceIdInScenario( blockFromTo.getAction().getBlocks() ));
-			}
-			// Block If, IfElse
-			else if (block instanceof ControlBlock) {
-				ControlBlock<?> blockIf = (ControlBlock<?>) block;
-				set.add(Integer.valueOf(blockIf.getCondition().getName()));
-				set.addAll(getListDeviceIdInScenario( blockIf.getAction().getBlocks() ));
-
-				if (block instanceof ControlBlockIfElse) {
-					ControlBlockIfElse blockIfElse = (ControlBlockIfElse) block;
-					set.add(Integer.valueOf(blockIfElse.getCondition().getName()));
-					set.addAll(getListDeviceIdInScenario( blockIfElse.getElseAction().getBlocks() ));
-				}
-			}
-		}
-		
-		return set;
 	}
 	
 	@Override

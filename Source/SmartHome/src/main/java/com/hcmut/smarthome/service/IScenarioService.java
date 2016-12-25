@@ -60,8 +60,6 @@ public interface IScenarioService {
 	boolean isValid(int homeId, int modeId, Script script, Scenario scenario)
 			throws Exception;
 
-	Set<Integer> getListDeviceIdInScenario(Scenario scenario) throws Exception;
-
 	/**
 	 * Run a given scenario 
 	 * @param scenarioId

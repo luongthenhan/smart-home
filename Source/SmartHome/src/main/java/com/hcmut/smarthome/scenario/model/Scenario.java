@@ -7,7 +7,9 @@ public class Scenario {
 	public enum ScenarioStatus{
 		RUNNING,
 		STOPPING,
-		STOP_FOREVER
+		STOP_FOREVER,
+		RUNNING_BUT_NO_CONDITIONS_MATCH,
+		STOPPING_BUT_NO_NEED_CHANGE_BACK_TO_ORIGINAL_DEVICE_STATUS
 	}
 	
 	private Integer id;
