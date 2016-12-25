@@ -21,7 +21,7 @@ public class DataInitiatorService {
 	@Autowired
 	private IDeviceService deviceService;
 	
-	@PostConstruct
+	//@PostConstruct
 	public void runAllScriptsAtFirstTimeStartApplication() throws Exception{
 		List<ScriptMoreDetail> scripts = deviceService.getAllScripts();
 		for (ScriptMoreDetail script : scripts) {
