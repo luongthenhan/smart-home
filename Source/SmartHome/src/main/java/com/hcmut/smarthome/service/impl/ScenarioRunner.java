@@ -144,29 +144,18 @@ public class ScenarioRunner {
 				switch (status) {
 					case RUNNING:
 						storeOriginalDeviceStatusBeforeRunScript(scenario);
-						runBlocks(scenario.getBlocks());
-						scenario.setStatus(ScenarioStatus.RUNNING_BUT_NO_NEED_CHECK_DEVICE_STATUS);
+						boolean atLeastOneConditionSatisfied = runBlocks(scenario.getBlocks());
+						if( atLeastOneConditionSatisfied )
+							scenario.setStatus(ScenarioStatus.RUNNING_BUT_NO_NEED_CHECK_ORIGINAL_DEVICE_STATUS);
 						break;
-						
-					case RUNNING_BUT_NO_NEED_CHECK_DEVICE_STATUS:
+					case RUNNING_BUT_NO_NEED_CHECK_ORIGINAL_DEVICE_STATUS:
 						boolean noConditionsMatch = !runBlocks(scenario.getBlocks());
 						if( noConditionsMatch ){
 							changeBackDeviceStatusToOriginalOne(scenario, false);
-							scenario.setStatus(ScenarioStatus.RUNNING_BUT_NO_CONDITIONS_MATCH);
+							scenario.setStatus(ScenarioStatus.RUNNING);
 						}
 						break;
-						
-					case RUNNING_BUT_NO_CONDITIONS_MATCH:
-						storeOriginalDeviceStatusBeforeRunScript(scenario);
-						boolean atLeastOneConditionSatisfied = runBlocks(scenario.getBlocks());
-						if( atLeastOneConditionSatisfied )
-							scenario.setStatus(ScenarioStatus.RUNNING);
-						break;
 					case STOPPING:
-						changeBackDeviceStatusToOriginalOne(scenario, false);
-						scenario.setStatus(ScenarioStatus.STOPPING_BUT_NO_NEED_CHANGE_BACK_TO_ORIGINAL_DEVICE_STATUS);
-						break;
-					case STOPPING_BUT_NO_NEED_CHANGE_BACK_TO_ORIGINAL_DEVICE_STATUS:
 						// Just skip
 						break;
 					case STOP_FOREVER:
