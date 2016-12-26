@@ -199,13 +199,13 @@ Với lòng biết ơn chân thành, chúng tôi xin gởi lời chúc sức kho
 Nhà thông minh là khái niệm đã không còn quá xa lạ với chúng ta mà hiện tại 
 đã trở thành xu thế công nghệ tất yếu, là tiêu chuẩn của nhà ở hiện đại. 
 Chúng ta đang sống trong một thế giới của công nghệ. Một ngôi nhà hoàn hảo 
-không chỉ sang trọng trong thiết kế, mà còn phải mang lại cảm giác thoải mái, tiện nghi và còn có khả năng hiểu được chủ nhân. Cuộc đua nhà thông minh đã và đang có những bước phát triển ở Việt Nạm, có thể kể đến như hệ thống nhà thông minh Bkav. Tuy nhiên, hiện tại ở Việt Nam, nhà thông minh chưa được phổ biến rộng, một phần vì chi phí lắp đặt, chi phí xây dựng khá cao. Nắm bắt xu hướng đó, ở luận văn này của nhóm với đề tài “Xây dựng ứng dụng nền tảng web hoặc di động tương tác với nhà thông minh qua các kịch bản” giúp chúng ta có thể tự tạo nên một hế thống nhà thông minh nhỏ, có khả năng quản lý tự động một số thiết bị trong gia đình với mức chi phí phù hợp.\\
+không chỉ sang trọng trong thiết kế, mà còn phải mang lại cảm giác thoải mái, tiện nghi và còn có khả năng hiểu được chủ nhân. Cuộc đua nhà thông minh đã và đang có những bước phát triển ở Việt Nam, có thể kể đến như hệ thống nhà thông minh Bkav. Tuy nhiên, hiện tại ở Việt Nam, nhà thông minh chưa được phổ biến rộng, một phần vì chi phí lắp đặt, chi phí xây dựng khá cao. Nắm bắt xu hướng đó, ở luận văn này của nhóm với đề tài “Xây dựng nhà thông minh tương tác với thiết bị di động” giúp chúng ta có thể tự tạo nên một hế thống nhà thông minh nhỏ, có khả năng quản lý tự động một số thiết bị trong gia đình với mức chi phí phù hợp.\\
 
 \noindent
 Về phương pháp thực hiện, nhóm chia việc xây dựng hệ thống thành các phần: giao diện, server và bộ phận tương tác thiết bị trên Raspberry Pi. Giao diện giúp người dùng quản lý thiết bị, kịch bản trong nhà. Phía server làm nhiệm vụ lưu trữ, kiểm tra, xử lý, vận hành kịch bản từ phía người dùng yêu cầu. Bộ phận tương tác có chức năng cung cấp cho server những dịch vụ (services) để điều khiển các thiết bị được gắn trên Raspberry Pi.\\
 
 \noindent
-Hệ thống được thử nghiệm cùng với một số loại thiết bị như: cảm biến nhiệt độ, cảm biến ánh sáng, cảm biến vật thể chuyển động, cảm biến khí gas, bóng đèn led, còi hú. Theo đánh giá của nhóm, hệ thống có thể xử lý tốt trong một số trường họp kịch bản đơn giản, tuy nhiên vẫn theo sát nhu cầu thực tế. Trong tương lai, hệ thống có thể tiếp tục được mở rộng. Nhóm hi vọng đề tài này có thể cung cấp những thông tin hữu ích cho các nghiên cứu liên quan sau này.
+Hệ thống được thử nghiệm cùng với một số loại thiết bị như: cảm biến nhiệt độ, cảm biến ánh sáng, cảm biến vật thể chuyển động, cảm biến khí gas, bóng đèn led, còi hú. Theo đánh giá của nhóm, hệ thống có thể xử lý tốt trong một số trường họp kịch bản đơn giản, tuy nhiên vẫn theo sát nhu cầu thực tế. Trong tương lai, hệ thống có thể tiếp tục được mở rộng. Nhóm hy vọng đề tài này có thể cung cấp những thông tin hữu ích cho các nghiên cứu liên quan sau này.
 
 %------------------------------ table of content --------------------------------------------------%
 \begingroup
@@ -2093,7 +2093,7 @@ Nhà thông minh hiện đang dần trở thành một xu hướng tất yếu c
 
 %--------------------------------------Phụ lục--------------------------------%
 
-\chapter*{Phụ lục A. \\Một số kịch bản thông dụng}
+\chapter*{Phụ lục A \\Một số kịch bản thông dụng}
 \addcontentsline{toc}{chapter}{Phụ lục A. Một số kịch bản thông dụng}
 \thispagestyle{plain}
 
@@ -2152,31 +2152,33 @@ Một vài kịch bản dạng From - To thông dụng:
 \end{itemize}
 
 \thispagestyle{plain}
+\pagestyle{plain}
 
-\chapter*{Phụ lục B. \\Danh sách API cung cấp cho client}
+\chapter*{Phụ lục B \\Danh sách API cung cấp cho client}
 \addcontentsline{toc}{chapter}{Phụ lục B. Danh sách API cung cấp cho client}
 
 Danh sách API được liệt kê theo bảng sau:
 
+\newcommand\Tstrut{\rule{0pt}{2.6ex}}
 {\scriptsize
-\begin{longtable}{|p{2.5cm}|p{1.2cm}|p{3.3cm}|p{3cm}|p{4cm}|}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2.2cm}|p{1.2cm}|p{3.3cm}|p{3cm}|>{\raggedright\arraybackslash}p{4.3cm}|}
 
 \hline 
-\multicolumn{1}{|p{2.5cm}|}{\textbf{Page/Function}} & \multicolumn{1}{p{1.2cm}|}{\textbf{Method Type}} & \multicolumn{1}{p{3.3cm}|}{\textbf{URL}} & \multicolumn{1}{p{3cm}|}{\textbf{Input}} & \multicolumn{1}{p{4cm}|}{\textbf{Output}} \\ \hline 
+\multicolumn{1}{|>{\raggedright\arraybackslash}p{2.2cm}|}{\textbf{Page/Function}} & \multicolumn{1}{p{1.2cm}|}{\textbf{Method Type}} & \multicolumn{1}{p{3.3cm}|}{\textbf{URL}} & \multicolumn{1}{p{3cm}|}{\textbf{Input}} & \multicolumn{1}{>{\raggedright\arraybackslash}p{4.3cm}|}{\textbf{Output}}\\ \hline 
 \endhead
 
-\hline
+\hline\Tstrut
 Get list categories given home & GET &	homes/{homeId}/device-types	& 
 homeId: Long &
 HTTP Status OK 200 if successful\newline
 categories: List<Category>\\
 
-\hline
+\hline\Tstrut
 Get all devices given category & 	GET &	homes/{homeId}/device-types/{deviceTypeId}/\newline devices &	homeId: Long\newline
-deviceTypeId: Long &	HTTP Status OK 200 if successful
+deviceTypeId: Long &	HTTP Status OK 200 if successful\newline
 Return: List<Device>\\
 
-\hline
+\hline\Tstrut
 Enabled/
 Disabled device	& PATCH &	homes/{homeId}/device-types/{deviceTypeId}
 /devices/{deviceId} &	
@@ -2187,32 +2189,32 @@ Pass json: {"enabled": true}
 to update enabled = true &	
 HTTP Status OK 204 if successful\\
 
-\hline
+\hline\Tstrut
 Delete device in home &	DELETE &	/homes/{homeId}/device-types/{deviceTypeId}/
 devices/{deviceId} &	
 deviceId: Long\newline
 homeId: Long\newline
 deviceTypeId: Long &	HTTP Status OK 204 if successful\\
 
-\hline
+\hline\Tstrut
 Get list scripts given mode	& GET &	devices/{deviceId}/modes/
 {modeId}/scripts &	deviceId: Long\newline
 modeId: Long &	
 HTTP Status OK 204 if successful\newline
 Return: List<Script>\\
 
-\hline
+\hline\Tstrut
 Update script of one specific mode &	PATCH &	devices/{deviceId}/modes/
 {modeId}/scripts/{scriptId} &	
 deviceId: Long\newline
 modeId: Long\newline
 script: Script &	HTTP Status OK 204 if successful\\
 
-\hline
+\hline\Tstrut
 Delete script in one specific mode &	DELETE &	devices/{deviceId}/modes/
 {modeId}/scripts/{scriptId} &	scriptId: Long &	HTTP Status OK 204 if successful\\
 
-\hline
+\hline\Tstrut
 Add script to device given mode &	POST &	devices/{deviceId}/modes/
 {modeId}/scripts &	deviceId: Long\newline
 modeId: Long\newline
@@ -2222,7 +2224,7 @@ Also return the URI of new object.\newline
 E.g devices/5/modes/1/\newline
 scripts/3\\
 
-\hline
+\hline\Tstrut
 Add device of specific category &	POST &	homes/{homeId}/device-types/{deviceTypeId}/\newline devices &	
 homeId: Long\newline
 categoryId: Long\newline
@@ -2233,20 +2235,20 @@ E.g\newline
 homes/5/device-types/3/\newline
 devices/4\\
 
-\hline
+\hline\Tstrut
 Get all valid GPIO pins	& GET &	homes/all-gpios & &		
 HTTP Status OK 200 if successful.\newline
 Return: List<Integer>\\
 
-\hline
+\hline\Tstrut
 Get home &	GET	& homes/{homeId} &	homeId: Long &	
 HTTP Status OK 200 if successful.\newline
 Return: Home\\
 
-\hline
+\hline\Tstrut
 Delete home	& DELETE &	homes/{homeId} &	homeId: Long	& HTTP Status OK 204 if successful\\
 
-\hline
+\hline\Tstrut
 Add new home (also add default mode ) &	POST &	homes &	
 home: Home &
 HTTP Status OK 201 if successful\newline
@@ -2254,29 +2256,29 @@ Also return the URI of new object. \newline
 E.g\newline
 homes/1\\
 
-\hline
+\hline\Tstrut
 Update home (Enabled/ Disable / Current mode,\dots)	& PATCH	& homes/{homeId} &	
 homeId: Long\newline
 home: Home\newline
 Pass json: {"enabled": true}
 to update enabled = true &	HTTP Status OK 204 if successful\\
 
-\hline
+\hline\Tstrut
 Get list home of one user	& GET &	homes & &		
 HTTP Status OK 200 if successful\newline
 Return: List<Home>\\
 
-\hline
+\hline\Tstrut
 Get list mode in home &	GET &	homes/{homeId}/modes &	homeId: Long &	
 HTTP Status OK 200 if successful\newline
 Return: List<Mode>\\
 
-\hline
+\hline\Tstrut
 Delete mode &	DELETE &	homes/{homeId}/modes/
 {modeId} &	homeId: Long
 modeId: Long &	HTTP Status OK 204 if successful\\
 
-\hline
+\hline\Tstrut
 Add new mode &	POST &	homes/{homeId}/modes &	
 mode:Mode\newline
 homeId: Long & 
@@ -2284,14 +2286,14 @@ HTTP Status OK 201 if successful\newline
 Also return the URI of new object. E.g
 homes/3/modes/3\\
 
-\hline
+\hline\Tstrut
 Update existing mode & PATCH &	homes/{homeId}/modes/
 {modeId} &	
 homeId: Long\newline
 modeId: Long\newline
 mode: Mode & HTTP Status OK 204 if successful\\
 
-\hline
+\hline\Tstrut
 Login &	POST & 	/login &	
 Add headers:\newline
 X-Username\newline
@@ -2300,7 +2302,7 @@ HTTP Status:\newline
 200 OK\newline
 401 Unauthorized\\
 
-\hline
+\hline\Tstrut
 Logout & POST &	/logout &	
 Add header:\newline
 X-Auth-Token \newline
@@ -2308,7 +2310,7 @@ X-Auth-Token \newline
 200 OK\newline
 401 Unauthorized\\
 
-\hline
+\hline\Tstrut
 Sign up	& POST &	/users/signup &	
 User information:\newline
 Username\newline
@@ -2324,13 +2326,13 @@ Http status:\newline
 200 OK\newline
 400 Bad request\\
 
-\hline
+\hline\Tstrut
 Activate user &	GET &	/users/activation/{userId} &	User id &	
 Http status:\newline
 200 OK\newline
 400 Bad request\\
 
-\hline
+\hline\Tstrut
 Get user information &	GET	& /users &
 X-Auth-Token &
 Http status:\newline
@@ -2338,7 +2340,7 @@ Http status:\newline
 400 Bad request\newline
 Return: User model\\
 
-\hline
+\hline\Tstrut
 Get list device id in script &	POST &	/homes/{homeId}/scripts &	Script object with content and script type id &	
 Http status:\newline
 200 OK\newline
