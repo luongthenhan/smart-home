@@ -53,7 +53,6 @@ public class ScenarioRunner {
 	private IDeviceService deviceService;
 	
 	@Autowired
-	@Qualifier(value="local")
 	private IGeneralController deviceController;
 	
 	private Map<Pair<Integer,Integer>, Supplier<?>> mapOriginalDeviceStatusBeforeRunScript = new ConcurrentHashMap<>();

@@ -62,7 +62,6 @@ public class ScenarioCreator {
 	private JSONParser parser = new JSONParser();
 	
 	@Autowired
-	@Qualifier(value="local")
 	private IGeneralController deviceController;
 	
 	@Autowired
