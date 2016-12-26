@@ -18,6 +18,7 @@ import java.util.function.Supplier;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.hcmut.smarthome.device.controller.IGeneralController;
@@ -52,6 +53,7 @@ public class ScenarioRunner {
 	private IDeviceService deviceService;
 	
 	@Autowired
+	@Qualifier(value="local")
 	private IGeneralController deviceController;
 	
 	private Map<Pair<Integer,Integer>, Supplier<?>> mapOriginalDeviceStatusBeforeRunScript = new ConcurrentHashMap<>();
@@ -142,12 +144,18 @@ public class ScenarioRunner {
 				switch (status) {
 					case RUNNING:
 						storeOriginalDeviceStatusBeforeRunScript(scenario);
+						runBlocks(scenario.getBlocks());
+						scenario.setStatus(ScenarioStatus.RUNNING_BUT_NO_NEED_CHECK_DEVICE_STATUS);
+						break;
+						
+					case RUNNING_BUT_NO_NEED_CHECK_DEVICE_STATUS:
 						boolean noConditionsMatch = !runBlocks(scenario.getBlocks());
 						if( noConditionsMatch ){
 							changeBackDeviceStatusToOriginalOne(scenario, false);
 							scenario.setStatus(ScenarioStatus.RUNNING_BUT_NO_CONDITIONS_MATCH);
 						}
 						break;
+						
 					case RUNNING_BUT_NO_CONDITIONS_MATCH:
 						storeOriginalDeviceStatusBeforeRunScript(scenario);
 						boolean atLeastOneConditionSatisfied = runBlocks(scenario.getBlocks());
