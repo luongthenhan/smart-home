@@ -17,6 +17,7 @@ app.controller('LoginController', ['MainService', '$location', function(MainServ
     }
 
     self.register = function() {
+        MainService.hostDomain = self.hostDomain;
         $location.path("/register");
     }
 }])
