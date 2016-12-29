@@ -139,8 +139,8 @@
 \hline 
 \\ 
 \\
-\textbf{{\LARGE \textbf{\centerline{ XÂY DỰNG NHÀ THÔNG MINH }}}}\\
-\\\textbf{{\LARGE TƯƠNG TÁC VỚI THIẾT BỊ DI ĐỘNG}}\\
+\textbf{{\LARGE \textbf{\centerline{ XÂY DỰNG ỨNG DỤNG DI ĐỘNG }}}}\\
+\\\textbf{{\LARGE TƯƠNG TÁC NHÀ THÔNG MINH}}\\
 \\ 
 \\
 \hline 
@@ -199,7 +199,7 @@ Với lòng biết ơn chân thành, chúng tôi xin gởi lời chúc sức kho
 Nhà thông minh là khái niệm đã không còn quá xa lạ với chúng ta mà hiện tại 
 đã trở thành xu thế công nghệ tất yếu, là tiêu chuẩn của nhà ở hiện đại. 
 Chúng ta đang sống trong một thế giới của công nghệ. Một ngôi nhà hoàn hảo 
-không chỉ sang trọng trong thiết kế, mà còn phải mang lại cảm giác thoải mái, tiện nghi và còn có khả năng hiểu được chủ nhân. Cuộc đua nhà thông minh đã và đang có những bước phát triển ở Việt Nam, có thể kể đến như hệ thống nhà thông minh Bkav. Tuy nhiên, hiện tại ở Việt Nam, nhà thông minh chưa được phổ biến rộng, một phần vì chi phí lắp đặt, chi phí xây dựng khá cao. Nắm bắt xu hướng đó, ở luận văn này của nhóm với đề tài “Xây dựng nhà thông minh tương tác với thiết bị di động” giúp chúng ta có thể tự tạo nên một hế thống nhà thông minh nhỏ, có khả năng quản lý tự động một số thiết bị trong gia đình với mức chi phí phù hợp.\\
+không chỉ sang trọng trong thiết kế, mà còn phải mang lại cảm giác thoải mái, tiện nghi và còn có khả năng hiểu được chủ nhân. Cuộc đua nhà thông minh đã và đang có những bước phát triển ở Việt Nam, có thể kể đến như hệ thống nhà thông minh Bkav. Tuy nhiên, hiện tại ở Việt Nam, nhà thông minh chưa được phổ biến rộng, một phần vì chi phí lắp đặt, chi phí xây dựng khá cao. Nắm bắt xu hướng đó, ở luận văn này của nhóm với đề tài “Xây dựng ứng dụng di động tương tác nhà thông minh” giúp chúng ta có thể tự tạo nên một hế thống nhà thông minh nhỏ, có khả năng quản lý tự động một số thiết bị trong gia đình với mức chi phí phù hợp.\\
 
 \noindent
 Về phương pháp thực hiện, nhóm chia việc xây dựng hệ thống thành các phần: giao diện, server và bộ phận tương tác thiết bị trên Raspberry Pi. Giao diện giúp người dùng quản lý thiết bị, kịch bản trong nhà. Phía server làm nhiệm vụ lưu trữ, kiểm tra, xử lý, vận hành kịch bản từ phía người dùng yêu cầu. Bộ phận tương tác có chức năng cung cấp cho server những dịch vụ (services) để điều khiển các thiết bị được gắn trên Raspberry Pi.\\
@@ -2055,7 +2055,7 @@ Hình \ref{fig:6-Communicate-among-client-server-and-Pi} mô tả cách giao ti�
 %-------------------------------------Tổng kết----------------------------------%
 \chapter{Tổng kết}
 
-Với mục tiêu của đề tài “Xây dựng hệ thống nhà thông minh sử dụng Raspberry Pi” là hướng tới phát triển một hệ thống điều khiển các thiết bị thông dụng trong nhà thông qua các kịch bản người dùng mong muốn một cách dễ dàng và tiện lợi, chúng tôi đã tìm hiểu được cách thức hoạt động và điều khiển các thiết bị phần cứng được gắn trên máy tính kích thước nhỏ Raspberry Pi, hiện thực một máy chủ với vai trò xử lý các kịch bản của người dùng và một ứng dụng di động cho phép người dùng dễ dàng truy cập và quản lý các thiết bị.\\
+Với mục tiêu của đề tài “Xây dựng ứng dụng di động tương tác nhà thông minh” là hướng tới phát triển một hệ thống điều khiển các thiết bị thông dụng trong nhà thông qua các kịch bản người dùng mong muốn một cách dễ dàng và tiện lợi, chúng tôi đã tìm hiểu được cách thức hoạt động và điều khiển các thiết bị phần cứng được gắn trên máy tính kích thước nhỏ Raspberry Pi, hiện thực một máy chủ với vai trò xử lý các kịch bản của người dùng và một ứng dụng di động cho phép người dùng dễ dàng truy cập và quản lý các thiết bị.\\
 
 \noindent
 Về mặt các thiết bị hỗ trợ, chúng tôi đã triển khai việc lắp đặt và điều khiển thành công các thiết bị: Bóng đèn, còi hú, cảm biến nhiệt độ, cảm biến chuyển động, cảm biến ánh sáng và cảm biến khí gas vào Raspberry Pi. Tuy nhiên, việc điều khiển các thiết bị thông qua Raspberry Pi vẫn còn nhiều hạn chế như số lượng giới hạn các cổng GPIO, phải điều chỉnh độ nhạy của các cảm biến bằng tay, không xác định một cách tự động loại thiết bị được gắn vào chân GPIO,\dots\hspace{0mm} Vì mục tiêu đề tài hướng trọng tâm vào việc xử lý các tác vụ trên phương diện phần mềm, nên việc lặp đặt các thiết bị phần cứng vẫn còn dừng ở mức thí nghiệm, chưa sử dụng các thiết bị thật để hiện thực hệ thống.\\
