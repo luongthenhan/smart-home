@@ -1003,7 +1003,7 @@ Khi xử lý 1 điều kiện, nhóm dùng Predicate class để hiện thực n
 
 \subsection{Module hỗ trợ xây dựng kịch bản tùy ý (Script Builder)}\label{script-builder}
 
-Hệ thống không chỉ cung cấp cho người dùng những kịch bản theo mẫu định sẵn, mà còn hỗ trợ cả kịch bản tùy biến. Để dễ dàng hơn cho người dùng định nghĩa 1 kịch bản tùy biến, nhóm tạo ra 1 module là Script Builder. Cú pháp của kịch bản người dùng tùy biến gần giống như ngôn ngữ tự nhiên, nhưng lại có khả năng chuyển đổi sang dạng kịch bản lưu trữ dễ dàng. Hình \ref{fig:6-user-grammar} mô tả cú pháp của văn phạm kịch bản tùy biến.
+Hệ thống không chỉ cung cấp cho người dùng những kịch bản theo mẫu định sẵn, mà còn hỗ trợ cả kịch bản tùy biến. Để dễ dàng hơn cho người dùng định nghĩa 1 kịch bản tùy biến, nhóm tạo ra 1 module là Script Builder. Cú pháp của kịch bản người dùng tùy biến gần giống như ngôn ngữ tự nhiên, nhưng lại có khả năng chuyển đổi sang dạng kịch bản lưu trữ dễ dàng. Hình \ref{fig:6-user-grammar} mô tả cú pháp của văn phạm kịch bản tùy biến.\\
 
 \begin{figure}[h!]
   \centering
@@ -1012,12 +1012,19 @@ Hệ thống không chỉ cung cấp cho người dùng những kịch bản the
 \end{figure}
 
 \noindent
-Lấy ví dụ về 1 kịch bản người dùng là: “Nếu nhiệt độ thu được từ cảm biến nhiệt gần cửa sổ lớn hơn 40 độ thì bật đèn phòng và bật đèn nhà bếp”.\\
-
-\noindent
-Kịch bản người dùng tùy biến được viết lại theo văn phạm trên sẽ là:
+Lấy ví dụ về 1 kịch bản người dùng là: “Nếu nhiệt độ thu được từ cảm biến nhiệt gần cửa sổ lớn hơn 40 độ thì bật đèn phòng và bật đèn nhà bếp”. Kịch bản người dùng tùy biến được viết lại theo văn phạm trên sẽ là:
 \begin{verbatim}
 If(‘temp_sensor_near_window’, ‘>’ , ‘40’)
+	.action(‘TurnOn’, ‘light_room’)
+	.action(‘TurnOn’, ‘light_kitchen’)
+.endIf()
+\end{verbatim}
+
+\noindent
+Ngoài ra, module còn hỗ trợ thu gọn kịch bản có điều kiện “và”. Ví dụ, kịch bản người dùng là: “Nếu nhiệt độ thu được từ cảm biến nhiệt gần cửa sổ lớn hơn 40 độ và bé hơn 50 độ thì bật đèn phòng và bật đèn nhà bếp”. Kịch bản người dùng tùy biến được viết lại theo văn phạm trên sẽ là:
+\begin{verbatim}
+If( ‘temp_sensor_near_window’, ‘>’ , ‘40’)
+.and( ‘temp_sensor_near_window’, ‘<’ , ‘50’)
 	.action(‘TurnOn’, ‘light_room’)
 	.action(‘TurnOn’, ‘light_kitchen’)
 .endIf()
@@ -1029,14 +1036,14 @@ If(‘temp_sensor_near_window’, ‘>’ , ‘40’)
 %\begin{tabular}[t]{ |lll| } 
 %	\hline
 %	&&\\
-%	<Scenario>	&	::= & 
+%	<Scenario>	& -> & 
 %	\begin{tabular}[t]{l}
-%	[“ <ControlBlock> ”] | “[” <Scenario> “,”  <ControlBlock> “]” \\ 
-%	| “[” <SimpleAction> “]” | “[” <Scenario>  “,”  <SimpleAction> “]”
+%	<ControlBlock> | <Scenario> “.”  <ControlBlock> \\ 
+%	| <SimpleAction> | <Scenario>  “.”  <SimpleAction>
 %	\end{tabular}\\
 %	&&\\
 %	
-%	<ControlBlock> 	&	::=	&
+%	<ControlBlock> 	& -> &
 %	\begin{tabular}[t]{l}
 %	“If”  <Condition> “.” <Action>  “.endIf()” \\
 %	| “If”  <Condition>  “.”  <Action>  “.Else().”  <Action>  “.endIf()” \\
@@ -1044,32 +1051,32 @@ If(‘temp_sensor_near_window’, ‘>’ , ‘40’)
 %	\end{tabular}\\
 %	&&\\
 %	
-%	<Condition>  & ::= &
+%	<Condition>  & -> &
 %	\begin{tabular}[t]{l}
 %	“(“ <DeviceName>  “,” <RelationalOperator> “,” <Value> “)”
 %	\end{tabular}\\
 %	&&\\
 %	
-%	<Action> & ::= &
+%	<Action> & -> &
 %	\begin{tabular}[t]{l}
 %	<Scenario>
 %	\end{tabular}\\
 %	&&\\
 %	
-%	<FromToBlock> &	::= &
+%	<FromToBlock> &	-> &
 %	\begin{tabular}[t]{l}
 %	“FromTo(“\textbf{Time}”,“\textbf{Time}”).”  <Action>  “.endFromTo()”
 %	\end{tabular}\\
 %	&&\\
 %	
-%	<RelationalOperator> &	::= &
+%	<RelationalOperator> &	-> &
 %	\begin{tabular}[t]{l}
-%	<Equal> | <NotEqual> | < GreaterThan > \\
+%	<Equal> | <NotEqual> | <GreaterThan> \\
 %	| <GreaterThanEqual> | <LessThan> | <LessThanEqual> 
 %	\end{tabular}\\
 %	&&\\
 %	
-%	<SimpleAction> & ::= &
+%	<SimpleAction> & -> &
 %	\begin{tabular}[t]{l}
 %	“action( ‘TurnOn’,”  <DeviceName> “)”\\
 %	| “action( ‘TurnOff’,”  <DeviceName> “)”\\
@@ -1078,34 +1085,34 @@ If(‘temp_sensor_near_window’, ‘>’ , ‘40’)
 %	\end{tabular}\\
 %	&&\\
 %	
-%	<DeviceName> & ::= & \textbf{String} \\
+%	<DeviceName> & -> & \textbf{String} \\
 %	&&\\
 %	
-%	<Value> & ::= &	\textbf{Long} | \textbf{Boolean} \\
+%	<Value> & -> &	\textbf{Long} | \textbf{Boolean} \\
 %	&&\\
 %	
-%	<Equal> & ::= &	“=” \\
+%	<Equal> & -> &	“=” \\
 %	&&\\
 %	
-%	<NotEqual> 	& ::= & “!=” \\
+%	<NotEqual> 	& -> & “!=” \\
 %	&&\\
 %	
-%	<GreaterThan> &	::= & “>” \\
+%	<GreaterThan> &	-> & “>” \\
 %	&&\\
 %	
-%	<GreaterThanEqual> & ::= & “>=” \\
+%	<GreaterThanEqual> & -> & “>=” \\
 %	&&\\
 %	
-%	<LessThan> 	& ::= & “<” \\
+%	<LessThan> 	& -> & “<” \\
 %	&&\\
 %	
-%	<LessThanEqual>	& ::= & “<=”\\
+%	<LessThanEqual>	& -> & “<=”\\
 %	&&\\
 %	\hline
 %\end{tabular}
 %\end{table}
 %
-
+%
 \noindent
 Nhiệm vụ của client là sẽ mang kịch bản người dùng tùy biến trên gửi lên server, server sẽ dùng module ScriptBuilder để mà chuyển đổi sang kịch bản lưu trữ. Đi vào chi tiết module ScriptBuilder thì nó gồm 1 bộ biên dịch, nhằm thực thi một đoạn code được lưu dưới dạng chuỗi. Sở dĩ nhóm đề xuất văn phạm, cú pháp trên cho kịch bản tùy biến vì nó chính là đoạn code thu nhỏ, sử dụng ngôn ngữ Java. Nhiệm vụ của bộ biên dịch là đọc kịch bản đó giống như đọc và thực thi 1 đoạn code Java. Kết quả trả về từ đoạn code (hay kịch bản tùy biến) sẽ là một kịch bản lưu trữ. Bằng cách này, nhóm có thể cung cấp cho người dùng những cú pháp khác linh hoạt hơn và tiện lợi hơn (syntatic sugar), giúp người dùng định nghĩa một kịch bản tùy biến dễ dàng và thuận tiện nhất.\\
 
@@ -1311,9 +1318,9 @@ Do cảm biến DS18B20 sử dụng cơ chế truyền tín hiệu 1-Wire nên c
 %------------------------------Hiện thực module----------------------------%
 \subsection{Hiện thực module điều khiển thiết bị}
 
-Module điều khiển thiết bị được chia làm nhiều bộ điều khiển nhỏ cho các loại thiết bị và được quản lý bởi bộ điều chung. Tất cả các yêu cầu từ server sẽ được bộ điều khiển chung xử lý và đẩy vào các bộ điều khiển thích hợp. Bên cạnh đó, module điều khiển thiết bị còn có thêm bộ cung cấp GPIO với nhiệm vụ khởi tạo đúng loại cổng mà một bộ điều khiển cần. Hình \ref{fig:6-module-dieu-khien-class-diagram} thể hiện sơ đồ lớp (class diagram) của module.
+Module điều khiển thiết bị được chia làm nhiều bộ điều khiển nhỏ cho các loại thiết bị và được quản lý bởi bộ điều chung. Tất cả các yêu cầu từ server sẽ được bộ điều khiển chung xử lý và đẩy vào các bộ điều khiển thích hợp. Bên cạnh đó, module điều khiển thiết bị còn có thêm bộ cung cấp GPIO với nhiệm vụ khởi tạo đúng loại cổng mà một bộ điều khiển cần. Hình \ref{fig:6-module-dieu-khien-class-diagram} thể hiện sơ đồ lớp (class diagram) của module.\\
 
-\begin{figure}[h]
+\begin{figure}[h!]
   \centering
      \includegraphics[width=15.5cm]{6-module-dieu-khien-class-diagram}
   \caption{Sơ đồ lớp (class diagram) của module điều khiển thiết bị}\label{fig:6-module-dieu-khien-class-diagram}
@@ -1330,7 +1337,7 @@ Module điều khiển thiết bị được chia làm nhiều bộ điều khi�
 					RaspiPin.GPIO_01, "MyLED", PinState.HIGH);
 \end{lstlisting}
 
-\begin{figure}[h]
+\begin{figure}[h!]
   \centering
      \includegraphics[width=7cm]{4-pi4j-danh-so}
   \caption{Quy tắc đánh số của Pi4J cho Raspberry Pi 3 Model B}\label{fig:4-pi4j-danh-so}
@@ -1508,7 +1515,7 @@ Apache Cordova thường được sử dụng khi:
 \end{figure}
 
 \noindent
-Với tính đơn giản dễ sử dụng, đồng thời có khả năng hỗ trợ nhiều nền tảng di động khác nhau được thể hiện ở \ref{fig:6-cordova-platforms}, đặc biệt là 3 nền tảng di động chính được sử dụng rộng rãi hiện nay là Android, iOS và Windows Phone, chúng tôi quyết định sử dụng công nghệ Apache Cordova để chuyển tiếp ứng dụng từ nền tảng Web sang các nền tảng di động khác nhau.
+Với tính đơn giản dễ sử dụng, đồng thời có khả năng hỗ trợ nhiều nền tảng di động khác nhau được thể hiện ở hình \ref{fig:6-cordova-platforms}, đặc biệt là 3 nền tảng di động chính được sử dụng rộng rãi hiện nay là Android, iOS và Windows Phone, chúng tôi quyết định sử dụng công nghệ Apache Cordova để chuyển tiếp ứng dụng từ nền tảng Web sang các nền tảng di động khác nhau.
 
 \subsection{Hiện thực ứng dụng di động}
 Theo kiến trúc ứng dụng đã được trình bày ở Chương 5, ứng dụng di động sẽ bao gồm 6 trang giao diện chính (main pages) và 8 thành phần chia sẻ (shared components) là các thành phần chung được sử dụng lại nhiều lần giữa các trang giao diện khác nhau hoặc trong cùng một trang giao diện.
